@@ -1,0 +1,155 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:ripple="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="#ffffffff">
+    <FrameLayout
+        android:id="@+id/action_bar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/actionbar_dimen"
+        android:background="@color/actionbar_color">
+
+        <com.andexert.library.RippleView
+            ripple:rv_centered="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            ripple:rv_rippleDuration="280">
+            <ImageView
+                android:id="@+id/drawer_indicator"
+                android:layout_width="@dimen/actionbar_dimen"
+                android:layout_height="@dimen/actionbar_dimen"
+                android:scaleType="centerInside"
+                android:background="@drawable/drawer_selector"
+                android:layout_gravity="start"
+                />
+        </com.andexert.library.RippleView>
+
+        <TextView
+            android:id="@+id/indicator_style"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/actionbar_dimen"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:text="Login"
+            android:gravity="center"
+            android:background="@drawable/drawer_selector"
+            android:layout_gravity="center"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:layout_marginLeft="5dp"/>
+    </FrameLayout>
+
+    <android.support.v4.widget.DrawerLayout
+        android:id="@+id/drawer_layout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:text="@string/app_name"
+                android:id="@+id/kuasapText"
+                android:layout_centerHorizontal="true"
+                android:textSize="34sp"
+                android:textColor="#ff000000" />
+
+            <TableLayout
+                android:layout_marginTop="10dp"
+                android:id="@+id/tablelayout"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_alignLeft="@+id/more"
+                android:layout_below="@+id/kuasapText"
+                android:layout_alignRight="@+id/more">
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/Username"
+                    android:hint="Username"
+                    android:textSize="14sp"
+                    android:autoText="false"
+                    android:background="@drawable/login_table_top" />
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/Password"
+                    android:hint="Password"
+                    android:textSize="14sp"
+                    android:background="@drawable/login_table_bottom"
+                    android:password="true" />
+            </TableLayout>
+
+            <com.andexert.library.RippleView
+                android:id="@+id/more"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="false"
+                ripple:rv_rippleDuration="300"
+                android:gravity="center"
+                android:layout_below="@+id/tablelayout"
+                android:layout_centerHorizontal="true">
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:id="@+id/SignIn"
+                    android:layout_below="@+id/tablelayout"
+                    android:textSize="15sp"
+                    android:text="登入系統"
+                    android:enabled="true"
+                    android:width="200dp"
+                    android:textColor="@color/white"
+                    android:background="@color/actionbar_color" />
+            </com.andexert.library.RippleView>
+
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/more"
+                android:layout_marginTop="5dp"
+                android:text="記住密碼"
+                android:id="@+id/RememberPass"
+                android:layout_gravity="center_horizontal"
+                android:layout_alignLeft="@+id/more"
+                android:layout_toRightOf="@+id/tablelayout"
+                android:textSize="14sp" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="180dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_gravity="start"
+            android:background="#ffffffff">
+
+        <ListView
+            android:layout_width="180dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:background="@color/white"
+            android:id="@+id/drawerlistView"
+            android:layout_above="@+id/aboutlistView"
+            android:layout_alignParentTop="true"/>
+        <ListView
+            android:id="@+id/aboutlistView"
+            android:layout_width="180dp"
+            android:gravity="center"
+            android:background="@color/white"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true" />
+        </RelativeLayout>
+    </android.support.v4.widget.DrawerLayout>
+</LinearLayout>
