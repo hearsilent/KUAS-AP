@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +22,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -92,6 +92,7 @@ public class MainActivity extends ActionBarActivity {
     Runnable ReadSemesterRunnable;
 
     private Spinner spinner;
+    private TextView SelectTextView;
     private ArrayList<String> SemesterList = new ArrayList<>();
     private ArrayList<String> SemesterValue = new ArrayList<>();
     private ArrayAdapter<String> listAdapter;
@@ -200,7 +201,7 @@ public class MainActivity extends ActionBarActivity {
 
     public Boolean ReLogin()
     {
-        Log.d("KUAS AP", "ReLogin");
+        System.out.println("ReLogin");
         cookieStore = new BasicCookieStore();
         List<NameValuePair> params = new LinkedList<>();
         params.add(new BasicNameValuePair("uid", Uid));
@@ -211,7 +212,7 @@ public class MainActivity extends ActionBarActivity {
 
     public void initLogin(){
         setContentView(R.layout.login);
-
+        _fncid = "";
         UserNameEditText = (EditText) findViewById(R.id.Username);
         PasswordEditText = (EditText) findViewById(R.id.Password);
         SignInButton = (Button) findViewById(R.id.SignIn);
@@ -235,7 +236,7 @@ public class MainActivity extends ActionBarActivity {
         final String[] aboutvalues = new String[]{ "關於我們"};
 
         ArrayAdapter<String> aboutadapter=new ArrayAdapter<String>(
-                this,R.layout.aboutlistview_item, aboutvalues){
+                this,R.layout.menulistview_item, aboutvalues){
             private LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
 
             class ViewHolder {
@@ -249,7 +250,7 @@ public class MainActivity extends ActionBarActivity {
                 ViewHolder holder;
                 if (convertView == null) {
                     holder = new ViewHolder();
-                    convertView = mInflater.inflate(R.layout.aboutlistview_item, null);
+                    convertView = mInflater.inflate(R.layout.menulistview_item, null);
                     holder.textView = (TextView) convertView.findViewById(R.id.textView);
                     holder.imageView = (ImageView) convertView.findViewById(R.id.imageView);
                     convertView.setTag(holder);
@@ -348,13 +349,13 @@ public class MainActivity extends ActionBarActivity {
 
     public void initLogout(){
         setContentView(R.layout.logout);
-
+        _fncid = "";
         mDrawerList = (ListView)findViewById(R.id.drawerlistView);
         mAboutList = (ListView)findViewById(R.id.aboutlistView);
         final String[] aboutvalues = new String[]{ "關於我們"};
         final String[] values = new String[]{ "學期課表", "學期成績", "缺曠系統", "校車系統", "校園資訊" };
         ArrayAdapter<String> adapter=new ArrayAdapter<String>(
-                this,R.layout.aboutlistview_item, values){
+                this,R.layout.menulistview_item, values){
             private LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
 
             class ViewHolder {
@@ -368,7 +369,7 @@ public class MainActivity extends ActionBarActivity {
                 ViewHolder holder;
                 if (convertView == null) {
                     holder = new ViewHolder();
-                    convertView = mInflater.inflate(R.layout.aboutlistview_item, null);
+                    convertView = mInflater.inflate(R.layout.menulistview_item, null);
                     holder.textView = (TextView) convertView.findViewById(R.id.textView);
                     holder.imageView = (ImageView) convertView.findViewById(R.id.imageView);
                     convertView.setTag(holder);
@@ -380,7 +381,7 @@ public class MainActivity extends ActionBarActivity {
             }
         };
         ArrayAdapter<String> aboutadapter=new ArrayAdapter<String>(
-                this,R.layout.aboutlistview_item, aboutvalues){
+                this,R.layout.menulistview_item, aboutvalues){
             private LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
 
             class ViewHolder {
@@ -394,7 +395,7 @@ public class MainActivity extends ActionBarActivity {
                 ViewHolder holder;
                 if (convertView == null) {
                     holder = new ViewHolder();
-                    convertView = mInflater.inflate(R.layout.aboutlistview_item, null);
+                    convertView = mInflater.inflate(R.layout.menulistview_item, null);
                     holder.textView = (TextView) convertView.findViewById(R.id.textView);
                     holder.imageView = (ImageView) convertView.findViewById(R.id.imageView);
                     convertView.setTag(holder);
@@ -413,10 +414,10 @@ public class MainActivity extends ActionBarActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch (position) {
                     case 0:
-                        initCourse();
+                        initCourse(false, false);
                         break;
                     case 1:
-                        initScore();
+                        initScore(false, false);
                         break;
                     case 2:
 
@@ -470,25 +471,86 @@ public class MainActivity extends ActionBarActivity {
 
     }
 
-    public void initCourse(){
-        setContentView(R.layout.course);
-        TextView textView = (TextView) findViewById(R.id.textView);
-        textView.setVisibility(View.GONE);
-        spinner = (Spinner)findViewById(R.id.spinner);
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (!ymsScore.equals(SemesterValue.get(position)))
-                {
-                    ymsScore = SemesterValue.get(position);
-                    ReadCourseHandler.sendEmptyMessage(-1);
-                    new Thread(ReadCourseRunnable).start();
-                }
+    public void initSelect(){
+        setContentView(R.layout.select);
+        ListView selectListView = (ListView) findViewById(R.id.listView);
+        TextView cancel = (TextView) findViewById(R.id.cancel);
+        ArrayAdapter<String> adapter=new ArrayAdapter<String>(
+                this,R.layout.select_item, SemesterList){
+            private LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
+
+            class ViewHolder {
+                public TextView textView;
+                public ImageView imageView;
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {
+            public View getView(int position, View convertView,
+                                ViewGroup parent) {
+                ViewHolder holder;
+                if (convertView == null) {
+                    holder = new ViewHolder();
+                    convertView = mInflater.inflate(R.layout.select_item, null);
+                    holder.textView = (TextView) convertView.findViewById(R.id.textView);
+                    holder.imageView = (ImageView) convertView.findViewById(R.id.imageView);
+                    convertView.setTag(holder);
+                } else {
+                    holder = (ViewHolder)convertView.getTag();
+                }
+                holder.textView.setText(SemesterList.get(position));
+                if (SemesterValue.get(position).equals(ymsScore))
+                    holder.imageView.setBackgroundResource(R.drawable.ic_done_black_48dp);
+                else
+                    holder.imageView.setBackgroundColor(Color.TRANSPARENT);
+                return convertView;
+            }
+        };
+        selectListView.setAdapter(adapter);
+        selectListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Boolean cancel = false;
+                if (ymsScore.equals(SemesterValue.get(position)))
+                    cancel = true;
+                ymsScore = SemesterValue.get(position);
+                if (_fncid.equals("AG222"))
+                    initCourse(true, cancel);
+                else if (_fncid.equals("AG008"))
+                    initScore(true, cancel);
+            }
+        });
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (_fncid.equals("AG222"))
+                    initCourse(true, true);
+                else if (_fncid.equals("AG008"))
+                    initScore(true, true);
+            }
+        });
+    }
 
+    public void initSelectSemester(){
+        SelectTextView = (TextView) findViewById(R.id.selecttextView);
+        for (int i = 0; i < SemesterValue.size(); i ++)
+            if (SemesterValue.get(i).equals(ymsScore))
+            {
+                SelectTextView.setText(SemesterList.get(i));
+                break;
+            }
+    }
+
+    public void initCourse(boolean select, boolean cancel){
+        setContentView(R.layout.course);
+        TextView textView = (TextView) findViewById(R.id.textView);
+        textView.setVisibility(View.GONE);
+
+        RelativeLayout Select = (RelativeLayout) findViewById(R.id.select);
+        Select.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                _fncid = "AG222";
+                initSelect();
             }
         });
 
@@ -504,7 +566,7 @@ public class MainActivity extends ActionBarActivity {
         final String[] aboutvalues = new String[]{ "關於我們"};
         final String[] values = new String[]{ "學期成績", "缺曠系統", "校車系統", "校園資訊" };
         ArrayAdapter<String> adapter=new ArrayAdapter<String>(
-                this,R.layout.aboutlistview_item, values){
+                this,R.layout.menulistview_item, values){
             private LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
 
             class ViewHolder {
@@ -518,7 +580,7 @@ public class MainActivity extends ActionBarActivity {
                 ViewHolder holder;
                 if (convertView == null) {
                     holder = new ViewHolder();
-                    convertView = mInflater.inflate(R.layout.aboutlistview_item, null);
+                    convertView = mInflater.inflate(R.layout.menulistview_item, null);
                     holder.textView = (TextView) convertView.findViewById(R.id.textView);
                     holder.imageView = (ImageView) convertView.findViewById(R.id.imageView);
                     convertView.setTag(holder);
@@ -530,7 +592,7 @@ public class MainActivity extends ActionBarActivity {
             }
         };
         ArrayAdapter<String> aboutadapter=new ArrayAdapter<String>(
-                this,R.layout.aboutlistview_item, aboutvalues){
+                this,R.layout.menulistview_item, aboutvalues){
             private LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
 
             class ViewHolder {
@@ -544,7 +606,7 @@ public class MainActivity extends ActionBarActivity {
                 ViewHolder holder;
                 if (convertView == null) {
                     holder = new ViewHolder();
-                    convertView = mInflater.inflate(R.layout.aboutlistview_item, null);
+                    convertView = mInflater.inflate(R.layout.menulistview_item, null);
                     holder.textView = (TextView) convertView.findViewById(R.id.textView);
                     holder.imageView = (ImageView) convertView.findViewById(R.id.imageView);
                     convertView.setTag(holder);
@@ -563,7 +625,7 @@ public class MainActivity extends ActionBarActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch (position) {
                     case 0:
-                        initScore();
+                        initScore(false, false);
                         break;
                     case 1:
 
@@ -662,26 +724,33 @@ public class MainActivity extends ActionBarActivity {
         };
 
         _fncid = "AG222";
-        new Thread(ReadSemesterRunnable).start();
+        if (!select)
+            new Thread(ReadSemesterRunnable).start();
+        else
+        {
+            if (!cancel)
+            {
+                ReadCourseHandler.sendEmptyMessage(-1);
+                new Thread(ReadCourseRunnable).start();
+                initSelectSemester();
+            }
+            else
+            {
+                initSelectSemester();
+                addCourse();
+            }
+        }
     }
 
-    public void initScore(){
+    public void initScore(boolean select, boolean cancel){
         setContentView(R.layout.score);
-        spinner = (Spinner)findViewById(R.id.spinner);
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (!ymsScore.equals(SemesterValue.get(position)))
-                {
-                    ymsScore = SemesterValue.get(position);
-                    ReadScoreHandler.sendEmptyMessage(-1);
-                    new Thread(ReadScoreRunnable).start();
-                }
-            }
 
+        RelativeLayout Select = (RelativeLayout) findViewById(R.id.select);
+        Select.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
+            public void onClick(View v) {
+                _fncid = "AG008";
+                initSelect();
             }
         });
 
@@ -697,7 +766,7 @@ public class MainActivity extends ActionBarActivity {
         final String[] aboutvalues = new String[]{ "關於我們"};
         final String[] values = new String[]{ "學期課表", "缺曠系統", "校車系統", "校園資訊" };
         ArrayAdapter<String> adapter=new ArrayAdapter<String>(
-                this,R.layout.aboutlistview_item, values){
+                this,R.layout.menulistview_item, values){
             private LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
 
             class ViewHolder {
@@ -711,7 +780,7 @@ public class MainActivity extends ActionBarActivity {
                 ViewHolder holder;
                 if (convertView == null) {
                     holder = new ViewHolder();
-                    convertView = mInflater.inflate(R.layout.aboutlistview_item, null);
+                    convertView = mInflater.inflate(R.layout.menulistview_item, null);
                     holder.textView = (TextView) convertView.findViewById(R.id.textView);
                     holder.imageView = (ImageView) convertView.findViewById(R.id.imageView);
                     convertView.setTag(holder);
@@ -723,7 +792,7 @@ public class MainActivity extends ActionBarActivity {
             }
         };
         ArrayAdapter<String> aboutadapter=new ArrayAdapter<String>(
-                this,R.layout.aboutlistview_item, aboutvalues){
+                this,R.layout.menulistview_item, aboutvalues){
             private LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
 
             class ViewHolder {
@@ -737,7 +806,7 @@ public class MainActivity extends ActionBarActivity {
                 ViewHolder holder;
                 if (convertView == null) {
                     holder = new ViewHolder();
-                    convertView = mInflater.inflate(R.layout.aboutlistview_item, null);
+                    convertView = mInflater.inflate(R.layout.menulistview_item, null);
                     holder.textView = (TextView) convertView.findViewById(R.id.textView);
                     holder.imageView = (ImageView) convertView.findViewById(R.id.imageView);
                     convertView.setTag(holder);
@@ -756,7 +825,7 @@ public class MainActivity extends ActionBarActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch (position) {
                     case 0:
-                        initCourse();
+                        initCourse(false, false);
                         break;
                     case 1:
 
@@ -831,7 +900,22 @@ public class MainActivity extends ActionBarActivity {
         };
 
         _fncid = "AG008";
-        new Thread(ReadSemesterRunnable).start();
+        if (!select)
+            new Thread(ReadSemesterRunnable).start();
+        else
+        {
+            if (!cancel)
+            {
+                ReadScoreHandler.sendEmptyMessage(-1);
+                new Thread(ReadScoreRunnable).start();
+                initSelectSemester();
+            }
+            else
+            {
+                initSelectSemester();
+                addScore();
+            }
+        }
     }
 
     private Handler ReadScoreHandler = new Handler() {
@@ -893,14 +977,7 @@ public class MainActivity extends ActionBarActivity {
                     LoadingDialog.show();
                     break;
                 case 1:
-                    listAdapter = new ArrayAdapter<>(MainActivity.this, R.layout.dropdown_item, SemesterList);
-                    spinner.setAdapter(listAdapter);
-                    for (int i = 0; i < SemesterValue.size(); i++)
-                        if (SemesterValue.get(i).equals(ymsScore))
-                        {
-                            spinner.setSelection(i);
-                            break;
-                        }
+                    initSelectSemester();
                     if (_fncid.equals("AG008"))
                         new Thread(ReadScoreRunnable).start();
                     else if (_fncid.equals("AG222"))
@@ -954,6 +1031,7 @@ public class MainActivity extends ActionBarActivity {
         TableLayout table = (TableLayout) findViewById(R.id.tablelayout);
         table.setStretchAllColumns(true);
         table.removeAllViews();
+
         TextView textView = (TextView) findViewById(R.id.textView);
         if (!isHolidayClass)
             textView.setVisibility(View.GONE);
@@ -964,7 +1042,7 @@ public class MainActivity extends ActionBarActivity {
         {
             TableRow tablerow = new TableRow(MainActivity.this);
             final TextView testview = new TextView(MainActivity.this);
-            testview.setTextSize(17);
+            testview.setTextSize(14);
             testview.setGravity(Gravity.CENTER);
             testview.setText("目前無學生個人選課資料");
             testview.setBackgroundResource(R.drawable.tablelayout_oneitem);
@@ -1014,14 +1092,14 @@ public class MainActivity extends ActionBarActivity {
             TextView title = new TextView(MainActivity.this);
             title.setText(titles[i]);
             title.setTextColor(getResources().getColor(R.color.blue));
-            title.setTextSize(18);
+            title.setTextSize(14);
             title.setGravity(Gravity.CENTER);
             if (i == 0)
-                title.setBackgroundResource(R.drawable.tablelayout_top_left);
+                title.setBackgroundResource(R.drawable.course_top_left);
             else if (i == titles.length-1)
-                title.setBackgroundResource(R.drawable.tablelayout_top_right);
+                title.setBackgroundResource(R.drawable.course_top_right);
             else
-                title.setBackgroundResource(R.drawable.tablelayout_top_center);
+                title.setBackgroundResource(R.drawable.course_top_center);
             tablerowx.addView(title);
         }
         table.addView(tablerowx);
@@ -1031,20 +1109,21 @@ public class MainActivity extends ActionBarActivity {
             TableRow tablerow = new TableRow(MainActivity.this);
             for (int j = 0; j < x; j++) {
                 final TextView testview = new TextView(MainActivity.this);
-                testview.setTextSize(17);
+                testview.setTextSize(16);
 
                 if (j == 0)
                 {
                     testview.setTextColor(getResources().getColor(R.color.blue));
-                    testview.setTextSize(18);
+                    testview.setTextSize(14);
                     testview.setText(titles2[i]);
                 }
                 else
                 {
+                    testview.setTextColor(getResources().getColor(R.color.grey));
                     if (CourseList.get(i).get(j - 1).ID.length() > 0)
                         testview.setText(CourseList.get(i).get(j - 1).ID.substring(0,2));
                     else
-                        testview.setText(CourseList.get(i).get(j - 1).ID);
+                        testview.setText("　　");
                 }
 
                 final int yy = i;
@@ -1067,25 +1146,25 @@ public class MainActivity extends ActionBarActivity {
                 if (j == 0)
                 {
                     if (i == y-1)
-                        testview.setBackgroundResource(R.drawable.tablelayout_bottom_left);
+                        testview.setBackgroundResource(R.drawable.course_bottom_left);
                     else
-                        testview.setBackgroundResource(R.drawable.tablelayout_normal_left);
+                        testview.setBackgroundResource(R.drawable.course_normal_left);
                 }
                 else if (j == x-1)
                 {
                     if (i == y-1)
-                        testview.setBackgroundResource(R.drawable.tablelayout_bottom_right);
+                        testview.setBackgroundResource(R.drawable.course_bottom_right);
                     else
-                        testview.setBackgroundResource(R.drawable.tablelayout_normal_right);
+                        testview.setBackgroundResource(R.drawable.course_normal_right);
                 }
                 else
                 {
                     if (i == y-1)
-                        testview.setBackgroundResource(R.drawable.tablelayout_bottom_center);
+                        testview.setBackgroundResource(R.drawable.course_bottom_center);
                     else
-                        testview.setBackgroundResource(R.drawable.tablelayout_normal_center);
+                        testview.setBackgroundResource(R.drawable.course_normal_center);
                 }
-                tablerow.addView(testview,new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.MATCH_PARENT));
+                tablerow.addView(testview, new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.MATCH_PARENT));
             }
             table.addView(tablerow);
         }
@@ -1289,7 +1368,6 @@ public class MainActivity extends ActionBarActivity {
         setting.edit().putBoolean("Remember", RememberPass.isChecked()).apply();
 
     }
-
 
 
     @Override

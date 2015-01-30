@@ -33,7 +33,7 @@
             android:layout_height="@dimen/actionbar_dimen"
             android:paddingLeft="12dp"
             android:paddingRight="12dp"
-            android:text="Score"
+            android:text="Course"
             android:gravity="center"
             android:background="@drawable/drawer_selector"
             android:layout_gravity="center"
@@ -63,19 +63,35 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <Spinner
-                android:layout_width="wrap_content"
+            <RelativeLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/spinner"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:spinnerMode="dialog"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentRight="true"
-                android:layout_marginBottom="5sp"
-                android:layout_marginTop="20sp"
-                android:layout_marginRight="20sp"
-                android:layout_marginLeft="20sp" />
+                android:id="@+id/select"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:gravity="center_horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="103學年度第1學期"
+                    android:id="@+id/selecttextView"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:textSize="18sp"
+                    android:layout_marginTop="15dp"
+                    android:textColor="#ff000000" />
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:id="@+id/selectimageView"
+                    android:layout_alignParentTop="true"
+                    android:layout_toRightOf="@+id/selecttextView"
+                    android:layout_toEndOf="@+id/selecttextView"
+                    android:layout_marginTop="6dp"
+                    android:background="@drawable/ic_keyboard_arrow_down_black_48dp" />
+            </RelativeLayout>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -83,7 +99,7 @@
                 android:text="轉橫向即可查看周末課程"
                 android:layout_marginBottom="5sp"
                 android:id="@+id/textView"
-                android:layout_below="@+id/spinner"
+                android:layout_below="@+id/select"
                 android:layout_centerHorizontal="true"
                 android:textSize="15sp"
                 android:textColor="#ff000000" />
@@ -92,12 +108,12 @@
                 android:id="@+id/scrollView"
                 android:layout_below="@+id/textView"
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent" >
+                android:layout_height="fill_parent">
 
                 <TableLayout
                     android:id="@+id/tablelayout"
                     android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
+                    android:layout_height="wrap_content"
                     android:shrinkColumns="0"
                     android:layout_marginLeft="20sp"
                     android:layout_marginRight="20sp"
