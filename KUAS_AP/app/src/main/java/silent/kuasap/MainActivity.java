@@ -23,7 +23,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -48,9 +47,16 @@ import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
+import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.mozilla.javascript.Context;
+import org.mozilla.javascript.Function;
+import org.mozilla.javascript.NativeJavaObject;
+import org.mozilla.javascript.NativeObject;
+import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.ScriptableObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -66,13 +72,16 @@ import static android.view.Gravity.START;
 
 
 public class MainActivity extends ActionBarActivity {
-    public static final String USER_AGENT = "Mozilla/5.0 (Windows NT 6.3; WOW64; rv:34.0) Gecko/20100101 Firefox/34.0";
+    public static final String USER_AGENT = "Mozilla/5.0 (Windows NT 6.3; WOW64; rv:35.0) Gecko/20100101 Firefox/35.0";
+    String BusJs = "function baseEncryption(e) {function h(b, a) { var d, c, e, f, g; e = b & 2147483648; f = a & 2147483648; d = b & 1073741824; c = a & 1073741824; g = (b & 1073741823) + (a & 1073741823); return d & c ? g ^ 2147483648 ^ e ^ f : d | c ? g & 1073741824 ? g ^ 3221225472 ^ e ^ f : g ^ 1073741824 ^ e ^ f : g ^ e ^ f } function g(b, a, d, c, e, f, g) { b = h(b, h(h(a & d | ~a & c, e), g)); return h(b << f | b >>> 32 - f, a) } function i(b, a, d, c, e, f, g) { b = h(b, h(h(a & c | d & ~c, e), g)); return h(b << f | b >>> 32 - f, a) } function j(b, a, c, d, e, f, g) { b = h(b, h(h(a ^ c ^ d, e), g)); return h(b << f | b >>> 32 - f, a) } function k(b, a, c, d, e, f, g) {b = h(b, h(h(c ^(a | ~d), e), g)); return h(b << f | b >>> 32 - f, a)} function l(b) { var a = \"\", c = \"\", d; for (d = 0; 3 >= d; d++) c = b >>> 8 * d & 255, c = \"0\" + c.toString(16), a += c.substr(c.length - 2, 2); return a } var f = [], m, n, o, p, b, a, d, c, f = function (b) { var a, c = b.length; a = c + 8; for (var d = 16 * ((a - a % 64) / 64 + 1), e = Array(d - 1), f = 0, g = 0; g < c; ) a = (g - g % 4) / 4, f = 8 * (g % 4), e[a] |= b.charCodeAt(g) << f, g++; a = (g - g % 4) / 4; e[a] |= 128 << 8 * (g % 4); e[d - 2] = c << 3; e[d - 1] = c >>> 29; return e } (e); b = 1732584193; a = 4023233417; d = 2562383102; c = 271733878; for (e = 0; e < f.length; e += 16) m = b, n = a, o = d, p = c, b = g(b, a, d, c, f[e +0], 7, 3614090360), c = g(c, b, a, d, f[e + 1], 12, 3905402710), d = g(d, c, b, a, f[e + 2], 17, 606105819), a = g(a, d, c, b, f[e + 3], 22, 3250441966), b = g(b, a, d, c, f[e + 4], 7, 4118548399), c = g(c, b, a, d, f[e + 5], 12, 1200080426), d = g(d, c, b, a, f[e + 6], 17, 2821735955), a = g(a, d, c, b, f[e + 7], 22, 4249261313), b = g(b, a, d, c, f[e + 8], 7, 1770035416), c = g(c, b, a, d, f[e + 9], 12, 2336552879), d = g(d, c, b, a, f[e + 10], 17, 4294925233), a = g(a, d, c, b, f[e + 11], 22, 2304563134), b = g(b, a, d, c, f[e + 12], 7, 1804603682), c = g(c, b, a, d, f[e + 13], 12, 4254626195), d = g(d, c, b, a, f[e + 14], 17, 2792965006), a = g(a, d,c, b, f[e + 15], 22, 1236535329), b = i(b, a, d, c, f[e + 1], 5, 4129170786), c = i(c, b, a, d, f[e + 6], 9, 3225465664), d = i(d, c, b, a, f[e + 11], 14, 643717713), a = i(a, d, c, b, f[e + 0], 20, 3921069994), b = i(b, a, d, c, f[e + 5], 5, 3593408605), c = i(c, b, a, d, f[e + 10], 9, 38016083), d = i(d, c, b, a, f[e + 15], 14, 3634488961), a = i(a, d, c, b, f[e + 4], 20, 3889429448), b = i(b, a, d, c, f[e + 9], 5, 568446438), c = i(c, b, a, d, f[e + 14], 9, 3275163606), d = i(d, c, b, a, f[e + 3], 14, 4107603335), a = i(a, d, c, b, f[e + 8], 20, 1163531501), b = i(b, a, d, c, f[e + 13], 5, 2850285829), c = i(c, b, a, d, f[e + 2], 9, 4243563512), d = i(d,c, b, a, f[e + 7], 14, 1735328473), a = i(a, d, c, b, f[e + 12], 20, 2368359562), b = j(b, a, d, c, f[e + 5], 4, 4294588738), c = j(c, b, a, d, f[e + 8], 11, 2272392833), d = j(d, c, b, a, f[e + 11], 16, 1839030562), a = j(a, d, c, b, f[e + 14], 23, 4259657740), b = j(b, a, d, c, f[e + 1], 4, 2763975236), c = j(c, b, a, d, f[e + 4], 11, 1272893353), d = j(d, c, b, a, f[e + 7], 16, 4139469664), a = j(a, d, c, b, f[e + 10], 23, 3200236656), b = j(b, a, d, c, f[e + 13], 4, 681279174), c = j(c, b, a, d, f[e + 0], 11, 3936430074), d = j(d, c, b, a, f[e + 3], 16, 3572445317), a = j(a, d, c, b, f[e + 6], 23, 76029189), b = j(b, a, d, c, f[e + 9], 4, 3654602809),c = j(c, b, a, d, f[e + 12], 11, 3873151461), d = j(d, c, b, a, f[e + 15], 16, 530742520), a = j(a, d, c, b, f[e + 2], 23, 3299628645), b = k(b, a, d, c, f[e + 0], 6, 4096336452), c = k(c, b, a, d, f[e + 7], 10, 1126891415), d = k(d, c, b, a, f[e + 14], 15, 2878612391), a = k(a, d, c, b, f[e + 5], 21, 4237533241), b = k(b, a, d, c, f[e + 12], 6, 1700485571), c = k(c, b, a, d, f[e + 3], 10, 2399980690), d = k(d, c, b, a, f[e + 10], 15, 4293915773), a = k(a, d, c, b, f[e + 1], 21, 2240044497), b = k(b, a, d, c, f[e + 8], 6, 1873313359), c = k(c, b, a, d, f[e + 15], 10, 4264355552), d = k(d, c, b, a, f[e + 6], 15, 2734768916), a = k(a, d, c, b, f[e + 13], 21,1309151649), b = k(b, a, d, c, f[e + 4], 6, 4149444226), c = k(c, b, a, d, f[e + 11], 10, 3174756917), d = k(d, c, b, a, f[e + 2], 15, 718787259), a = k(a, d, c, b, f[e + 9], 21, 3951481745), b = h(b, m), a = h(a, n), d = h(d, o), c = h(c, p); return (l(b) + l(a) + l(d) + l(c)).toLowerCase()}loginEncryption = function (e, h) {var g = Math.floor(1163531501 * Math.random()) + 15441, i = Math.floor(1163531502 * Math.random()) + 0, j = Math.floor(1163531502 * Math.random()) + 0, k = Math.floor(1163531502 * Math.random()) + 0, g = baseEncryption(\"J\" + g), i = baseEncryption(\"E\" + i), j = baseEncryption(\"R\" + j), k = baseEncryption(\"Y\" + k), e = baseEncryption(e + encA1(g)), h = baseEncryption(e + h + \"JERRY\" + encA1(i)), l = baseEncryption(e + h + \"KUAS\" + encA1(j)), l = baseEncryption(l + e + encA1(\"ITALAB\") + encA1(k)), l = baseEncryption(l + h + \"MIS\" + k); return '{ a:\"' + l + '\",b:\"' +g + '\",c:\"' + i + '\",d:\"' + j + '\",e:\"' + k + '\",f:\"' + h + '\" }'}; function encA2(e) { return baseEncryption(e) };";
     CookieStore cookieStore = new BasicCookieStore();
     private String _loginUrl = "http://140.127.113.231/kuas/perchk.jsp";
     private String _usernameUrl = "http://140.127.113.231/kuas/f_head.jsp";
     private String _fncUrl = "http://140.127.113.231/kuas/fnc.jsp";
     private String _scoreUrl = "http://140.127.113.231/kuas/ag_pro/ag008.jsp";
     private String _courseUrl = "http://140.127.113.231/kuas/ag_pro/ag222.jsp";
+    private String _leaveSearchUrl = "http://140.127.113.231/kuas/ak_pro/ak002_01.jsp";
+    private String _busLoginUrl = "http://bus.kuas.edu.tw/API/Users/login";
     private String _fncid = "";
     private String Uid = "";
     private String Pwd = "";
@@ -91,11 +100,9 @@ public class MainActivity extends ActionBarActivity {
 
     Runnable ReadSemesterRunnable;
 
-    private Spinner spinner;
     private TextView SelectTextView;
     private ArrayList<String> SemesterList = new ArrayList<>();
     private ArrayList<String> SemesterValue = new ArrayList<>();
-    private ArrayAdapter<String> listAdapter;
 
     // Login
     private EditText UserNameEditText;
@@ -116,6 +123,13 @@ public class MainActivity extends ActionBarActivity {
     boolean isNightClass = false;
     boolean isHolidayNightClass = false;
     boolean isHolidayClass = false;
+
+    // Leave
+    Runnable ReadLeaveRunnable;
+    ArrayList<LeaveList> LeaveList = new ArrayList<>();
+
+    // Bus
+    Runnable BusLoginRunnable;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -168,7 +182,9 @@ public class MainActivity extends ActionBarActivity {
                     if (_fncid.equals("AG008"))
                         document = Jsoup.parse(post_url_contents("http://140.127.113.231/kuas/system/sys001_00.jsp?spath=ag_pro/ag008.jsp?", params, cookieStore));
                     else if (_fncid.equals("AG222"))
-                        document = Jsoup.parse(post_url_contents("http://140.127.113.231/kuas/system/sys001_00.jsp?spath=ag_pro/ag008.jsp?", params, cookieStore));
+                        document = Jsoup.parse(post_url_contents("http://140.127.113.231/kuas/system/sys001_00.jsp?spath=ag_pro/ag222.jsp?", params, cookieStore));
+                    else if (_fncid.equals("AK002"))
+                        document = Jsoup.parse(post_url_contents("http://140.127.113.231/kuas/system/sys001_00.jsp?spath=ak_pro/ak002_01.jsp?", params, cookieStore));
                     SemesterList = new ArrayList<>();
                     SemesterValue = new ArrayList<>();
                     ymsScore = "";
@@ -212,6 +228,7 @@ public class MainActivity extends ActionBarActivity {
 
     public void initLogin(){
         setContentView(R.layout.login);
+
         _fncid = "";
         UserNameEditText = (EditText) findViewById(R.id.Username);
         PasswordEditText = (EditText) findViewById(R.id.Password);
@@ -233,7 +250,34 @@ public class MainActivity extends ActionBarActivity {
 
         mDrawerList = (ListView)findViewById(R.id.drawerlistView);
         mAboutList = (ListView)findViewById(R.id.aboutlistView);
-        final String[] aboutvalues = new String[]{ "關於我們"};
+        final String[] aboutvalues = new String[]{ "關於我們" };
+        final String[] values = new String[]{ "校園資訊" };
+        ArrayAdapter<String> adapter=new ArrayAdapter<String>(
+                this,R.layout.menulistview_item, values){
+            private LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
+
+            class ViewHolder {
+                public TextView textView;
+                public ImageView imageView;
+            }
+
+            @Override
+            public View getView(int position, View convertView,
+                                ViewGroup parent) {
+                ViewHolder holder;
+                if (convertView == null) {
+                    holder = new ViewHolder();
+                    convertView = mInflater.inflate(R.layout.menulistview_item, null);
+                    holder.textView = (TextView) convertView.findViewById(R.id.textView);
+                    holder.imageView = (ImageView) convertView.findViewById(R.id.imageView);
+                    convertView.setTag(holder);
+                } else {
+                    holder = (ViewHolder)convertView.getTag();
+                }
+                holder.textView.setText(values[position]);
+                return convertView;
+            }
+        };
 
         ArrayAdapter<String> aboutadapter=new ArrayAdapter<String>(
                 this,R.layout.menulistview_item, aboutvalues){
@@ -263,22 +307,13 @@ public class MainActivity extends ActionBarActivity {
             }
         };
         mAboutList.setAdapter(aboutadapter);
-
+        mDrawerList.setAdapter(adapter);
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch (position) {
                     case 0:
-
-                        break;
-                    case 1:
-
-                        break;
-                    case 2:
-
-                        break;
-                    case 3:
-
+                        initEvent1(false);
                         break;
                 }
             }
@@ -420,10 +455,13 @@ public class MainActivity extends ActionBarActivity {
                         initScore(false, false);
                         break;
                     case 2:
-
+                        initLeave1(false, false);
                         break;
                     case 3:
-
+                        initBus();
+                        break;
+                    case 4:
+                        initEvent1(true);
                         break;
                 }
             }
@@ -517,6 +555,8 @@ public class MainActivity extends ActionBarActivity {
                     initCourse(true, cancel);
                 else if (_fncid.equals("AG008"))
                     initScore(true, cancel);
+                else if (_fncid.equals("AK002"))
+                    initLeave1(true, cancel);
             }
         });
         cancel.setOnClickListener(new View.OnClickListener() {
@@ -526,6 +566,8 @@ public class MainActivity extends ActionBarActivity {
                     initCourse(true, true);
                 else if (_fncid.equals("AG008"))
                     initScore(true, true);
+                else if (_fncid.equals("AK002"))
+                    initLeave1(true, true);
             }
         });
     }
@@ -628,13 +670,13 @@ public class MainActivity extends ActionBarActivity {
                         initScore(false, false);
                         break;
                     case 1:
-
+                        initLeave1(false, false);
                         break;
                     case 2:
 
                         break;
                     case 3:
-
+                        initEvent1(true);
                         break;
                 }
             }
@@ -828,13 +870,13 @@ public class MainActivity extends ActionBarActivity {
                         initCourse(false, false);
                         break;
                     case 1:
-
+                        initLeave1(false, false);
                         break;
                     case 2:
 
                         break;
                     case 3:
-
+                        initEvent1(true);
                         break;
                 }
             }
@@ -918,6 +960,810 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
+    public void initLeave1(boolean select, boolean cancel){
+        setContentView(R.layout.leave1);
+
+        RelativeLayout Select = (RelativeLayout) findViewById(R.id.select);
+        Select.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                _fncid = "AK002";
+                initSelect();
+            }
+        });
+
+        RelativeLayout Page2 = (RelativeLayout) findViewById(R.id.RelativeLayout2);
+        Page2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                initLeave2();
+            }
+        });
+
+        TextView textView = (TextView) findViewById(R.id.textView);
+        textView.setVisibility(View.GONE);
+
+        ImageView Logout = (ImageView) findViewById(R.id.Logout);
+        Logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                initLogout();
+            }
+        });
+        mDrawerList = (ListView)findViewById(R.id.drawerlistView);
+        mAboutList = (ListView)findViewById(R.id.aboutlistView);
+        final String[] aboutvalues = new String[]{ "關於我們"};
+        final String[] values = new String[]{ "學期課表", "學期成績", "校車系統", "校園資訊" };
+        ArrayAdapter<String> adapter=new ArrayAdapter<String>(
+                this,R.layout.menulistview_item, values){
+            private LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
+
+            class ViewHolder {
+                public TextView textView;
+                public ImageView imageView;
+            }
+
+            @Override
+            public View getView(int position, View convertView,
+                                ViewGroup parent) {
+                ViewHolder holder;
+                if (convertView == null) {
+                    holder = new ViewHolder();
+                    convertView = mInflater.inflate(R.layout.menulistview_item, null);
+                    holder.textView = (TextView) convertView.findViewById(R.id.textView);
+                    holder.imageView = (ImageView) convertView.findViewById(R.id.imageView);
+                    convertView.setTag(holder);
+                } else {
+                    holder = (ViewHolder)convertView.getTag();
+                }
+                holder.textView.setText(values[position]);
+                return convertView;
+            }
+        };
+        ArrayAdapter<String> aboutadapter=new ArrayAdapter<String>(
+                this,R.layout.menulistview_item, aboutvalues){
+            private LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
+
+            class ViewHolder {
+                public TextView textView;
+                public ImageView imageView;
+            }
+
+            @Override
+            public View getView(int position, View convertView,
+                                ViewGroup parent) {
+                ViewHolder holder;
+                if (convertView == null) {
+                    holder = new ViewHolder();
+                    convertView = mInflater.inflate(R.layout.menulistview_item, null);
+                    holder.textView = (TextView) convertView.findViewById(R.id.textView);
+                    holder.imageView = (ImageView) convertView.findViewById(R.id.imageView);
+                    convertView.setTag(holder);
+                } else {
+                    holder = (ViewHolder)convertView.getTag();
+                }
+                holder.textView.setText(aboutvalues[position]);
+                holder.imageView.setBackgroundResource(R.drawable.ic_thumb_up_black_48dp);
+                return convertView;
+            }
+        };
+        mAboutList.setAdapter(aboutadapter);
+        mDrawerList.setAdapter(adapter);
+        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                switch (position) {
+                    case 0:
+                        initCourse(false, false);
+                        break;
+                    case 1:
+                        initScore(false, false);
+                        break;
+                    case 2:
+
+                        break;
+                    case 3:
+                        initEvent1(true);
+                        break;
+                }
+            }
+        });
+        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        final ImageView imageView = (ImageView) findViewById(R.id.drawer_indicator);
+        final Resources resources = getResources();
+        drawerArrowDrawable = new DrawerArrowDrawable(resources, true);
+        drawerArrowDrawable.setStrokeColor(Color.WHITE);
+        imageView.setImageDrawable(drawerArrowDrawable);
+        drawer.setDrawerListener(new DrawerLayout.SimpleDrawerListener() {
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+                offset = slideOffset;
+                // Sometimes slideOffset ends up so close to but not quite 1 or 0.
+                if (slideOffset >= .995) {
+                    flipped = true;
+                    drawerArrowDrawable.setFlip(flipped);
+                } else if (slideOffset <= .005) {
+                    flipped = false;
+                    drawerArrowDrawable.setFlip(flipped);
+                }
+                drawerArrowDrawable.setParameter(offset);
+            }
+        });
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (drawer.isDrawerVisible(START)) {
+                    drawer.closeDrawer(START);
+                } else {
+                    drawer.openDrawer(START);
+                }
+            }
+        });
+
+        ReadLeaveRunnable = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    if (!CheckLoginState())
+                        ReLogin();
+
+                    List<NameValuePair> params = new LinkedList<>();
+                    params.add(new BasicNameValuePair("yms", ymsScore));
+                    params.add(new BasicNameValuePair("arg01", ymsScore.split(",")[0]));
+                    params.add(new BasicNameValuePair("arg02", ymsScore.split(",")[1]));
+                    params.add(new BasicNameValuePair("spath", "ak_pro/ak002_01.jsp?"));
+                    Document document = Jsoup.parse(post_url_contents(_leaveSearchUrl, params, cookieStore));
+
+                    LeaveList = new ArrayList<>();
+                    for (int i = 2; i <= Xsoup.compile("/html/body/table[2]/tbody/tr").evaluate(document).list().size(); i++)
+                    {
+
+                        String getData = Xsoup.compile("/html/body/table[2]/tbody/tr[" + i + "]").evaluate(document).getElements().text();
+                        if (getData.split(" ").length == 19)
+                            LeaveList.add(new LeaveList(getData.split(" ")[2],
+                                    getData.split(" ")[3] + getData.split(" ")[4],
+                                    getData.split(" ")[5],
+                                    getData.split(" ")[6],
+                                    getData.split(" ")[7],
+                                    getData.split(" ")[8],
+                                    getData.split(" ")[9],
+                                    getData.split(" ")[10],
+                                    getData.split(" ")[11],
+                                    getData.split(" ")[12],
+                                    getData.split(" ")[13],
+                                    getData.split(" ")[14],
+                                    getData.split(" ")[15],
+                                    getData.split(" ")[16],
+                                    getData.split(" ")[17],
+                                    getData.split(" ")[18]));
+                        else if (getData.split(" ").length == 18)
+                            LeaveList.add(new LeaveList(getData.split(" ")[1],
+                                    getData.split(" ")[2] + getData.split(" ")[3],
+                                    getData.split(" ")[4],
+                                    getData.split(" ")[5],
+                                    getData.split(" ")[6],
+                                    getData.split(" ")[7],
+                                    getData.split(" ")[8],
+                                    getData.split(" ")[9],
+                                    getData.split(" ")[10],
+                                    getData.split(" ")[11],
+                                    getData.split(" ")[12],
+                                    getData.split(" ")[13],
+                                    getData.split(" ")[14],
+                                    getData.split(" ")[15],
+                                    getData.split(" ")[16],
+                                    getData.split(" ")[17]));
+                    }
+                    ReadLeaveHandler.sendEmptyMessage(1);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        _fncid = "AK002";
+        if (!select)
+            new Thread(ReadSemesterRunnable).start();
+        else
+        {
+            if (!cancel)
+            {
+                ReadLeaveHandler.sendEmptyMessage(-1);
+                new Thread(ReadLeaveRunnable).start();
+                initSelectSemester();
+            }
+            else
+            {
+                initSelectSemester();
+                addLeave();
+            }
+        }
+    }
+
+    public void initLeave2(){
+        setContentView(R.layout.leave2);
+
+        RelativeLayout Page1 = (RelativeLayout) findViewById(R.id.relativeLayout);
+        Page1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                initLeave1(true, true);
+            }
+        });
+
+        ImageView Logout = (ImageView) findViewById(R.id.Logout);
+        Logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                initLogout();
+            }
+        });
+        mDrawerList = (ListView)findViewById(R.id.drawerlistView);
+        mAboutList = (ListView)findViewById(R.id.aboutlistView);
+        final String[] aboutvalues = new String[]{ "關於我們"};
+        final String[] values = new String[]{ "學期課表", "學期成績", "校車系統", "校園資訊" };
+        ArrayAdapter<String> adapter=new ArrayAdapter<String>(
+                this,R.layout.menulistview_item, values){
+            private LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
+
+            class ViewHolder {
+                public TextView textView;
+                public ImageView imageView;
+            }
+
+            @Override
+            public View getView(int position, View convertView,
+                                ViewGroup parent) {
+                ViewHolder holder;
+                if (convertView == null) {
+                    holder = new ViewHolder();
+                    convertView = mInflater.inflate(R.layout.menulistview_item, null);
+                    holder.textView = (TextView) convertView.findViewById(R.id.textView);
+                    holder.imageView = (ImageView) convertView.findViewById(R.id.imageView);
+                    convertView.setTag(holder);
+                } else {
+                    holder = (ViewHolder)convertView.getTag();
+                }
+                holder.textView.setText(values[position]);
+                return convertView;
+            }
+        };
+        ArrayAdapter<String> aboutadapter=new ArrayAdapter<String>(
+                this,R.layout.menulistview_item, aboutvalues){
+            private LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
+
+            class ViewHolder {
+                public TextView textView;
+                public ImageView imageView;
+            }
+
+            @Override
+            public View getView(int position, View convertView,
+                                ViewGroup parent) {
+                ViewHolder holder;
+                if (convertView == null) {
+                    holder = new ViewHolder();
+                    convertView = mInflater.inflate(R.layout.menulistview_item, null);
+                    holder.textView = (TextView) convertView.findViewById(R.id.textView);
+                    holder.imageView = (ImageView) convertView.findViewById(R.id.imageView);
+                    convertView.setTag(holder);
+                } else {
+                    holder = (ViewHolder)convertView.getTag();
+                }
+                holder.textView.setText(aboutvalues[position]);
+                holder.imageView.setBackgroundResource(R.drawable.ic_thumb_up_black_48dp);
+                return convertView;
+            }
+        };
+        mAboutList.setAdapter(aboutadapter);
+        mDrawerList.setAdapter(adapter);
+        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                switch (position) {
+                    case 0:
+                        initCourse(false, false);
+                        break;
+                    case 1:
+                        initScore(false, false);
+                        break;
+                    case 2:
+
+                        break;
+                    case 3:
+                        initEvent1(true);
+                        break;
+                }
+            }
+        });
+        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        final ImageView imageView = (ImageView) findViewById(R.id.drawer_indicator);
+        final Resources resources = getResources();
+        drawerArrowDrawable = new DrawerArrowDrawable(resources, true);
+        drawerArrowDrawable.setStrokeColor(Color.WHITE);
+        imageView.setImageDrawable(drawerArrowDrawable);
+        drawer.setDrawerListener(new DrawerLayout.SimpleDrawerListener() {
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+                offset = slideOffset;
+                // Sometimes slideOffset ends up so close to but not quite 1 or 0.
+                if (slideOffset >= .995) {
+                    flipped = true;
+                    drawerArrowDrawable.setFlip(flipped);
+                } else if (slideOffset <= .005) {
+                    flipped = false;
+                    drawerArrowDrawable.setFlip(flipped);
+                }
+                drawerArrowDrawable.setParameter(offset);
+            }
+        });
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (drawer.isDrawerVisible(START)) {
+                    drawer.closeDrawer(START);
+                } else {
+                    drawer.openDrawer(START);
+                }
+            }
+        });
+
+        _fncid = "";
+    }
+
+    public void initEvent1(final boolean _isLogin){
+        setContentView(R.layout.event1);
+
+        RelativeLayout Page2 = (RelativeLayout) findViewById(R.id.RelativeLayout2);
+        Page2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                initEvent2(_isLogin);
+            }
+        });
+
+        RelativeLayout Page3 = (RelativeLayout) findViewById(R.id.RelativeLayout3);
+        Page3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                initEvent3(_isLogin);
+            }
+        });
+
+        ImageView Logout = (ImageView) findViewById(R.id.Logout);
+        Logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (_isLogin)
+                    initLogout();
+                else
+                    initLogin();
+            }
+        });
+        mDrawerList = (ListView)findViewById(R.id.drawerlistView);
+        mAboutList = (ListView)findViewById(R.id.aboutlistView);
+        final String[] aboutvalues = new String[]{ "關於我們"};
+        final String[] values = new String[]{ "學期課表", "學期成績", "缺曠系統", "校車系統" };
+        ArrayAdapter<String> adapter=new ArrayAdapter<String>(
+                this,R.layout.menulistview_item, values){
+            private LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
+
+            class ViewHolder {
+                public TextView textView;
+                public ImageView imageView;
+            }
+
+            @Override
+            public View getView(int position, View convertView,
+                                ViewGroup parent) {
+                ViewHolder holder;
+                if (convertView == null) {
+                    holder = new ViewHolder();
+                    convertView = mInflater.inflate(R.layout.menulistview_item, null);
+                    holder.textView = (TextView) convertView.findViewById(R.id.textView);
+                    holder.imageView = (ImageView) convertView.findViewById(R.id.imageView);
+                    convertView.setTag(holder);
+                } else {
+                    holder = (ViewHolder)convertView.getTag();
+                }
+                holder.textView.setText(values[position]);
+                return convertView;
+            }
+        };
+        ArrayAdapter<String> aboutadapter=new ArrayAdapter<String>(
+                this,R.layout.menulistview_item, aboutvalues){
+            private LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
+
+            class ViewHolder {
+                public TextView textView;
+                public ImageView imageView;
+            }
+
+            @Override
+            public View getView(int position, View convertView,
+                                ViewGroup parent) {
+                ViewHolder holder;
+                if (convertView == null) {
+                    holder = new ViewHolder();
+                    convertView = mInflater.inflate(R.layout.menulistview_item, null);
+                    holder.textView = (TextView) convertView.findViewById(R.id.textView);
+                    holder.imageView = (ImageView) convertView.findViewById(R.id.imageView);
+                    convertView.setTag(holder);
+                } else {
+                    holder = (ViewHolder)convertView.getTag();
+                }
+                holder.textView.setText(aboutvalues[position]);
+                holder.imageView.setBackgroundResource(R.drawable.ic_thumb_up_black_48dp);
+                return convertView;
+            }
+        };
+        mAboutList.setAdapter(aboutadapter);
+        if (_isLogin)
+            mDrawerList.setAdapter(adapter);
+        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                switch (position) {
+                    case 0:
+                        initCourse(false, false);
+                        break;
+                    case 1:
+                        initScore(false, false);
+                        break;
+                    case 2:
+                        initLeave1(false, false);
+                        break;
+                    case 3:
+
+                        break;
+                }
+            }
+        });
+        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        final ImageView imageView = (ImageView) findViewById(R.id.drawer_indicator);
+        final Resources resources = getResources();
+        drawerArrowDrawable = new DrawerArrowDrawable(resources, true);
+        drawerArrowDrawable.setStrokeColor(Color.WHITE);
+        imageView.setImageDrawable(drawerArrowDrawable);
+        drawer.setDrawerListener(new DrawerLayout.SimpleDrawerListener() {
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+                offset = slideOffset;
+                // Sometimes slideOffset ends up so close to but not quite 1 or 0.
+                if (slideOffset >= .995) {
+                    flipped = true;
+                    drawerArrowDrawable.setFlip(flipped);
+                } else if (slideOffset <= .005) {
+                    flipped = false;
+                    drawerArrowDrawable.setFlip(flipped);
+                }
+                drawerArrowDrawable.setParameter(offset);
+            }
+        });
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (drawer.isDrawerVisible(START)) {
+                    drawer.closeDrawer(START);
+                } else {
+                    drawer.openDrawer(START);
+                }
+            }
+        });
+
+        _fncid = "";
+    }
+
+    public void initEvent2(final boolean _isLogin){
+        setContentView(R.layout.event2);
+
+        RelativeLayout Page1 = (RelativeLayout) findViewById(R.id.RelativeLayout);
+        Page1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                initEvent1(_isLogin);
+            }
+        });
+
+        RelativeLayout Page3 = (RelativeLayout) findViewById(R.id.RelativeLayout3);
+        Page3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                initEvent3(_isLogin);
+            }
+        });
+
+        ImageView Logout = (ImageView) findViewById(R.id.Logout);
+        Logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (_isLogin)
+                    initLogout();
+                else
+                    initLogin();
+            }
+        });
+        mDrawerList = (ListView)findViewById(R.id.drawerlistView);
+        mAboutList = (ListView)findViewById(R.id.aboutlistView);
+        final String[] aboutvalues = new String[]{ "關於我們"};
+        final String[] values = new String[]{ "學期課表", "學期成績", "缺曠系統", "校車系統" };
+        ArrayAdapter<String> adapter=new ArrayAdapter<String>(
+                this,R.layout.menulistview_item, values){
+            private LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
+
+            class ViewHolder {
+                public TextView textView;
+                public ImageView imageView;
+            }
+
+            @Override
+            public View getView(int position, View convertView,
+                                ViewGroup parent) {
+                ViewHolder holder;
+                if (convertView == null) {
+                    holder = new ViewHolder();
+                    convertView = mInflater.inflate(R.layout.menulistview_item, null);
+                    holder.textView = (TextView) convertView.findViewById(R.id.textView);
+                    holder.imageView = (ImageView) convertView.findViewById(R.id.imageView);
+                    convertView.setTag(holder);
+                } else {
+                    holder = (ViewHolder)convertView.getTag();
+                }
+                holder.textView.setText(values[position]);
+                return convertView;
+            }
+        };
+        ArrayAdapter<String> aboutadapter=new ArrayAdapter<String>(
+                this,R.layout.menulistview_item, aboutvalues){
+            private LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
+
+            class ViewHolder {
+                public TextView textView;
+                public ImageView imageView;
+            }
+
+            @Override
+            public View getView(int position, View convertView,
+                                ViewGroup parent) {
+                ViewHolder holder;
+                if (convertView == null) {
+                    holder = new ViewHolder();
+                    convertView = mInflater.inflate(R.layout.menulistview_item, null);
+                    holder.textView = (TextView) convertView.findViewById(R.id.textView);
+                    holder.imageView = (ImageView) convertView.findViewById(R.id.imageView);
+                    convertView.setTag(holder);
+                } else {
+                    holder = (ViewHolder)convertView.getTag();
+                }
+                holder.textView.setText(aboutvalues[position]);
+                holder.imageView.setBackgroundResource(R.drawable.ic_thumb_up_black_48dp);
+                return convertView;
+            }
+        };
+        mAboutList.setAdapter(aboutadapter);
+        if (_isLogin)
+            mDrawerList.setAdapter(adapter);
+        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                switch (position) {
+                    case 0:
+                        initCourse(false, false);
+                        break;
+                    case 1:
+                        initScore(false, false);
+                        break;
+                    case 2:
+                        initLeave1(false, false);
+                        break;
+                    case 3:
+
+                        break;
+                }
+            }
+        });
+        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        final ImageView imageView = (ImageView) findViewById(R.id.drawer_indicator);
+        final Resources resources = getResources();
+        drawerArrowDrawable = new DrawerArrowDrawable(resources, true);
+        drawerArrowDrawable.setStrokeColor(Color.WHITE);
+        imageView.setImageDrawable(drawerArrowDrawable);
+        drawer.setDrawerListener(new DrawerLayout.SimpleDrawerListener() {
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+                offset = slideOffset;
+                // Sometimes slideOffset ends up so close to but not quite 1 or 0.
+                if (slideOffset >= .995) {
+                    flipped = true;
+                    drawerArrowDrawable.setFlip(flipped);
+                } else if (slideOffset <= .005) {
+                    flipped = false;
+                    drawerArrowDrawable.setFlip(flipped);
+                }
+                drawerArrowDrawable.setParameter(offset);
+            }
+        });
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (drawer.isDrawerVisible(START)) {
+                    drawer.closeDrawer(START);
+                } else {
+                    drawer.openDrawer(START);
+                }
+            }
+        });
+
+        _fncid = "";
+    }
+
+    public void initEvent3(final boolean _isLogin){
+        setContentView(R.layout.event3);
+
+        RelativeLayout Page1 = (RelativeLayout) findViewById(R.id.RelativeLayout);
+        Page1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                initEvent1(_isLogin);
+            }
+        });
+
+        RelativeLayout Page2 = (RelativeLayout) findViewById(R.id.RelativeLayout2);
+        Page2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                initEvent2(_isLogin);
+            }
+        });
+
+        ImageView Logout = (ImageView) findViewById(R.id.Logout);
+        Logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (_isLogin)
+                    initLogout();
+                else
+                    initLogin();
+            }
+        });
+        mDrawerList = (ListView)findViewById(R.id.drawerlistView);
+        mAboutList = (ListView)findViewById(R.id.aboutlistView);
+        final String[] aboutvalues = new String[]{ "關於我們"};
+        final String[] values = new String[]{ "學期課表", "學期成績", "缺曠系統", "校車系統" };
+        ArrayAdapter<String> adapter=new ArrayAdapter<String>(
+                this,R.layout.menulistview_item, values){
+            private LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
+
+            class ViewHolder {
+                public TextView textView;
+                public ImageView imageView;
+            }
+
+            @Override
+            public View getView(int position, View convertView,
+                                ViewGroup parent) {
+                ViewHolder holder;
+                if (convertView == null) {
+                    holder = new ViewHolder();
+                    convertView = mInflater.inflate(R.layout.menulistview_item, null);
+                    holder.textView = (TextView) convertView.findViewById(R.id.textView);
+                    holder.imageView = (ImageView) convertView.findViewById(R.id.imageView);
+                    convertView.setTag(holder);
+                } else {
+                    holder = (ViewHolder)convertView.getTag();
+                }
+                holder.textView.setText(values[position]);
+                return convertView;
+            }
+        };
+        ArrayAdapter<String> aboutadapter=new ArrayAdapter<String>(
+                this,R.layout.menulistview_item, aboutvalues){
+            private LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
+
+            class ViewHolder {
+                public TextView textView;
+                public ImageView imageView;
+            }
+
+            @Override
+            public View getView(int position, View convertView,
+                                ViewGroup parent) {
+                ViewHolder holder;
+                if (convertView == null) {
+                    holder = new ViewHolder();
+                    convertView = mInflater.inflate(R.layout.menulistview_item, null);
+                    holder.textView = (TextView) convertView.findViewById(R.id.textView);
+                    holder.imageView = (ImageView) convertView.findViewById(R.id.imageView);
+                    convertView.setTag(holder);
+                } else {
+                    holder = (ViewHolder)convertView.getTag();
+                }
+                holder.textView.setText(aboutvalues[position]);
+                holder.imageView.setBackgroundResource(R.drawable.ic_thumb_up_black_48dp);
+                return convertView;
+            }
+        };
+        mAboutList.setAdapter(aboutadapter);
+        if (_isLogin)
+            mDrawerList.setAdapter(adapter);
+        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                switch (position) {
+                    case 0:
+                        initCourse(false, false);
+                        break;
+                    case 1:
+                        initScore(false, false);
+                        break;
+                    case 2:
+                        initLeave1(false, false);
+                        break;
+                    case 3:
+
+                        break;
+                }
+            }
+        });
+        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        final ImageView imageView = (ImageView) findViewById(R.id.drawer_indicator);
+        final Resources resources = getResources();
+        drawerArrowDrawable = new DrawerArrowDrawable(resources, true);
+        drawerArrowDrawable.setStrokeColor(Color.WHITE);
+        imageView.setImageDrawable(drawerArrowDrawable);
+        drawer.setDrawerListener(new DrawerLayout.SimpleDrawerListener() {
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+                offset = slideOffset;
+                // Sometimes slideOffset ends up so close to but not quite 1 or 0.
+                if (slideOffset >= .995) {
+                    flipped = true;
+                    drawerArrowDrawable.setFlip(flipped);
+                } else if (slideOffset <= .005) {
+                    flipped = false;
+                    drawerArrowDrawable.setFlip(flipped);
+                }
+                drawerArrowDrawable.setParameter(offset);
+            }
+        });
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (drawer.isDrawerVisible(START)) {
+                    drawer.closeDrawer(START);
+                } else {
+                    drawer.openDrawer(START);
+                }
+            }
+        });
+
+        _fncid = "";
+    }
+
+    private void initBus()
+    {
+        BusLoginRunnable = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    get_url_contents("http://bus.kuas.edu.tw/" , null, cookieStore);
+                    String n = runScript(BusJs + get_url_contents("http://bus.kuas.edu.tw/API/Scripts/a1" , null, cookieStore), "loginEncryption", new String[]{Uid, Pwd});
+                    List<NameValuePair> params = new LinkedList<>();
+                    params.add(new BasicNameValuePair("account", Uid));
+                    params.add(new BasicNameValuePair("password", Pwd));
+                    params.add(new BasicNameValuePair("n", n));
+                    System.out.println(post_url_contents(_busLoginUrl , params, cookieStore));
+                    JSONObject jsonObj = new JSONObject(post_url_contents(_busLoginUrl , params, cookieStore));
+                    System.out.println(jsonObj.optString("success"));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        new Thread(BusLoginRunnable).start();
+    }
+
+
     private Handler ReadScoreHandler = new Handler() {
         @Override
         public void handleMessage(android.os.Message msg) {
@@ -962,6 +1808,28 @@ public class MainActivity extends ActionBarActivity {
         };
     };
 
+    private Handler ReadLeaveHandler = new Handler() {
+        @Override
+        public void handleMessage(android.os.Message msg) {
+            switch (msg.what)
+            {
+                case -1:
+                    LoadingDialog.setMessage("Loading...");
+                    ProgressDialogPro progressDialog = (ProgressDialogPro) LoadingDialog;
+                    progressDialog.setProgressStyle(ProgressDialogPro.STYLE_SPINNER);
+                    progressDialog.setIndeterminate(true);
+                    LoadingDialog.setCancelable(false);
+                    LoadingDialog.setCanceledOnTouchOutside(false);
+                    LoadingDialog.show();
+                    break;
+                case 1:
+                    addLeave();
+                    LoadingDialog.dismiss();
+                    break;
+            }
+        };
+    };
+
     private Handler ReadSemesterHandler = new Handler() {
         @Override
         public void handleMessage(android.os.Message msg) {
@@ -982,6 +1850,8 @@ public class MainActivity extends ActionBarActivity {
                         new Thread(ReadScoreRunnable).start();
                     else if (_fncid.equals("AG222"))
                         new Thread(ReadCourseRunnable).start();
+                    else if (_fncid.equals("AK002"))
+                        new Thread(ReadLeaveRunnable).start();
                     break;
             }
         };
@@ -1026,6 +1896,144 @@ public class MainActivity extends ActionBarActivity {
             }
         };
     };
+
+    public void addLeave() {
+        TableLayout table = (TableLayout) findViewById(R.id.tablelayout);
+        table.setStretchAllColumns(true);
+        table.removeAllViews();
+
+        TextView textView = (TextView) findViewById(R.id.textView);
+        textView.setVisibility(View.GONE);
+        if (LeaveList.size() == 0)
+        {
+            TableRow tablerow = new TableRow(MainActivity.this);
+            final TextView testview = new TextView(MainActivity.this);
+            testview.setTextSize(14);
+            testview.setGravity(Gravity.CENTER);
+            testview.setText("本學期無缺曠課紀錄");
+            testview.setBackgroundResource(R.drawable.tablelayout_oneitem);
+            tablerow.addView(testview,new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.MATCH_PARENT));
+            table.addView(tablerow);
+            return;
+        }
+
+        TableRow tablerowx = new TableRow(MainActivity.this);
+        String[] titles;
+
+        if (getResources().getConfiguration().orientation == 2) //橫向
+        {
+            textView.setVisibility(View.GONE);
+            titles = new String[]{"日期", "M", "1", "2", "3", "4", "A", "5", "6", "7", "8", "B", "11", "12", "13", "14"};
+        }
+        else //垂直
+        {
+            textView.setVisibility(View.VISIBLE);
+            titles = new String[]{"日期", "M", "1", "2", "3", "4", "A", "5", "6", "7", "8"};
+        }
+
+        for (int i = 0; i < titles.length; i++)
+        {
+            TextView title = new TextView(MainActivity.this);
+            title.setText(titles[i]);
+            title.setTextColor(getResources().getColor(R.color.blue));
+            title.setTextSize(14);
+            title.setGravity(Gravity.CENTER);
+            if (i == 0)
+                title.setBackgroundResource(R.drawable.tablelayout_top_left);
+            else if (i == titles.length-1)
+                title.setBackgroundResource(R.drawable.tablelayout_top_right);
+            else
+                title.setBackgroundResource(R.drawable.tablelayout_top_center);
+            tablerowx.addView(title);
+        }
+        table.addView(tablerowx);
+
+        for (int i = 0; i < LeaveList.size(); i++) {
+            TableRow tablerow = new TableRow(MainActivity.this);
+            for (int j = 0; j < titles.length; j++) {
+                final TextView testview = new TextView(MainActivity.this);
+                testview.setTextSize(14);
+
+                testview.setTextColor(getResources().getColor(R.color.grey));
+                switch (j)
+                {
+                    case 0:
+                        testview.setText(LeaveList.get(i)._Time);
+                        break;
+                    case 1:
+                        testview.setText(LeaveList.get(i)._M);
+                        break;
+                    case 2:
+                        testview.setText(LeaveList.get(i)._1);
+                        break;
+                    case 3:
+                        testview.setText(LeaveList.get(i)._2);
+                        break;
+                    case 4:
+                        testview.setText(LeaveList.get(i)._3);
+                        break;
+                    case 5:
+                        testview.setText(LeaveList.get(i)._4);
+                        break;
+                    case 6:
+                        testview.setText(LeaveList.get(i)._A);
+                        break;
+                    case 7:
+                        testview.setText(LeaveList.get(i)._5);
+                        break;
+                    case 8:
+                        testview.setText(LeaveList.get(i)._6);
+                        break;
+                    case 9:
+                        testview.setText(LeaveList.get(i)._7);
+                        break;
+                    case 10:
+                        testview.setText(LeaveList.get(i)._8);
+                        break;
+                    case 11:
+                        testview.setText(LeaveList.get(i)._B);
+                        break;
+                    case 12:
+                        testview.setText(LeaveList.get(i)._11);
+                        break;
+                    case 13:
+                        testview.setText(LeaveList.get(i)._12);
+                        break;
+                    case 14:
+                        testview.setText(LeaveList.get(i)._13);
+                        break;
+                    case 15:
+                        testview.setText(LeaveList.get(i)._14);
+                        break;
+                }
+
+                testview.setGravity(Gravity.CENTER);
+                if (j == 0)
+                {
+                    if (i == LeaveList.size()-1)
+                        testview.setBackgroundResource(R.drawable.tablelayout_bottom_left);
+                    else
+                        testview.setBackgroundResource(R.drawable.tablelayout_normal_left);
+                }
+                else if (j == titles.length-1)
+                {
+                    if (i == LeaveList.size()-1)
+                        testview.setBackgroundResource(R.drawable.tablelayout_bottom_right);
+                    else
+                        testview.setBackgroundResource(R.drawable.tablelayout_normal_right);
+                }
+                else
+                {
+                    if (i == LeaveList.size()-1)
+                        testview.setBackgroundResource(R.drawable.tablelayout_bottom_center);
+                    else
+                        testview.setBackgroundResource(R.drawable.tablelayout_normal_center);
+                }
+                tablerow.addView(testview, new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.MATCH_PARENT));
+            }
+            table.addView(tablerow);
+        }
+    }
 
     public void addCourse() {
         TableLayout table = (TableLayout) findViewById(R.id.tablelayout);
@@ -1348,6 +2356,32 @@ public class MainActivity extends ActionBarActivity {
         return new String(mByteArrayOutputStream.toByteArray());
     }
 
+    public String runScript(String js, String functionName, Object[] functionParams) {
+        Context rhino = Context.enter();
+        rhino.setOptimizationLevel(-1);
+        try {
+            Scriptable scope = rhino.initStandardObjects();
+
+            ScriptableObject.putProperty(scope, "javaContext", Context.javaToJS(MainActivity.this, scope));
+            ScriptableObject.putProperty(scope, "javaLoader", Context.javaToJS(MainActivity.class.getClassLoader(), scope));
+
+            rhino.evaluateString(scope, js, "MainActivity", 1, null);
+
+            Function function = (Function) scope.get(functionName, scope);
+
+            Object result = function.call(rhino, scope, scope, functionParams);
+            if (result instanceof String) {
+                return (String) result;
+            } else if (result instanceof NativeJavaObject) {
+                return (String) ((NativeJavaObject) result).getDefaultValue(String.class);
+            } else if (result instanceof NativeObject) {
+                return (String) ((NativeObject) result).getDefaultValue(String.class);
+            }
+            return result.toString();
+        } finally {
+            Context.exit();
+        }
+    }
 
     private void restorePrefs() {
         SharedPreferences setting = getSharedPreferences("KUAS AP", 0);
@@ -1378,5 +2412,7 @@ public class MainActivity extends ActionBarActivity {
         else { }
         if (_fncid.equals("AG222") && !LoadingDialog.isShowing())
             addCourse();
+        else if (_fncid.equals("AK002") && !LoadingDialog.isShowing())
+            addLeave();
     }
 }

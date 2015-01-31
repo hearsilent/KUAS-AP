@@ -1,0 +1,156 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:ripple="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="#ffffffff">
+    <FrameLayout
+        android:id="@+id/action_bar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/actionbar_dimen"
+        android:background="@color/actionbar_color">
+
+        <com.andexert.library.RippleView
+            ripple:rv_centered="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            ripple:rv_rippleDuration="280">
+            <ImageView
+                android:id="@+id/drawer_indicator"
+                android:layout_width="@dimen/actionbar_dimen"
+                android:layout_height="@dimen/actionbar_dimen"
+                android:scaleType="centerInside"
+                android:background="@drawable/drawer_selector"
+                android:layout_gravity="start"
+                />
+        </com.andexert.library.RippleView>
+
+        <TextView
+            android:id="@+id/indicator_style"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/actionbar_dimen"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:text="Leave"
+            android:gravity="center"
+            android:background="@drawable/drawer_selector"
+            android:layout_gravity="center"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:layout_marginLeft="5dp"/>
+
+        <ImageView
+            android:id="@+id/Logout"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:scaleType="centerInside"
+            android:background="@drawable/ic_settings_applications_white_48dp"
+            android:layout_gravity="end"
+            android:layout_marginTop="8dp"
+            android:layout_marginRight="10dp" />
+    </FrameLayout>
+
+    <android.support.v4.widget.DrawerLayout
+        android:id="@+id/drawer_layout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:gravity="center"
+                android:id="@+id/Page"
+                android:layout_marginTop="5dp"
+                android:paddingBottom="5sp">
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/relativeLayout"
+                    android:layout_marginRight="50sp">
+
+                    <ImageView
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:id="@+id/imageView1"
+                        android:layout_centerHorizontal="true"
+                        android:background="@drawable/ic_search_grey600_48dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="請假查詢"
+                        android:id="@+id/textView1"
+                        android:layout_below="@id/imageView1"
+                        android:layout_centerHorizontal="true"
+                        android:textSize="12sp"
+                        android:textColor="@color/page_grey" />
+                </RelativeLayout>
+
+                <View android:layout_height="25sp" android:background="@color/bar_grey"
+                    android:layout_toRightOf="@+id/relativeLayout"
+                    android:layout_centerVertical="true"
+                    android:layout_width="1sp"></View>
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_toRightOf="@+id/relativeLayout"
+                    android:layout_toEndOf="@+id/relativeLayout"
+                    android:layout_marginLeft="50sp">
+
+                    <ImageView
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:id="@+id/imageView2"
+                        android:layout_centerHorizontal="true"
+                        android:background="@drawable/ic_create_black_48dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="請假登錄"
+                        android:id="@+id/textView2"
+                        android:layout_below="@id/imageView2"
+                        android:layout_centerHorizontal="true"
+                        android:textSize="12sp"
+                        android:textColor="#ff000000" />
+                </RelativeLayout>
+            </RelativeLayout>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="180dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_gravity="start"
+            android:background="#ffffffff">
+
+            <ListView
+                android:layout_width="180dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:background="@color/white"
+                android:id="@+id/drawerlistView"
+                android:layout_above="@+id/aboutlistView"
+                android:layout_alignParentTop="true"/>
+            <ListView
+                android:id="@+id/aboutlistView"
+                android:layout_width="180dp"
+                android:gravity="center"
+                android:background="@color/white"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true" />
+        </RelativeLayout>
+    </android.support.v4.widget.DrawerLayout>
+</LinearLayout>

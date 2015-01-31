@@ -115,7 +115,6 @@
                 android:gravity="center"
                 android:background="@color/white"
                 android:id="@+id/drawerlistView"
-                android:layout_above="@+id/aboutlistView"
                 android:layout_alignParentTop="true"/>
             <ListView
                 android:id="@+id/aboutlistView"
@@ -123,7 +122,6 @@
                 android:gravity="center"
                 android:background="@color/white"
                 android:layout_height="wrap_content"
-                tools:listitem="@layout/aboutlistview_item"
                 android:layout_alignParentBottom="true" />
         </RelativeLayout>
     </android.support.v4.widget.DrawerLayout>

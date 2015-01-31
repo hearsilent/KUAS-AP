@@ -10,4 +10,6 @@
     <color name="actionbar_color">#1E88E5</color>
     <color name="drawer_arrow_second_color">#303f9f</color>
     <color name="thumbColor">#66aaaaaa</color>
+    <color name="page_grey">#757575</color>
+    <color name="bar_grey">#959595</color>
 </resources>
