@@ -1,5 +1,5 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:ripple="http://schemas.android.com/apk/res-auto"
@@ -63,6 +63,97 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
+            <ScrollView
+                android:id="@+id/scrollView"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_above="@+id/Page">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <View android:layout_height="1sp" android:background="@color/bar_grey"
+                        android:layout_width="fill_parent"
+                        android:layout_alignTop="@+id/time"></View>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="22sp"
+                        android:paddingBottom="22sp"
+                        android:layout_marginTop="15sp"
+                        android:id="@+id/time"
+                        android:background="#0b000000"
+                        android:layout_marginBottom="15sp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="選擇乘車時間"
+                            android:id="@+id/timeTextView"
+                            android:layout_centerHorizontal="true"
+                            android:textSize="16sp"
+                            android:textColor="@color/grey" />
+                    </RelativeLayout>
+
+                    <View android:layout_height="1sp" android:background="@color/bar_grey"
+                        android:layout_width="fill_parent"
+                        android:layout_alignBottom="@+id/time"
+                        android:layout_marginTop="1sp"></View>
+
+                    <LinearLayout
+                        android:layout_below="@id/time"
+                        android:orientation="horizontal"
+                        android:layout_width="fill_parent"
+                        android:id="@+id/location"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8sp">
+
+                        <RelativeLayout
+                            android:layout_weight="1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingTop="22sp"
+                            android:paddingBottom="22sp"
+                            android:id="@+id/location1"
+                            android:background="@color/blue_2">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="從建工出發的車次"
+                                android:layout_centerHorizontal="true"
+                                android:textSize="16sp"
+                                android:textColor="#ffffffff" />
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:layout_weight="1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingTop="22sp"
+                            android:paddingBottom="22sp"
+                            android:id="@+id/location2"
+                            android:background="@color/bar_grey">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="從燕巢出發的車次"
+                                android:layout_centerHorizontal="true"
+                                android:textSize="16sp"
+                                android:textColor="#ffffffff" />
+                        </RelativeLayout>
+
+                    </LinearLayout>
+
+                    <TableLayout
+                        android:id="@+id/tablelayout"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:layout_below="@+id/location"
+                        android:stretchColumns="*"></TableLayout>
+                </RelativeLayout>
+            </ScrollView>
+
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -107,6 +198,7 @@
                     android:layout_alignParentTop="true"
                     android:layout_toRightOf="@+id/relativeLayout"
                     android:layout_toEndOf="@+id/relativeLayout"
+                    android:id="@+id/RelativeLayout2"
                     android:layout_marginLeft="50sp">
 
                     <ImageView
@@ -127,6 +219,7 @@
                         android:textColor="@color/page_grey" />
                 </RelativeLayout>
             </RelativeLayout>
+
         </RelativeLayout>
 
         <RelativeLayout

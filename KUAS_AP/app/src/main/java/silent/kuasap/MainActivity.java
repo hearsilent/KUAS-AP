@@ -1,12 +1,14 @@
 package silent.kuasap;
 
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Gravity;
@@ -26,9 +28,12 @@ import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.alertdialogpro.AlertDialogPro;
 import com.alertdialogpro.ProgressDialogPro;
+import com.roomorama.caldroid.CaldroidFragment;
+import com.roomorama.caldroid.CaldroidListener;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -47,6 +52,7 @@ import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -61,8 +67,10 @@ import org.mozilla.javascript.ScriptableObject;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -85,6 +93,8 @@ public class MainActivity extends ActionBarActivity {
     private String _fncid = "";
     private String Uid = "";
     private String Pwd = "";
+
+    private String api_server = "http://kuas.grd.idv.tw:14768/";
 
     private String ymsScore = "";
 
@@ -130,6 +140,15 @@ public class MainActivity extends ActionBarActivity {
 
     // Bus
     Runnable BusLoginRunnable;
+    Runnable ReadBusRunnable;
+    Runnable BusReserveRunnable;
+    Runnable BusBookingRunnable;
+    String BusDate = "";
+    String BusEndStation = "燕巢";
+    String _busId = "";
+    String _busAction = "";
+    ArrayList<BusList> BusList = new ArrayList<>();
+    ArrayList<BusList> BusReserveList = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -205,8 +224,17 @@ public class MainActivity extends ActionBarActivity {
     public Boolean CheckLoginState()
     {
         try {
+            // Cilent
+            /*
             Document document = Jsoup.parse(get_url_contents(_usernameUrl, null, cookieStore));
             if (Xsoup.compile("/html/body/div[1]/div/div[3]/span[3]").evaluate(document).get() != null)
+                return true;
+            else
+                return false;
+            */
+
+            // Server
+            if (post_url_contents(api_server + "ap/is_login", null, cookieStore).equals("true"))
                 return true;
             else
                 return false;
@@ -218,11 +246,18 @@ public class MainActivity extends ActionBarActivity {
     public Boolean ReLogin()
     {
         System.out.println("ReLogin");
+        // Client
         cookieStore = new BasicCookieStore();
         List<NameValuePair> params = new LinkedList<>();
         params.add(new BasicNameValuePair("uid", Uid));
         params.add(new BasicNameValuePair("pwd", Pwd));
         post_url_contents(_loginUrl, params, cookieStore);
+
+        // Server
+        params.clear();
+        params.add(new BasicNameValuePair("username", UserNameEditText.getText().toString()));
+        params.add(new BasicNameValuePair("password", PasswordEditText.getText().toString()));
+        post_url_contents(api_server + "ap/login", params, cookieStore);
         return CheckLoginState();
     }
 
@@ -359,9 +394,18 @@ public class MainActivity extends ActionBarActivity {
                     cookieStore = new BasicCookieStore();
                     LoginHandler.sendEmptyMessage(LoginInit);
                     List<NameValuePair> params = new LinkedList<>();
+                    // Cilent
                     params.add(new BasicNameValuePair("uid", UserNameEditText.getText().toString()));
                     params.add(new BasicNameValuePair("pwd", PasswordEditText.getText().toString()));
                     post_url_contents(_loginUrl, params, cookieStore);
+
+                    // Server
+                    params.clear();
+                    params.add(new BasicNameValuePair("username", UserNameEditText.getText().toString()));
+                    params.add(new BasicNameValuePair("password", PasswordEditText.getText().toString()));
+                    post_url_contents(api_server + "ap/login", params, cookieStore);
+                    System.out.println(get_url_contents(api_server + "status", null, cookieStore));
+
                     if (CheckLoginState())
                     {
                         Uid = UserNameEditText.getText().toString();
@@ -458,7 +502,7 @@ public class MainActivity extends ActionBarActivity {
                         initLeave1(false, false);
                         break;
                     case 3:
-                        initBus();
+                        initBus1(true);
                         break;
                     case 4:
                         initEvent1(true);
@@ -673,7 +717,7 @@ public class MainActivity extends ActionBarActivity {
                         initLeave1(false, false);
                         break;
                     case 2:
-
+                        initBus1(true);
                         break;
                     case 3:
                         initEvent1(true);
@@ -713,6 +757,7 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
+        _fncid = "AG222";
         ReadCourseRunnable = new Runnable() {
             @Override
             public void run() {
@@ -721,16 +766,55 @@ public class MainActivity extends ActionBarActivity {
                         ReLogin();
 
                     List<NameValuePair> params = new LinkedList<>();
+
+                    // Client
+                    /*
                     params.add(new BasicNameValuePair("yms", ymsScore));
                     params.add(new BasicNameValuePair("arg01", ymsScore.split(",")[0]));
                     params.add(new BasicNameValuePair("arg02", ymsScore.split(",")[1]));
                     params.add(new BasicNameValuePair("spath", "ag_pro/ag222.jsp?"));
                     Document document = Jsoup.parse(post_url_contents(_courseUrl, params, cookieStore));
+                    */
 
                     isHolidayClass = false;
                     isHolidayNightClass = false;
                     isNightClass = false;
                     CourseList = new ArrayList<>();
+
+                    // Server
+                    params.add(new BasicNameValuePair("fncid", _fncid.toLowerCase()));
+                    params.add(new BasicNameValuePair("arg01", ymsScore.split(",")[0]));
+                    params.add(new BasicNameValuePair("arg02", ymsScore.split(",")[1]));
+                    try {
+                        JSONArray jsonObj = new JSONArray( post_url_contents(api_server + "ap/query", params, cookieStore));
+                        for (int i = 0; i < jsonObj.getJSONObject(0).length(); i++) {
+                            JSONObject item = jsonObj.getJSONObject(0).getJSONObject(Integer.toString(i));
+                            ArrayList<CourseList> CourseList2 = new ArrayList<>();
+                            for (int j = 1; j < 8; j ++)
+                            {
+                                JSONObject itemdata = item.getJSONObject(Integer.toString(j));
+                                if (j >= 6 && !itemdata.getString("course_name").equals(""))
+                                {
+                                    isHolidayClass = true;
+                                    if (i >= 10)
+                                        isHolidayNightClass = true;
+                                }
+                                else if (!itemdata.getString("course_name").equals("") && i >= 10)
+                                    isNightClass = true;
+
+                                CourseList2.add(new CourseList(itemdata.getString("course_name"),
+                                        itemdata.getString("course_teacher"),
+                                        itemdata.getString("course_classroom"),
+                                        item.getString("time")));
+                            }
+                            CourseList.add(CourseList2);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    // Cilent
+                    /*
                     for (int i = 2; i <= Xsoup.compile("/html/body/table/tbody/tr").evaluate(document).list().size(); i++)
                     {
                         ArrayList<CourseList> CourseList2 = new ArrayList<>();
@@ -758,6 +842,7 @@ public class MainActivity extends ActionBarActivity {
                         }
                         CourseList.add(CourseList2);
                     }
+                    */
                     ReadCourseHandler.sendEmptyMessage(1);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -765,7 +850,6 @@ public class MainActivity extends ActionBarActivity {
             }
         };
 
-        _fncid = "AG222";
         if (!select)
             new Thread(ReadSemesterRunnable).start();
         else
@@ -873,7 +957,7 @@ public class MainActivity extends ActionBarActivity {
                         initLeave1(false, false);
                         break;
                     case 2:
-
+                        initBus1(true);
                         break;
                     case 3:
                         initEvent1(true);
@@ -913,6 +997,7 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
+        _fncid = "AG008";
         ReadScoreRunnable = new Runnable() {
             @Override
             public void run() {
@@ -920,13 +1005,20 @@ public class MainActivity extends ActionBarActivity {
                     if (!CheckLoginState())
                         ReLogin();
                     List<NameValuePair> params = new LinkedList<>();
+                    // Client
+                    /*
                     params.add(new BasicNameValuePair("yms", ymsScore));
                     params.add(new BasicNameValuePair("arg01", ymsScore.split(",")[0]));
                     params.add(new BasicNameValuePair("arg02", ymsScore.split(",")[1]));
                     params.add(new BasicNameValuePair("spath", "ag_pro/ag008.jsp?"));
                     Document document = Jsoup.parse(post_url_contents(_scoreUrl, params, cookieStore));
+                    */
+
                     ScoreList = new ArrayList<>();
                     Score2List = new ArrayList<>();
+
+                    // Client
+                    /*
                     for (int j = 2; j <= Xsoup.compile("/html/body/form/table/tbody/tr").evaluate(document).list().size(); j++)
                         ScoreList.add(new ScoreList(Xsoup.compile("/html/body/form/table/tbody/tr[" + j + "]/td[2]").evaluate(document).getElements().text().trim(),
                                 Xsoup.compile("/html/body/form/table/tbody/tr[" + j + "]/td[7]").evaluate(document).getElements().text().trim(),
@@ -934,6 +1026,28 @@ public class MainActivity extends ActionBarActivity {
 
                     for (String xxx : Xsoup.compile("/html/body/form/table/caption/div/text()").evaluate(document).getElements().text().replace("　　　　", " ").split(" "))
                         Score2List.add(xxx);
+                    */
+
+                    // Server
+                    params.clear();
+                    params.add(new BasicNameValuePair("fncid", _fncid.toLowerCase()));
+                    params.add(new BasicNameValuePair("arg01", ymsScore.split(",")[0]));
+                    params.add(new BasicNameValuePair("arg02", ymsScore.split(",")[1]));
+                    params.add(new BasicNameValuePair("arg03", Uid));
+                    try {
+                        JSONArray jsonObj = new JSONArray( post_url_contents(api_server + "ap/query", params, cookieStore));
+                        for (int i = 0; i < jsonObj.getJSONArray(0).length(); i++) {
+                            JSONObject item = jsonObj.getJSONArray(0).getJSONObject(i);
+                            ScoreList.add(new ScoreList(item.getString("course_name"),
+                                    item.getString("middle_score"),
+                                    item.getString("final_score")));
+                        }
+
+                        for (int i = 0; i < jsonObj.getJSONArray(1).length(); i++)
+                            Score2List.add(jsonObj.getJSONArray(1).get(i).toString());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                     ReadScoreHandler.sendEmptyMessage(1);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -941,7 +1055,6 @@ public class MainActivity extends ActionBarActivity {
             }
         };
 
-        _fncid = "AG008";
         if (!select)
             new Thread(ReadSemesterRunnable).start();
         else
@@ -1060,7 +1173,7 @@ public class MainActivity extends ActionBarActivity {
                         initScore(false, false);
                         break;
                     case 2:
-
+                        initBus1(true);
                         break;
                     case 3:
                         initEvent1(true);
@@ -1100,6 +1213,7 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
+        _fncid = "AK002";
         ReadLeaveRunnable = new Runnable() {
             @Override
             public void run() {
@@ -1108,13 +1222,15 @@ public class MainActivity extends ActionBarActivity {
                         ReLogin();
 
                     List<NameValuePair> params = new LinkedList<>();
+                    LeaveList = new ArrayList<>();
+
+                    // Client
                     params.add(new BasicNameValuePair("yms", ymsScore));
                     params.add(new BasicNameValuePair("arg01", ymsScore.split(",")[0]));
                     params.add(new BasicNameValuePair("arg02", ymsScore.split(",")[1]));
                     params.add(new BasicNameValuePair("spath", "ak_pro/ak002_01.jsp?"));
                     Document document = Jsoup.parse(post_url_contents(_leaveSearchUrl, params, cookieStore));
 
-                    LeaveList = new ArrayList<>();
                     for (int i = 2; i <= Xsoup.compile("/html/body/table[2]/tbody/tr").evaluate(document).list().size(); i++)
                     {
 
@@ -1154,6 +1270,36 @@ public class MainActivity extends ActionBarActivity {
                                     getData.split(" ")[16],
                                     getData.split(" ")[17]));
                     }
+
+                    // Server
+                    /*
+                    params.clear();
+                    params.add(new BasicNameValuePair("arg01", ymsScore.split(",")[0]));
+                    params.add(new BasicNameValuePair("arg02", ymsScore.split(",")[1]));
+                    try {
+                        JSONArray jsonObj = new JSONArray(post_url_contents(api_server + "leave", params, cookieStore));
+                        for (int i = 1; i < jsonObj.length(); i++) {
+                            LeaveList.add(new LeaveList(jsonObj.getJSONArray(i).get(0).toString(),
+                                    jsonObj.getJSONArray(i).get(1).toString(),
+                                    jsonObj.getJSONArray(i).get(2).toString(),
+                                    jsonObj.getJSONArray(i).get(3).toString(),
+                                    jsonObj.getJSONArray(i).get(4).toString(),
+                                    jsonObj.getJSONArray(i).get(5).toString(),
+                                    jsonObj.getJSONArray(i).get(6).toString(),
+                                    jsonObj.getJSONArray(i).get(7).toString(),
+                                    jsonObj.getJSONArray(i).get(8).toString(),
+                                    jsonObj.getJSONArray(i).get(9).toString(),
+                                    jsonObj.getJSONArray(i).get(10).toString(),
+                                    "",
+                                    "",
+                                    "",
+                                    "",
+                                    ""));
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    */
                     ReadLeaveHandler.sendEmptyMessage(1);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -1161,7 +1307,6 @@ public class MainActivity extends ActionBarActivity {
             }
         };
 
-        _fncid = "AK002";
         if (!select)
             new Thread(ReadSemesterRunnable).start();
         else
@@ -1268,7 +1413,7 @@ public class MainActivity extends ActionBarActivity {
                         initScore(false, false);
                         break;
                     case 2:
-
+                        initBus1(true);
                         break;
                     case 3:
                         initEvent1(true);
@@ -1414,7 +1559,7 @@ public class MainActivity extends ActionBarActivity {
                         initLeave1(false, false);
                         break;
                     case 3:
-
+                        initBus1(true);
                         break;
                 }
             }
@@ -1557,7 +1702,7 @@ public class MainActivity extends ActionBarActivity {
                         initLeave1(false, false);
                         break;
                     case 3:
-
+                        initBus1(true);
                         break;
                 }
             }
@@ -1700,7 +1845,7 @@ public class MainActivity extends ActionBarActivity {
                         initLeave1(false, false);
                         break;
                     case 3:
-
+                        initBus1(true);
                         break;
                 }
             }
@@ -1740,8 +1885,164 @@ public class MainActivity extends ActionBarActivity {
         _fncid = "";
     }
 
-    private void initBus()
+    private void initBus1(boolean ShowCal)
     {
+        setContentView(R.layout.bus1);
+
+        RelativeLayout Page2 = (RelativeLayout) findViewById(R.id.RelativeLayout2);
+        Page2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                initBus2();
+            }
+        });
+
+        final RelativeLayout location1 = (RelativeLayout) findViewById(R.id.location1);
+        final RelativeLayout location2 = (RelativeLayout) findViewById(R.id.location2);
+        location1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!BusEndStation.equals("燕巢"))
+                {
+                    location1.setBackgroundColor(getResources().getColor(R.color.blue_2));
+                    location2.setBackgroundColor(getResources().getColor(R.color.bar_grey));
+                    BusEndStation = "燕巢";
+                    addBus();
+                }
+            }
+        });
+        location2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!BusEndStation.equals("建工"))
+                {
+                    location1.setBackgroundColor(getResources().getColor(R.color.bar_grey));
+                    location2.setBackgroundColor(getResources().getColor(R.color.green));
+                    BusEndStation = "建工";
+                    addBus();
+                }
+            }
+        });
+
+        ImageView Logout = (ImageView) findViewById(R.id.Logout);
+        Logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                initLogout();
+            }
+        });
+        mDrawerList = (ListView)findViewById(R.id.drawerlistView);
+        mAboutList = (ListView)findViewById(R.id.aboutlistView);
+        final String[] aboutvalues = new String[]{ "關於我們"};
+        final String[] values = new String[]{ "學期課表", "學期成績", "缺曠系統", "校園資訊" };
+        ArrayAdapter<String> adapter=new ArrayAdapter<String>(
+                this,R.layout.menulistview_item, values){
+            private LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
+
+            class ViewHolder {
+                public TextView textView;
+                public ImageView imageView;
+            }
+
+            @Override
+            public View getView(int position, View convertView,
+                                ViewGroup parent) {
+                ViewHolder holder;
+                if (convertView == null) {
+                    holder = new ViewHolder();
+                    convertView = mInflater.inflate(R.layout.menulistview_item, null);
+                    holder.textView = (TextView) convertView.findViewById(R.id.textView);
+                    holder.imageView = (ImageView) convertView.findViewById(R.id.imageView);
+                    convertView.setTag(holder);
+                } else {
+                    holder = (ViewHolder)convertView.getTag();
+                }
+                holder.textView.setText(values[position]);
+                return convertView;
+            }
+        };
+        ArrayAdapter<String> aboutadapter=new ArrayAdapter<String>(
+                this,R.layout.menulistview_item, aboutvalues){
+            private LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
+
+            class ViewHolder {
+                public TextView textView;
+                public ImageView imageView;
+            }
+
+            @Override
+            public View getView(int position, View convertView,
+                                ViewGroup parent) {
+                ViewHolder holder;
+                if (convertView == null) {
+                    holder = new ViewHolder();
+                    convertView = mInflater.inflate(R.layout.menulistview_item, null);
+                    holder.textView = (TextView) convertView.findViewById(R.id.textView);
+                    holder.imageView = (ImageView) convertView.findViewById(R.id.imageView);
+                    convertView.setTag(holder);
+                } else {
+                    holder = (ViewHolder)convertView.getTag();
+                }
+                holder.textView.setText(aboutvalues[position]);
+                holder.imageView.setBackgroundResource(R.drawable.ic_thumb_up_black_48dp);
+                return convertView;
+            }
+        };
+        mAboutList.setAdapter(aboutadapter);
+        mDrawerList.setAdapter(adapter);
+        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                switch (position) {
+                    case 0:
+                        initCourse(false, false);
+                        break;
+                    case 1:
+                        initScore(false, false);
+                        break;
+                    case 2:
+                        initLeave1(false, false);
+                        break;
+                    case 3:
+                        initEvent1(true);
+                        break;
+                }
+            }
+        });
+        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        final ImageView imageView = (ImageView) findViewById(R.id.drawer_indicator);
+        final Resources resources = getResources();
+        drawerArrowDrawable = new DrawerArrowDrawable(resources, true);
+        drawerArrowDrawable.setStrokeColor(Color.WHITE);
+        imageView.setImageDrawable(drawerArrowDrawable);
+        drawer.setDrawerListener(new DrawerLayout.SimpleDrawerListener() {
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+                offset = slideOffset;
+                // Sometimes slideOffset ends up so close to but not quite 1 or 0.
+                if (slideOffset >= .995) {
+                    flipped = true;
+                    drawerArrowDrawable.setFlip(flipped);
+                } else if (slideOffset <= .005) {
+                    flipped = false;
+                    drawerArrowDrawable.setFlip(flipped);
+                }
+                drawerArrowDrawable.setParameter(offset);
+            }
+        });
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (drawer.isDrawerVisible(START)) {
+                    drawer.closeDrawer(START);
+                } else {
+                    drawer.openDrawer(START);
+                }
+            }
+        });
+
+        _fncid = "";
+
         BusLoginRunnable = new Runnable() {
             @Override
             public void run() {
@@ -1760,7 +2061,300 @@ public class MainActivity extends ActionBarActivity {
                 }
             }
         };
-        new Thread(BusLoginRunnable).start();
+
+        final CaldroidFragment dialogCaldroidFragment = CaldroidFragment.newInstance("選擇乘車時間", (Calendar.getInstance().get(Calendar.MONTH)+1), Calendar.getInstance().get(Calendar.YEAR));
+        final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        dialogCaldroidFragment.setMinDate(Calendar.getInstance().getTime());
+        dialogCaldroidFragment.refreshView();
+
+        final TextView timeTextView = (TextView) findViewById(R.id.timeTextView);
+        final CaldroidListener listener = new CaldroidListener() {
+            @Override
+            public void onSelectDate(Date date, View view) {
+                BusDate = formatter.format(date);
+                timeTextView.setText("乘車時間 " + BusDate);
+                ReadBusHandler.sendEmptyMessage(-1);
+                new Thread(ReadBusRunnable).start();
+                dialogCaldroidFragment.dismiss();
+            }
+            @Override
+            public void onChangeMonth(int month, int year) {}
+            @Override
+            public void onLongClickDate(Date date, View view) {}
+            @Override
+            public void onCaldroidViewCreated() {
+                dialogCaldroidFragment.setEnableSwipe(true);
+                dialogCaldroidFragment.setCancelable(false);
+                dialogCaldroidFragment.refreshView();
+            }
+        };
+        dialogCaldroidFragment.setCaldroidListener(listener);
+
+        RelativeLayout timePick = (RelativeLayout) findViewById(R.id.time);
+        timePick.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialogCaldroidFragment.show(getSupportFragmentManager(), "Caldroid");
+            }
+        });
+
+        BusBookingRunnable = new Runnable() {
+            @Override
+            public void run() {
+                // Server
+                List<NameValuePair> params = new LinkedList<>();
+                params.add(new BasicNameValuePair("busId", _busId));
+                params.add(new BasicNameValuePair("action", _busAction));
+                try {
+                    JSONArray jsonObj = new JSONArray("[" + post_url_contents(api_server + "bus/booking", params, cookieStore) + "]");
+                    Message msg = new Message();
+                    msg.what = 3;
+                    msg.obj = jsonObj.get(0).toString();
+                    ReadBusHandler.sendMessage(msg);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        ReadBusRunnable = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    // Server
+                    List<NameValuePair> params = new LinkedList<>();
+                    params.add(new BasicNameValuePair("date", BusDate));
+                    System.out.println(get_url_contents(api_server + "bus/reserve", null, cookieStore));
+                    BusList.clear();
+                    try {
+                        JSONArray jsonObj = new JSONArray(post_url_contents(api_server + "bus/query", params, cookieStore));
+                        for (int i = 0; i < jsonObj.length(); i++) {
+                            JSONObject item = jsonObj.getJSONObject(i);
+                            BusList.add(new BusList(item.getString("busId"),
+                                    item.getString("endStation"),
+                                    item.getInt("reserveCount"),
+                                    item.getInt("limitCount"),
+                                    item.getString("runDateTime"),
+                                    item.getInt("isReserve")));
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    ReadBusHandler.sendEmptyMessage(1);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        if (ShowCal)
+            dialogCaldroidFragment.show(getSupportFragmentManager(), "Caldroid");
+        else
+        {
+            timeTextView.setText("乘車時間 " + BusDate);
+            ReadBusHandler.sendEmptyMessage(-1);
+            new Thread(ReadBusRunnable).start();
+        }
+    }
+
+    private void initBus2()
+    {
+        setContentView(R.layout.bus2);
+
+        RelativeLayout Page1 = (RelativeLayout) findViewById(R.id.relativeLayout);
+        Page1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                initBus1(false);
+            }
+        });
+
+        ImageView Logout = (ImageView) findViewById(R.id.Logout);
+        Logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                initLogout();
+            }
+        });
+        mDrawerList = (ListView)findViewById(R.id.drawerlistView);
+        mAboutList = (ListView)findViewById(R.id.aboutlistView);
+        final String[] aboutvalues = new String[]{ "關於我們"};
+        final String[] values = new String[]{ "學期課表", "學期成績", "缺曠系統", "校園資訊" };
+        ArrayAdapter<String> adapter=new ArrayAdapter<String>(
+                this,R.layout.menulistview_item, values){
+            private LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
+
+            class ViewHolder {
+                public TextView textView;
+                public ImageView imageView;
+            }
+
+            @Override
+            public View getView(int position, View convertView,
+                                ViewGroup parent) {
+                ViewHolder holder;
+                if (convertView == null) {
+                    holder = new ViewHolder();
+                    convertView = mInflater.inflate(R.layout.menulistview_item, null);
+                    holder.textView = (TextView) convertView.findViewById(R.id.textView);
+                    holder.imageView = (ImageView) convertView.findViewById(R.id.imageView);
+                    convertView.setTag(holder);
+                } else {
+                    holder = (ViewHolder)convertView.getTag();
+                }
+                holder.textView.setText(values[position]);
+                return convertView;
+            }
+        };
+        ArrayAdapter<String> aboutadapter=new ArrayAdapter<String>(
+                this,R.layout.menulistview_item, aboutvalues){
+            private LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
+
+            class ViewHolder {
+                public TextView textView;
+                public ImageView imageView;
+            }
+
+            @Override
+            public View getView(int position, View convertView,
+                                ViewGroup parent) {
+                ViewHolder holder;
+                if (convertView == null) {
+                    holder = new ViewHolder();
+                    convertView = mInflater.inflate(R.layout.menulistview_item, null);
+                    holder.textView = (TextView) convertView.findViewById(R.id.textView);
+                    holder.imageView = (ImageView) convertView.findViewById(R.id.imageView);
+                    convertView.setTag(holder);
+                } else {
+                    holder = (ViewHolder)convertView.getTag();
+                }
+                holder.textView.setText(aboutvalues[position]);
+                holder.imageView.setBackgroundResource(R.drawable.ic_thumb_up_black_48dp);
+                return convertView;
+            }
+        };
+        mAboutList.setAdapter(aboutadapter);
+        mDrawerList.setAdapter(adapter);
+        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                switch (position) {
+                    case 0:
+                        initCourse(false, false);
+                        break;
+                    case 1:
+                        initScore(false, false);
+                        break;
+                    case 2:
+                        initLeave1(false, false);
+                        break;
+                    case 3:
+                        initEvent1(true);
+                        break;
+                }
+            }
+        });
+        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        final ImageView imageView = (ImageView) findViewById(R.id.drawer_indicator);
+        final Resources resources = getResources();
+        drawerArrowDrawable = new DrawerArrowDrawable(resources, true);
+        drawerArrowDrawable.setStrokeColor(Color.WHITE);
+        imageView.setImageDrawable(drawerArrowDrawable);
+        drawer.setDrawerListener(new DrawerLayout.SimpleDrawerListener() {
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+                offset = slideOffset;
+                // Sometimes slideOffset ends up so close to but not quite 1 or 0.
+                if (slideOffset >= .995) {
+                    flipped = true;
+                    drawerArrowDrawable.setFlip(flipped);
+                } else if (slideOffset <= .005) {
+                    flipped = false;
+                    drawerArrowDrawable.setFlip(flipped);
+                }
+                drawerArrowDrawable.setParameter(offset);
+            }
+        });
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (drawer.isDrawerVisible(START)) {
+                    drawer.closeDrawer(START);
+                } else {
+                    drawer.openDrawer(START);
+                }
+            }
+        });
+
+        _fncid = "";
+
+        BusLoginRunnable = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    get_url_contents("http://bus.kuas.edu.tw/" , null, cookieStore);
+                    String n = runScript(BusJs + get_url_contents("http://bus.kuas.edu.tw/API/Scripts/a1" , null, cookieStore), "loginEncryption", new String[]{Uid, Pwd});
+                    List<NameValuePair> params = new LinkedList<>();
+                    params.add(new BasicNameValuePair("account", Uid));
+                    params.add(new BasicNameValuePair("password", Pwd));
+                    params.add(new BasicNameValuePair("n", n));
+                    System.out.println(post_url_contents(_busLoginUrl , params, cookieStore));
+                    JSONObject jsonObj = new JSONObject(post_url_contents(_busLoginUrl , params, cookieStore));
+                    System.out.println(jsonObj.optString("success"));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        BusBookingRunnable = new Runnable() {
+            @Override
+            public void run() {
+                // Server
+                List<NameValuePair> params = new LinkedList<>();
+                params.add(new BasicNameValuePair("busId", _busId));
+                params.add(new BasicNameValuePair("action", _busAction));
+                try {
+                    JSONArray jsonObj = new JSONArray("[" + post_url_contents(api_server + "bus/booking", params, cookieStore) + "]");
+                    Message msg = new Message();
+                    msg.what = 4;
+                    msg.obj = jsonObj.get(0).toString();
+                    ReadBusHandler.sendMessage(msg);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        BusReserveRunnable = new Runnable() {
+            @Override
+            public void run() {
+            try {
+                // Server
+                BusReserveList.clear();
+                try {
+                    JSONArray jsonObj = new JSONArray(get_url_contents(api_server + "bus/reserve", null, cookieStore));
+                    for (int i = 0; i < jsonObj.length(); i++) {
+                        JSONObject item = jsonObj.getJSONObject(i);
+                        BusReserveList.add(new BusList(item.getString("key"),
+                                item.getString("end"),
+                                0,
+                                0,
+                                item.getString("time"),
+                                1));
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                ReadBusHandler.sendEmptyMessage(2);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            }
+        };
+
+        ReadBusHandler.sendEmptyMessage(-1);
+        new Thread(BusReserveRunnable).start();
     }
 
 
@@ -1857,6 +2451,42 @@ public class MainActivity extends ActionBarActivity {
         };
     };
 
+    private Handler ReadBusHandler = new Handler() {
+        @Override
+        public void handleMessage(android.os.Message msg) {
+            switch (msg.what)
+            {
+                case -1:
+                    LoadingDialog.setMessage("Loading...");
+                    ProgressDialogPro progressDialog = (ProgressDialogPro) LoadingDialog;
+                    progressDialog.setProgressStyle(ProgressDialogPro.STYLE_SPINNER);
+                    progressDialog.setIndeterminate(true);
+                    LoadingDialog.setCancelable(false);
+                    LoadingDialog.setCanceledOnTouchOutside(false);
+                    LoadingDialog.show();
+                    break;
+                case 1:
+                    addBus();
+                    LoadingDialog.dismiss();
+                    break;
+                case 2:
+                    addReserveBus();
+                    LoadingDialog.dismiss();
+                    break;
+                case 3:
+                    Toast.makeText(getApplicationContext(), (String) msg.obj, Toast.LENGTH_SHORT).show();
+                    ReadBusHandler.sendEmptyMessage(-1);
+                    new Thread(ReadBusRunnable).start();
+                    break;
+                case 4:
+                    Toast.makeText(getApplicationContext(), (String) msg.obj, Toast.LENGTH_SHORT).show();
+                    ReadBusHandler.sendEmptyMessage(-1);
+                    new Thread(BusReserveRunnable).start();
+                    break;
+            }
+        };
+    };
+
     private Handler LoginHandler = new Handler() {
         @Override
         public void handleMessage(android.os.Message msg) {
@@ -1896,6 +2526,122 @@ public class MainActivity extends ActionBarActivity {
             }
         };
     };
+
+    public void addBus() {
+        final ArrayList<BusList> NewBusList = new ArrayList<>();
+        for (int i = 0; i < BusList.size(); i ++)
+            if (BusList.get(i).endStation.equals(BusEndStation))
+                NewBusList.add(BusList.get(i));
+
+        TableLayout table = (TableLayout) findViewById(R.id.tablelayout);
+        table.setStretchAllColumns(true);
+        table.removeAllViews();
+        for (int i = 0; i < NewBusList.size(); i++)
+        {
+            final String Station;
+            if (NewBusList.get(i).endStation.equals("燕巢"))
+                Station = "建工到燕巢";
+            else
+                Station = "燕巢到建工";
+            final String time =  NewBusList.get(i).runDateTime.split(" ")[1];
+            final String busId = NewBusList.get(i).busId;
+            final String runDate = NewBusList.get(i).runDateTime;
+            TableRow row = (TableRow)LayoutInflater.from(MainActivity.this).inflate(R.layout.bus_item, null);
+            if (NewBusList.get(i).isReserve == -1)
+            {
+                row.findViewById(R.id.RelativeLayout).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        AlertDialogPro.Builder builder = new AlertDialogPro.Builder(MainActivity.this);
+                        builder.setTitle("確定要 預定 本校車車次？").
+                                setMessage("要預定從" + Station + time + "的校車嗎？").
+                                setPositiveButton("預定校車", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        _busId = busId;
+                                        _busAction = "";
+                                        new Thread(BusBookingRunnable).start();
+                                    }
+                                }).
+                                setNegativeButton("返回", null).setCancelable(false).show();
+                    }
+                });
+                ((TextView)row.findViewById(R.id.location)).setText("到" + NewBusList.get(i).endStation + "，發車：");
+            }
+            else
+            {
+                row.findViewById(R.id.RelativeLayout).setBackgroundColor(getResources().getColor(R.color.red));
+                row.findViewById(R.id.RelativeLayout).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        AlertDialogPro.Builder builder = new AlertDialogPro.Builder(MainActivity.this);
+                        builder.setTitle("確定要 取消 本校車車次？").
+                                setMessage("要取消從" + Station + time + "的校車嗎？").
+                                setPositiveButton("取消校車", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        _busId = runDate;
+                                        _busAction = "un";
+                                        new Thread(BusBookingRunnable).start();
+                                    }
+                                }).
+                                setNegativeButton("返回", null).setCancelable(false).show();
+                    }
+                });
+                ((TextView)row.findViewById(R.id.location)).setText("✔ 到" + NewBusList.get(i).endStation + "，發車：");
+            }
+            ((TextView)row.findViewById(R.id.time)).setText(NewBusList.get(i).runDateTime.split(" ")[1]);
+            ((TextView)row.findViewById(R.id.count)).setText("(" + NewBusList.get(i).reserveCount + "/" + NewBusList.get(i).limitCount + ")");
+            table.addView(row);
+        }
+    }
+
+    public void addReserveBus() {
+        TableLayout table = (TableLayout) findViewById(R.id.tablelayout);
+        table.setStretchAllColumns(true);
+        table.removeAllViews();
+        TextView noReserveTextView = (TextView) findViewById(R.id.noReserveTextView);
+        ImageView noReserveImageView = (ImageView) findViewById(R.id.noReserveImageView);
+
+        if (BusReserveList.size() != 0)
+        {
+            noReserveTextView.setVisibility(View.GONE);
+            noReserveImageView.setVisibility(View.GONE);
+        }
+
+        for (int i = 0; i < BusReserveList.size(); i++)
+        {
+            final String Station;
+            if (BusReserveList.get(i).endStation.equals("燕巢"))
+                Station = "建工到燕巢";
+            else
+                Station = "燕巢到建工";
+            final String time =  BusReserveList.get(i).runDateTime.split(" ")[1];
+            final String runDate = BusReserveList.get(i).runDateTime;
+            TableRow row = (TableRow)LayoutInflater.from(MainActivity.this).inflate(R.layout.busreserve_item, null);
+            row.findViewById(R.id.relativelayout).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    AlertDialogPro.Builder builder = new AlertDialogPro.Builder(MainActivity.this);
+                    builder.setTitle("確定要 取消 本校車車次？").
+                            setMessage("要取消從" + Station + time + "的校車嗎？").
+                            setPositiveButton("取消校車", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    _busId = runDate;
+                                    _busAction = "un";
+                                    new Thread(BusBookingRunnable).start();
+                                }
+                            }).
+                            setNegativeButton("返回", null).setCancelable(false).show();
+                }
+            });
+            ((TextView)row.findViewById(R.id.location)).setText("到" + BusReserveList.get(i).endStation + "，發車日期：");
+            ((TextView)row.findViewById(R.id.date)).setText(BusReserveList.get(i).runDateTime.split(" ")[0]);
+            ((TextView)row.findViewById(R.id.time)).setText(BusReserveList.get(i).runDateTime.split(" ")[1]);
+            table.addView(row);
+        }
+    }
 
     public void addLeave() {
         TableLayout table = (TableLayout) findViewById(R.id.tablelayout);
@@ -2342,7 +3088,7 @@ public class MainActivity extends ActionBarActivity {
         return "";
     }
     String getStringFromInputStream(InputStream in) {
-        byte []data = new byte[1024];
+        byte []data = new byte[102400];
         int length;
         if( in == null )
             return null;

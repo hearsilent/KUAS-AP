@@ -10,17 +10,18 @@ public class CourseList {
         this.ID = ID.replace(" ","");
         this.Teacher = Teacher.replace(" ","");
         this.Place = Place.replace(" ","");
-        if (!Time.equals(""))
-            if (Time.contains("A"))
-                this.Time = "A";
-            else if (Time.contains("M"))
-                this.Time = "M";
-            else if (Time.contains("B"))
-                this.Time = "B";
-            else
-            {
-                this.Time = Time.split("節")[1].replace(" ","");
-                this.Time = this.Time.substring(0,2) + ":" + this.Time.substring(2,7) + ":" + this.Time.substring(7);
-            }
+        this.Time = Time;
+//        if (!Time.equals(""))
+//            if (Time.contains("A"))
+//                this.Time = "A";
+//            else if (Time.contains("M"))
+//                this.Time = "M";
+//            else if (Time.contains("B"))
+//                this.Time = "B";
+//            else
+//            {
+//                this.Time = Time.split("節")[1].replace(" ","");
+//                this.Time = this.Time.substring(0,2) + ":" + this.Time.substring(2,7) + ":" + this.Time.substring(7);
+//            }
     }
 }

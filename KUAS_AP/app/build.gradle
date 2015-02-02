@@ -17,6 +17,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    packagingOptions {
+        exclude 'LICENSE.txt'
+    }
 }
 
 dependencies {
@@ -27,4 +31,5 @@ dependencies {
     compile 'us.codecraft:xsoup:0.3.0'
     compile 'com.github.fengdai:alertdialogpro-theme-material:0.2.1'
     compile 'org.mozilla:rhino:1.7R5'
+    compile 'com.roomorama:caldroid:1.1.7'
 }
