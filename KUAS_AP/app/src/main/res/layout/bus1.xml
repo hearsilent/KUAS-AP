@@ -84,7 +84,7 @@
                         android:paddingBottom="22sp"
                         android:layout_marginTop="15sp"
                         android:id="@+id/time"
-                        android:background="#0b000000"
+                        android:background="@color/background_grey"
                         android:layout_marginBottom="15sp">
                         <TextView
                             android:layout_width="wrap_content"

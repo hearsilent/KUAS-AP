@@ -2,10 +2,12 @@ package silent.kuasap;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -114,6 +116,14 @@ public class MainActivity extends ActionBarActivity {
     private ArrayList<String> SemesterList = new ArrayList<>();
     private ArrayList<String> SemesterValue = new ArrayList<>();
 
+    private boolean OnCreateCheck = false;
+
+    // Server Status
+    Runnable CheckServerStatusRunnable;
+    boolean ap_status = false;
+    boolean leave_status = false;
+    boolean bus_status = false;
+
     // Login
     private EditText UserNameEditText;
     private EditText PasswordEditText;
@@ -149,12 +159,18 @@ public class MainActivity extends ActionBarActivity {
     String _busAction = "";
     ArrayList<BusList> BusList = new ArrayList<>();
     ArrayList<BusList> BusReserveList = new ArrayList<>();
+
+    // Event
+    Runnable ReadNotificationRunnable;
+    ArrayList<NotificationList> NotificationList = new ArrayList<>();
+    Integer NotificationPage = 1;
+    ArrayList<PhoneList> PhoneList = new ArrayList<>();
+    String scheduleData = "[{\"events\":[\"(2/1) 103學年度第2學期開始日\",\"(2/3 - 2/5) 寄發103學年度第1學期學生成績單\",\"(2/4) 核對103學年度第1學期成績優良排名表\",\"(2/4) 核發103學年度寒畢畢業證書\",\"(2/5 - 2/9) 103學年度第1學期學業成績優良排名表送生輔組協查有無記過紀錄\",\"(2/10 - 2/16) 第1次公告103學年度第1學期學業成績優良名單\"],\"week\":\"寒\"},{\"events\":[\"(2/16) 新進教師研習會\",\"(2/18 - 2/23) 春節放假\",\"(2/17 - 2/24) 第2次公告103學年度第1學期學業成績優良名單\"],\"week\":\"預備週\"},{\"events\":[\"(2/23) 補假一天(補2/21春節初三)\",\"(2/25) 日間部、進修推廣處開學\",\"(2/27) 補假一天(補2/28和平紀念日)\",\"(2/24) 教學研討會（導師會議、導師輔導知能研習）\",\"(2/24) 研究生辦理103學年度第1學期離校手續截止日\",\"(2/24) 註冊繳費截止日\",\"(2/25) 網路公布103學年度第2學期加退選日程及相關辦法\",\"(2/25) 輔系、雙主修、轉學生學分抵免申請開始\",\"(2/25) 校際選課開始申請\",\"(2/25 - 3/4) 通知103學年度第1學期學業成績優良學生至學校網站登載銀行帳號(限郵局及台灣企銀)\",\"(2/25) 研究生自完成註冊手續後開始辦理學位考試申請\"],\"week\":\"第一週\"},{\"events\":[\"(3/4) 轉學生學分抵免申請截止日\",\"(3/4 - 3/11) 日間部學生加退選課申請作業(選課時間另行公布)\",\"(3/4) 輔系、雙主修申請截止日\",\"(3/6) 校際選課截止日\"],\"week\":\"第二週\"},{\"events\":[\"(3/12) 103學年度第2學期人工加掛選課申請截止日\"],\"week\":\"第三週\"},{\"events\":[\"(3/18) 103學年度第2學期第1次教務會議\"],\"week\":\"第四週\"},{\"events\":[\"(3/27 - 3/31) 學生加退選課繳費\"],\"week\":\"第五週\"},{\"events\":[\"(4/3) 補假一天(補4/4兒童節)\",\"(3/30) 加退選結束教師自行列印點名單及成績冊(web)\",\"(3/30 - 4/8) 教師上網登錄期中考考試時間\",\"(3/30 - 4/2) 核算103學年度第2學期教師鐘點費\",\"(4/1) 學生逕修讀博士學位開始申請\"],\"week\":\"第六週\"},{\"events\":[\"(4/6) 補假一天(補4/5民族掃墓節)\",\"(4/7) 學生辦理休、退學學雜費退2/3截止日\",\"(4/8 - 4/14) 103學年度暑修意願網路調查\"],\"week\":\"第七週\"},{\"events\":[\"(4/13 - 4/25) 上網公布期中考考試時間、開放同學查詢\",\"(4/15) 學生逕修讀博士學位申請截止日\",\"(4/15 - 5/3) 教師登錄期中成績暨預警作業\",\"(4/17) 教師期中考試卷申印製卷截止日\"],\"week\":\"第八週\"},{\"events\":[\"(4/20 - 4/25) 日間部、進修推廣處期中考試\"],\"week\":\"第九週\"},{\"events\":[\"(4/27) 103學年度第三次校務會議\",\"(4/27) 103學年度第2學期停修課程開始申請\",\"(4/27) 登錄教師研究計畫案及義務授課減授時數\",\"(4/27 - 5/1) 第一次修訂104學年度第1學期註冊須知\",\"(4/28) 公告103學年度暑修初步課表\",\"(4/30) 103學年度第2學期研究生學位考試申請期限截止日\",\"(5/1) 日間部大學部學生轉系(組)開始申請\",\"(5/2 - 5/3) 104學年度四技統一入學測驗考試\"],\"week\":\"第十週\"},{\"events\":[\"(5/3) 104學年度二技統一入學測驗考試\",\"(5/4 - 5/8) 103學年度暑修網路選課\",\"(5/3) 教師登錄期中成績暨預警作業截止日\"],\"week\":\"第十一週\"},{\"events\":[\"(5/11 - 5/13) 發放期中預警學生名單予各系、班級導師、任課老師\",\"(5/11 - 5/15) 第二次修訂104學年度第1學期註冊須知\",\"(5/11 - 5/31) 導師填報期中預警輔導紀錄表(web)\",\"(5/15) 103學年度第2學期停修課程申請截止日\",\"(5/15) 日間部大學部學生轉系(組)申請期限截止日\"],\"week\":\"第十二週\"},{\"events\":[\"(5/19) 學生辦理休、退學學雜費退1/3截止日\",\"(5/20 - 5/22) 寄發104學年度第1學期復學通知\"],\"week\":\"第十三週\"},{\"events\":[\"(5/25 - 5/27) 核算停修後教師鐘點費\",\"(5/27) 發放舊生註冊須知\"],\"week\":\"第十四週\"},{\"events\":[\"(6/3) 103學年度第2學期第2次教務會議\",\"(6/1 - 6/5) 103學年度暑修繳費\",\"(6/1 - 6/10) 教師上網登錄期末考時間\",\"(6/4) 開放上網查詢104學年度第1學期課程表\"],\"week\":\"第十五週\"},{\"events\":[\"(6/13) 畢業典禮\",\"(6/8 - 6/12) 日間部學生104學年度第1學期選課登記志願(初選第一階段)\"],\"week\":\"第十六週\"},{\"events\":[\"(6/19) 補假一天(補6/20端午節)\",\"(6/15) 103學年度第四次校務會議\",\"(6/15 - 6/27) 上網公佈期末考時間，開放學生查詢\",\"(6/16 - 6/23) 日間部學生104學年度第1學期選課電腦篩選\",\"(6/18) 學生期末考扣考資料通知學生、家長、老師\",\"(6/18) 教師期末考試卷申印製卷截止日\"],\"week\":\"第十七週\"},{\"events\":[\"(6/24 - 6/30) 日間部、進修推廣處期末考試\",\"(6/24 - 6/26) 日間部學生104學年度第1學期選課電腦篩選分發結果公告\"],\"week\":\"第十八週\"},{\"events\":[\"(6/29 - 7/2) 日間部學生104學年度第1學期初選第二階段選課\",\"(7/5) 教師送交畢業班學期考試成績截止日\",\"(7/6 - 7/8) 本學期修課不及格者辦理暑修報名並繳費\",\"(7/6 - 7/8) 外校生至本校暑修選課報名並同時繳費\",\"(7/7) 教師送交103學年度第2學期學生學期成績截止日\",\"(7/8 - 7/10) 彙算103學年度第2學期學生學業成績\",\"(7/13) 暑修開始上課，預計8/22上課結束\",\"(7/14) 寄發103學年度第2學期退學通知\",\"(7/20) 核發103學年度畢業生畢業證書\",\"(7/20 - 7/22) 寄發103學年度第2學期學生成績單\",\"(7/31) 103學年度第2學期研究生學位考試截止日\",\"(7/31) 103學年度第2學期結束日\"],\"week\":\"暑\"}]";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        initLogin();
 
         ReadSemesterRunnable = new Runnable() {
             @Override
@@ -219,6 +235,40 @@ public class MainActivity extends ActionBarActivity {
                 }
             }
         };
+
+        CheckServerStatusRunnable = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    ap_status = false;
+                    leave_status = false;
+                    bus_status = false;
+                    try {
+                        JSONArray jsonObj = new JSONArray(get_url_contents(api_server + "status", null, cookieStore));
+                        ap_status = jsonObj.getBoolean(0);
+                        if (jsonObj.getInt(1) == 200)
+                            leave_status = true;
+                        else
+                            leave_status = false;
+                        if (jsonObj.getInt(2) == 200)
+                            bus_status = true;
+                        else
+                            bus_status = false;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    CheckServerStatusHandler.sendEmptyMessage(1);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        if (!OnCreateCheck)
+        {
+            initLogin();
+            OnCreateCheck = true;
+        }
     }
 
     public Boolean CheckLoginState()
@@ -259,6 +309,25 @@ public class MainActivity extends ActionBarActivity {
         params.add(new BasicNameValuePair("password", PasswordEditText.getText().toString()));
         post_url_contents(api_server + "ap/login", params, cookieStore);
         return CheckLoginState();
+    }
+
+    public void initServerStatus(){
+        TextView ap = (TextView) findViewById(R.id.ap);
+        TextView leave = (TextView) findViewById(R.id.leave);
+        TextView bus = (TextView) findViewById(R.id.bus);
+
+        if (ap_status)
+            ap.setTextColor(getResources().getColor(R.color.green));
+        else
+            ap.setTextColor(getResources().getColor(R.color.red));
+        if (leave_status)
+            leave.setTextColor(getResources().getColor(R.color.green));
+        else
+            leave.setTextColor(getResources().getColor(R.color.red));
+        if (ap_status)
+            bus.setTextColor(getResources().getColor(R.color.green));
+        else
+            bus.setTextColor(getResources().getColor(R.color.red));
     }
 
     public void initLogin(){
@@ -343,12 +412,22 @@ public class MainActivity extends ActionBarActivity {
         };
         mAboutList.setAdapter(aboutadapter);
         mDrawerList.setAdapter(adapter);
+        mAboutList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                switch (position) {
+                    case 0:
+                        initAbout(false);
+                        break;
+                }
+            }
+        });
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch (position) {
                     case 0:
-                        initEvent1(false);
+                        initEvent1(false, true);
                         break;
                 }
             }
@@ -404,8 +483,6 @@ public class MainActivity extends ActionBarActivity {
                     params.add(new BasicNameValuePair("username", UserNameEditText.getText().toString()));
                     params.add(new BasicNameValuePair("password", PasswordEditText.getText().toString()));
                     post_url_contents(api_server + "ap/login", params, cookieStore);
-                    System.out.println(get_url_contents(api_server + "status", null, cookieStore));
-
                     if (CheckLoginState())
                     {
                         Uid = UserNameEditText.getText().toString();
@@ -424,6 +501,8 @@ public class MainActivity extends ActionBarActivity {
                 }
             }
         };
+
+        new Thread(CheckServerStatusRunnable).start();
     }
 
     public void initLogout(){
@@ -488,6 +567,16 @@ public class MainActivity extends ActionBarActivity {
         };
         mAboutList.setAdapter(aboutadapter);
         mDrawerList.setAdapter(adapter);
+        mAboutList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                switch (position) {
+                    case 0:
+                        initAbout(true);
+                        break;
+                }
+            }
+        });
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -505,7 +594,7 @@ public class MainActivity extends ActionBarActivity {
                         initBus1(true);
                         break;
                     case 4:
-                        initEvent1(true);
+                        initEvent1(true, true);
                         break;
                 }
             }
@@ -551,6 +640,7 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
+        initServerStatus();
     }
 
     public void initSelect(){
@@ -706,6 +796,16 @@ public class MainActivity extends ActionBarActivity {
         };
         mAboutList.setAdapter(aboutadapter);
         mDrawerList.setAdapter(adapter);
+        mAboutList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                switch (position) {
+                    case 0:
+                        initAbout(true);
+                        break;
+                }
+            }
+        });
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -720,7 +820,7 @@ public class MainActivity extends ActionBarActivity {
                         initBus1(true);
                         break;
                     case 3:
-                        initEvent1(true);
+                        initEvent1(true, true);
                         break;
                 }
             }
@@ -946,6 +1046,16 @@ public class MainActivity extends ActionBarActivity {
         };
         mAboutList.setAdapter(aboutadapter);
         mDrawerList.setAdapter(adapter);
+        mAboutList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                switch (position) {
+                    case 0:
+                        initAbout(true);
+                        break;
+                }
+            }
+        });
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -960,7 +1070,7 @@ public class MainActivity extends ActionBarActivity {
                         initBus1(true);
                         break;
                     case 3:
-                        initEvent1(true);
+                        initEvent1(true, true);
                         break;
                 }
             }
@@ -1162,6 +1272,16 @@ public class MainActivity extends ActionBarActivity {
         };
         mAboutList.setAdapter(aboutadapter);
         mDrawerList.setAdapter(adapter);
+        mAboutList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                switch (position) {
+                    case 0:
+                        initAbout(true);
+                        break;
+                }
+            }
+        });
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -1176,7 +1296,7 @@ public class MainActivity extends ActionBarActivity {
                         initBus1(true);
                         break;
                     case 3:
-                        initEvent1(true);
+                        initEvent1(true, true);
                         break;
                 }
             }
@@ -1402,6 +1522,16 @@ public class MainActivity extends ActionBarActivity {
         };
         mAboutList.setAdapter(aboutadapter);
         mDrawerList.setAdapter(adapter);
+        mAboutList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                switch (position) {
+                    case 0:
+                        initAbout(true);
+                        break;
+                }
+            }
+        });
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -1416,7 +1546,7 @@ public class MainActivity extends ActionBarActivity {
                         initBus1(true);
                         break;
                     case 3:
-                        initEvent1(true);
+                        initEvent1(true, true);
                         break;
                 }
             }
@@ -1456,7 +1586,7 @@ public class MainActivity extends ActionBarActivity {
         _fncid = "";
     }
 
-    public void initEvent1(final boolean _isLogin){
+    public void initEvent1(final boolean _isLogin, boolean ReLoad){
         setContentView(R.layout.event1);
 
         RelativeLayout Page2 = (RelativeLayout) findViewById(R.id.RelativeLayout2);
@@ -1545,6 +1675,16 @@ public class MainActivity extends ActionBarActivity {
         mAboutList.setAdapter(aboutadapter);
         if (_isLogin)
             mDrawerList.setAdapter(adapter);
+        mAboutList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                switch (position) {
+                    case 0:
+                        initAbout(_isLogin);
+                        break;
+                }
+            }
+        });
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -1597,6 +1737,83 @@ public class MainActivity extends ActionBarActivity {
         });
 
         _fncid = "";
+
+        ReadNotificationRunnable = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    NotificationList.clear();
+                    // Server
+                    try {
+                        JSONArray jsonObj = new JSONArray(get_url_contents(api_server + "notification/" + NotificationPage, null, cookieStore));
+                        for (int i = 0; i < jsonObj.length(); i ++)
+                        {
+                            NotificationList.add(new NotificationList(jsonObj.getJSONObject(i).getJSONArray("info").get(1).toString(),
+                                    jsonObj.getJSONObject(i).getJSONArray("info").get(2).toString(),
+                                    jsonObj.getJSONObject(i).getJSONArray("info").get(0).toString(),
+                                    jsonObj.getJSONObject(i).getString("link")));
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    ReadNotificationHandler.sendEmptyMessage(1);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        final TextView PageUpTextView = (TextView) findViewById(R.id.PageUpTextView);
+        final TextView NowPage = (TextView) findViewById(R.id.NowPageTextView);
+        RelativeLayout PageUp = (RelativeLayout) findViewById(R.id.PageUp);
+        PageUp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (NotificationPage > 1)
+                {
+                    NotificationPage --;
+                    NowPage.setText("第" + NotificationPage + "頁");
+                    ReadNotificationHandler.sendEmptyMessage(-1);
+                    new Thread(ReadNotificationRunnable).start();
+                }
+                if (NotificationPage == 1)
+                    PageUpTextView.setTextColor(getResources().getColor(R.color.bar_grey));
+                else
+                    PageUpTextView.setTextColor(Color.BLACK);
+            }
+        });
+
+        RelativeLayout PageDown = (RelativeLayout) findViewById(R.id.PageDown);
+        PageDown.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NotificationPage ++;
+                NowPage.setText("第" + NotificationPage + "頁");
+                ReadNotificationHandler.sendEmptyMessage(-1);
+                new Thread(ReadNotificationRunnable).start();
+                if (NotificationPage == 1)
+                    PageUpTextView.setTextColor(getResources().getColor(R.color.bar_grey));
+                else
+                    PageUpTextView.setTextColor(Color.BLACK);
+            }
+        });
+
+        if (ReLoad)
+        {
+            NotificationPage = 1;
+            ReadNotificationHandler.sendEmptyMessage(-1);
+            new Thread(ReadNotificationRunnable).start();
+        }
+        else
+        {
+            NowPage.setText("第" + NotificationPage + "頁");
+            addNotification();
+        }
+
+        if (NotificationPage == 1)
+            PageUpTextView.setTextColor(getResources().getColor(R.color.bar_grey));
+        else
+            PageUpTextView.setTextColor(Color.BLACK);
     }
 
     public void initEvent2(final boolean _isLogin){
@@ -1606,7 +1823,7 @@ public class MainActivity extends ActionBarActivity {
         Page1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                initEvent1(_isLogin);
+                initEvent1(_isLogin, false);
             }
         });
 
@@ -1688,6 +1905,16 @@ public class MainActivity extends ActionBarActivity {
         mAboutList.setAdapter(aboutadapter);
         if (_isLogin)
             mDrawerList.setAdapter(adapter);
+        mAboutList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                switch (position) {
+                    case 0:
+                        initAbout(_isLogin);
+                        break;
+                }
+            }
+        });
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -1740,6 +1967,7 @@ public class MainActivity extends ActionBarActivity {
         });
 
         _fncid = "";
+        addPhone();
     }
 
     public void initEvent3(final boolean _isLogin){
@@ -1749,7 +1977,7 @@ public class MainActivity extends ActionBarActivity {
         Page1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                initEvent1(_isLogin);
+                initEvent1(_isLogin, false);
             }
         });
 
@@ -1831,6 +2059,16 @@ public class MainActivity extends ActionBarActivity {
         mAboutList.setAdapter(aboutadapter);
         if (_isLogin)
             mDrawerList.setAdapter(adapter);
+        mAboutList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                switch (position) {
+                    case 0:
+                        initAbout(_isLogin);
+                        break;
+                }
+            }
+        });
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -1883,6 +2121,7 @@ public class MainActivity extends ActionBarActivity {
         });
 
         _fncid = "";
+        addSchedule();
     }
 
     private void initBus1(boolean ShowCal)
@@ -1990,6 +2229,16 @@ public class MainActivity extends ActionBarActivity {
         };
         mAboutList.setAdapter(aboutadapter);
         mDrawerList.setAdapter(adapter);
+        mAboutList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                switch (position) {
+                    case 0:
+                        initAbout(true);
+                        break;
+                }
+            }
+        });
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -2004,7 +2253,7 @@ public class MainActivity extends ActionBarActivity {
                         initLeave1(false, false);
                         break;
                     case 3:
-                        initEvent1(true);
+                        initEvent1(true, true);
                         break;
                 }
             }
@@ -2101,16 +2350,23 @@ public class MainActivity extends ActionBarActivity {
         BusBookingRunnable = new Runnable() {
             @Override
             public void run() {
-                // Server
-                List<NameValuePair> params = new LinkedList<>();
-                params.add(new BasicNameValuePair("busId", _busId));
-                params.add(new BasicNameValuePair("action", _busAction));
                 try {
-                    JSONArray jsonObj = new JSONArray("[" + post_url_contents(api_server + "bus/booking", params, cookieStore) + "]");
-                    Message msg = new Message();
-                    msg.what = 3;
-                    msg.obj = jsonObj.get(0).toString();
-                    ReadBusHandler.sendMessage(msg);
+                    if (!CheckLoginState())
+                        ReLogin();
+
+                    // Server
+                    List<NameValuePair> params = new LinkedList<>();
+                    params.add(new BasicNameValuePair("busId", _busId));
+                    params.add(new BasicNameValuePair("action", _busAction));
+                    try {
+                        JSONArray jsonObj = new JSONArray("[" + post_url_contents(api_server + "bus/booking", params, cookieStore) + "]");
+                        Message msg = new Message();
+                        msg.what = 3;
+                        msg.obj = jsonObj.get(0).toString();
+                        ReadBusHandler.sendMessage(msg);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -2121,6 +2377,9 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void run() {
                 try {
+                    if (!CheckLoginState())
+                        ReLogin();
+
                     // Server
                     List<NameValuePair> params = new LinkedList<>();
                     params.add(new BasicNameValuePair("date", BusDate));
@@ -2160,6 +2419,11 @@ public class MainActivity extends ActionBarActivity {
     private void initBus2()
     {
         setContentView(R.layout.bus2);
+
+        TextView noReserveTextView = (TextView) findViewById(R.id.noReserveTextView);
+        ImageView noReserveImageView = (ImageView) findViewById(R.id.noReserveImageView);
+        noReserveTextView.setVisibility(View.GONE);
+        noReserveImageView.setVisibility(View.GONE);
 
         RelativeLayout Page1 = (RelativeLayout) findViewById(R.id.relativeLayout);
         Page1.setOnClickListener(new View.OnClickListener() {
@@ -2235,6 +2499,16 @@ public class MainActivity extends ActionBarActivity {
         };
         mAboutList.setAdapter(aboutadapter);
         mDrawerList.setAdapter(adapter);
+        mAboutList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                switch (position) {
+                    case 0:
+                        initAbout(true);
+                        break;
+                }
+            }
+        });
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -2249,7 +2523,7 @@ public class MainActivity extends ActionBarActivity {
                         initLeave1(false, false);
                         break;
                     case 3:
-                        initEvent1(true);
+                        initEvent1(true, true);
                         break;
                 }
             }
@@ -2310,16 +2584,23 @@ public class MainActivity extends ActionBarActivity {
         BusBookingRunnable = new Runnable() {
             @Override
             public void run() {
-                // Server
-                List<NameValuePair> params = new LinkedList<>();
-                params.add(new BasicNameValuePair("busId", _busId));
-                params.add(new BasicNameValuePair("action", _busAction));
                 try {
-                    JSONArray jsonObj = new JSONArray("[" + post_url_contents(api_server + "bus/booking", params, cookieStore) + "]");
-                    Message msg = new Message();
-                    msg.what = 4;
-                    msg.obj = jsonObj.get(0).toString();
-                    ReadBusHandler.sendMessage(msg);
+                    if (!CheckLoginState())
+                        ReLogin();
+
+                    // Server
+                    List<NameValuePair> params = new LinkedList<>();
+                    params.add(new BasicNameValuePair("busId", _busId));
+                    params.add(new BasicNameValuePair("action", _busAction));
+                    try {
+                        JSONArray jsonObj = new JSONArray("[" + post_url_contents(api_server + "bus/booking", params, cookieStore) + "]");
+                        Message msg = new Message();
+                        msg.what = 4;
+                        msg.obj = jsonObj.get(0).toString();
+                        ReadBusHandler.sendMessage(msg);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -2330,6 +2611,9 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void run() {
             try {
+                if (!CheckLoginState())
+                    ReLogin();
+
                 // Server
                 BusReserveList.clear();
                 try {
@@ -2357,6 +2641,138 @@ public class MainActivity extends ActionBarActivity {
         new Thread(BusReserveRunnable).start();
     }
 
+    private void initAbout(final boolean _isLogin)
+    {
+        setContentView(R.layout.about);
+
+        ImageView Logout = (ImageView) findViewById(R.id.Logout);
+        Logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (_isLogin)
+                    initLogout();
+                else
+                    initLogin();
+            }
+        });
+        mDrawerList = (ListView)findViewById(R.id.drawerlistView);
+        mAboutList = (ListView)findViewById(R.id.aboutlistView);
+        final String[] values;
+        if (_isLogin)
+            values = new String[]{ "學期課表", "學期成績", "缺曠系統", "校車系統", "校園資訊" };
+        else
+            values = new String[]{ "校園資訊" };
+        ArrayAdapter<String> adapter=new ArrayAdapter<String>(
+                this,R.layout.menulistview_item, values){
+            private LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
+
+            class ViewHolder {
+                public TextView textView;
+                public ImageView imageView;
+            }
+
+            @Override
+            public View getView(int position, View convertView,
+                                ViewGroup parent) {
+                ViewHolder holder;
+                if (convertView == null) {
+                    holder = new ViewHolder();
+                    convertView = mInflater.inflate(R.layout.menulistview_item, null);
+                    holder.textView = (TextView) convertView.findViewById(R.id.textView);
+                    holder.imageView = (ImageView) convertView.findViewById(R.id.imageView);
+                    convertView.setTag(holder);
+                } else {
+                    holder = (ViewHolder)convertView.getTag();
+                }
+                holder.textView.setText(values[position]);
+                return convertView;
+            }
+        };
+        mDrawerList.setAdapter(adapter);
+        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                switch (position) {
+                    case 0:
+                        if (_isLogin)
+                            initCourse(false, false);
+                        else
+                            initEvent1(_isLogin, true);
+                        break;
+                    case 1:
+                        initScore(false, false);
+                        break;
+                    case 2:
+                        initLeave1(false, false);
+                        break;
+                    case 3:
+                        initEvent1(true, true);
+                        break;
+                    case 4:
+                        initEvent1(_isLogin, true);
+                        break;
+                }
+            }
+        });
+        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        final ImageView imageView = (ImageView) findViewById(R.id.drawer_indicator);
+        final Resources resources = getResources();
+        drawerArrowDrawable = new DrawerArrowDrawable(resources, true);
+        drawerArrowDrawable.setStrokeColor(Color.WHITE);
+        imageView.setImageDrawable(drawerArrowDrawable);
+        drawer.setDrawerListener(new DrawerLayout.SimpleDrawerListener() {
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+                offset = slideOffset;
+                // Sometimes slideOffset ends up so close to but not quite 1 or 0.
+                if (slideOffset >= .995) {
+                    flipped = true;
+                    drawerArrowDrawable.setFlip(flipped);
+                } else if (slideOffset <= .005) {
+                    flipped = false;
+                    drawerArrowDrawable.setFlip(flipped);
+                }
+                drawerArrowDrawable.setParameter(offset);
+            }
+        });
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (drawer.isDrawerVisible(START)) {
+                    drawer.closeDrawer(START);
+                } else {
+                    drawer.openDrawer(START);
+                }
+            }
+        });
+
+        ImageView facebook = (ImageView) findViewById(R.id.facebook);
+        facebook.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.facebook.com/pages/%E9%AB%98%E6%87%89%E6%A0%A1%E5%8B%99%E9%80%9A/954175941266264?fref=ts"));
+                startActivity(browserIntent);
+            }
+        });
+        ImageView github = (ImageView) findViewById(R.id.github);
+        github.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/kuastw"));
+                startActivity(browserIntent);
+            }
+        });
+        ImageView mail = (ImageView) findViewById(R.id.mail);
+        mail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("mailto:1102108133@kuas.edu.tw"));
+                startActivity(browserIntent);
+            }
+        });
+
+        _fncid = "";
+    }
 
     private Handler ReadScoreHandler = new Handler() {
         @Override
@@ -2487,6 +2903,28 @@ public class MainActivity extends ActionBarActivity {
         };
     };
 
+    private Handler ReadNotificationHandler = new Handler() {
+        @Override
+        public void handleMessage(android.os.Message msg) {
+            switch (msg.what)
+            {
+                case -1:
+                    LoadingDialog.setMessage("Loading...");
+                    ProgressDialogPro progressDialog = (ProgressDialogPro) LoadingDialog;
+                    progressDialog.setProgressStyle(ProgressDialogPro.STYLE_SPINNER);
+                    progressDialog.setIndeterminate(true);
+                    LoadingDialog.setCancelable(false);
+                    LoadingDialog.setCanceledOnTouchOutside(false);
+                    LoadingDialog.show();
+                    break;
+                case 1:
+                    addNotification();
+                    LoadingDialog.dismiss();
+                    break;
+            }
+        };
+    };
+
     private Handler LoginHandler = new Handler() {
         @Override
         public void handleMessage(android.os.Message msg) {
@@ -2527,6 +2965,94 @@ public class MainActivity extends ActionBarActivity {
         };
     };
 
+    private Handler CheckServerStatusHandler = new Handler() {
+        @Override
+        public void handleMessage(android.os.Message msg) {
+            switch (msg.what)
+            {
+                case 1:
+                    initServerStatus();
+                    break;
+            }
+        };
+    };
+
+    public void addPhone() {
+        PhoneListAdapter adapter = new PhoneListAdapter(MainActivity.this);
+        PhoneList.clear();
+        PhoneList.add(new PhoneList("高雄應用科技大學總機", "(07) 381-4526"));
+        PhoneList.add(new PhoneList("建工校安專線", "0916-507-506"));
+        PhoneList.add(new PhoneList( "燕巢校安專線", "0925-350-995"));
+        PhoneList.add(new PhoneList("事務組", "(07) 381-4526 #2650"));
+        PhoneList.add(new PhoneList("營繕組", "(07) 381-4526 #2630"));
+        PhoneList.add(new PhoneList("課外活動組", "(07) 381-4526 #2525"));
+        PhoneList.add(new PhoneList("諮商輔導中心", "(07) 381-4526 #2541"));
+        PhoneList.add(new PhoneList("圖書館", "(07) 381-4526 #3100"));
+        PhoneList.add(new PhoneList("建工校外賃居服務中心", "(07) 381-4526 #3420"));
+        PhoneList.add(new PhoneList("燕巢校外賃居服務中心", "(07) 381-4526 #8615"));
+        adapter.setData(PhoneList);
+        ListView PhoneListView = (ListView) findViewById(R.id.phone_listView);
+        PhoneListView.setAdapter(adapter);
+
+        PhoneListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+                AlertDialogPro.Builder builder = new AlertDialogPro.Builder(MainActivity.this);
+                builder.setTitle("撥出電話").
+                        setMessage("確定要撥給「" + PhoneList.get(position).title + "」？").
+                        setPositiveButton("撥出", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Intent myIntentDial = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:"+ PhoneList.get(position).number.replace("#", ",")));
+                                startActivity(myIntentDial);
+                            }
+                        }).
+                        setNegativeButton("返回", null).setCancelable(false).show();
+            }
+        });
+    }
+
+    public void addSchedule(){
+        TableLayout table = (TableLayout) findViewById(R.id.tablelayout);
+        table.setStretchAllColumns(true);
+        table.setShrinkAllColumns(true);
+        table.removeAllViews();
+        try {
+            JSONArray jsonObj = new JSONArray(scheduleData);
+            for (int i = 0; i < jsonObj.length(); i++) {
+                TableRow row = (TableRow)LayoutInflater.from(MainActivity.this).inflate(R.layout.schedule_item, null);
+                JSONObject item = jsonObj.getJSONObject(i);
+                ((TextView)row.findViewById(R.id.title)).setText(item.getString("week"));
+                ((TextView)row.findViewById(R.id.title)).setTextColor(Color.BLACK);
+                row.findViewById(R.id.RelativeLayout).setBackgroundColor(getResources().getColor(R.color.background_grey));
+                table.addView(row);
+                for (int j = 0; j < item.getJSONArray("events").length(); j++)
+                {
+                    TableRow rowx = (TableRow)LayoutInflater.from(MainActivity.this).inflate(R.layout.schedule_item, null);
+                    ((TextView)rowx.findViewById(R.id.title)).setText(item.getJSONArray("events").get(j).toString());
+                    table.addView(rowx);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void addNotification() {
+        NotificationListAdapter adapter = new NotificationListAdapter(MainActivity.this);
+        adapter.setData(NotificationList);
+        ListView NotificationListView = (ListView) findViewById(R.id.notification_listView);
+        NotificationListView.setAdapter(adapter);
+
+        NotificationListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(NotificationList.get(position).link));
+                startActivity(browserIntent);
+            }
+        });
+    }
+
     public void addBus() {
         final ArrayList<BusList> NewBusList = new ArrayList<>();
         for (int i = 0; i < BusList.size(); i ++)
@@ -2549,6 +3075,10 @@ public class MainActivity extends ActionBarActivity {
             TableRow row = (TableRow)LayoutInflater.from(MainActivity.this).inflate(R.layout.bus_item, null);
             if (NewBusList.get(i).isReserve == -1)
             {
+                if (NewBusList.get(i).endStation.equals("燕巢"))
+                    row.findViewById(R.id.RelativeLayout).setBackgroundColor(getResources().getColor(R.color.blue_2));
+                else
+                    row.findViewById(R.id.RelativeLayout).setBackgroundColor(getResources().getColor(R.color.green));
                 row.findViewById(R.id.RelativeLayout).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -2608,6 +3138,11 @@ public class MainActivity extends ActionBarActivity {
             noReserveTextView.setVisibility(View.GONE);
             noReserveImageView.setVisibility(View.GONE);
         }
+        else
+        {
+            noReserveTextView.setVisibility(View.VISIBLE);
+            noReserveImageView.setVisibility(View.VISIBLE);
+        }
 
         for (int i = 0; i < BusReserveList.size(); i++)
         {
@@ -2619,6 +3154,13 @@ public class MainActivity extends ActionBarActivity {
             final String time =  BusReserveList.get(i).runDateTime.split(" ")[1];
             final String runDate = BusReserveList.get(i).runDateTime;
             TableRow row = (TableRow)LayoutInflater.from(MainActivity.this).inflate(R.layout.busreserve_item, null);
+
+            if (BusReserveList.get(i).endStation.equals("燕巢"))
+                row.findViewById(R.id.relativelayout).setBackgroundColor(getResources().getColor(R.color.blue_2));
+            else
+                row.findViewById(R.id.relativelayout).setBackgroundColor(getResources().getColor(R.color.green));
+
+
             row.findViewById(R.id.relativelayout).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

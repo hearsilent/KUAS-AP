@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="#ffffffff">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="(07) 381-4526"
+        android:id="@+id/number"
+        android:layout_below="@+id/title"
+        android:layout_marginTop="2sp"
+        android:paddingBottom="15sp"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="10sp"
+        android:textSize="16sp"
+        android:textColor="#c8000000" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="高雄應用科技大學總機"
+        android:id="@+id/title"
+        android:layout_marginTop="15sp"
+        android:layout_marginLeft="10sp"
+        android:layout_marginRight="10sp"
+        android:textStyle="bold"
+        android:textColor="#c8000000"
+        android:textSize="16sp" />
+
+</RelativeLayout>

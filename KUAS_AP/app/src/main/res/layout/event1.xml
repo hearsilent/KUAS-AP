@@ -1,5 +1,5 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:ripple="http://schemas.android.com/apk/res-auto"
@@ -62,6 +62,78 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
+            <ListView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/notification_listView"
+                android:layout_above="@+id/changePage"
+                android:layout_centerVertical="true"
+                tools:listitem="@layout/notification_item"
+                android:layout_centerHorizontal="true" />
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:id="@+id/changePage"
+                android:layout_above="@id/Page"
+                android:paddingTop="7sp"
+                android:paddingBottom="7sp">
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/PageUp"
+                    android:layout_marginRight="70sp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="上一頁"
+                        android:layout_centerHorizontal="true"
+                        android:textColor="#ff000000"
+                        android:textStyle="bold"
+                        android:id="@+id/PageUpTextView"
+                        android:textSize="16sp" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/NowPage"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginRight="70sp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="第1頁"
+                        android:id="@+id/NowPageTextView"
+                        android:textColor="#ff000000"
+                        android:textSize="16sp" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/PageDown">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="下一頁"
+                        android:layout_centerHorizontal="true"
+                        android:textColor="#ff000000"
+                        android:textStyle="bold"
+                        android:textSize="16sp" />
+
+                </RelativeLayout>
+
+            </LinearLayout>
 
             <RelativeLayout
                 android:layout_width="match_parent"

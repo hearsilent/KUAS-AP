@@ -53,79 +53,184 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
-                android:text="@string/app_name"
-                android:id="@+id/kuasapText"
-                android:layout_centerHorizontal="true"
-                android:textSize="34sp"
-                android:textColor="#ff000000" />
-
-            <TableLayout
-                android:layout_marginTop="10dp"
-                android:id="@+id/tablelayout"
+            <ScrollView
+                android:id="@+id/scrollView"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_alignLeft="@+id/more"
-                android:layout_below="@+id/kuasapText"
-                android:layout_alignRight="@+id/more">
+                android:layout_height="fill_parent"
+                android:layout_above="@+id/ServerStatus">
 
-                <EditText
+                <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/Username"
-                    android:hint="Username"
-                    android:textSize="14sp"
-                    android:autoText="false"
-                    android:background="@drawable/login_table_top" />
+                    android:layout_height="wrap_content">
 
-                <EditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/Password"
-                    android:hint="Password"
-                    android:textSize="14sp"
-                    android:background="@drawable/login_table_bottom"
-                    android:password="true" />
-            </TableLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="30dp"
+                        android:text="@string/app_name"
+                        android:id="@+id/kuasapText"
+                        android:layout_centerHorizontal="true"
+                        android:textSize="34sp"
+                        android:textColor="#ff000000" />
 
-            <com.andexert.library.RippleView
-                android:id="@+id/more"
-                android:layout_width="wrap_content"
+                    <TableLayout
+                        android:layout_marginTop="10dp"
+                        android:id="@+id/tablelayout"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:layout_alignLeft="@+id/more"
+                        android:layout_below="@+id/kuasapText"
+                        android:layout_alignRight="@+id/more">
+
+                        <EditText
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/Username"
+                            android:hint="Username"
+                            android:textSize="14sp"
+                            android:autoText="false"
+                            android:background="@drawable/login_table_top" />
+
+                        <EditText
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/Password"
+                            android:hint="Password"
+                            android:textSize="14sp"
+                            android:background="@drawable/login_table_bottom"
+                            android:password="true" />
+                    </TableLayout>
+
+                    <com.andexert.library.RippleView
+                        android:id="@+id/more"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="false"
+                        ripple:rv_rippleDuration="300"
+                        android:gravity="center"
+                        android:layout_below="@+id/tablelayout"
+                        android:layout_centerHorizontal="true">
+                        <Button
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:id="@+id/SignIn"
+                            android:layout_below="@+id/tablelayout"
+                            android:textSize="15sp"
+                            android:text="登入系統"
+                            android:enabled="true"
+                            android:width="200dp"
+                            android:textColor="@color/white"
+                            android:background="@color/actionbar_color" />
+                    </com.andexert.library.RippleView>
+
+                    <CheckBox
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/more"
+                        android:layout_marginTop="5dp"
+                        android:text="記住密碼"
+                        android:id="@+id/RememberPass"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_alignLeft="@+id/more"
+                        android:layout_toRightOf="@+id/tablelayout"
+                        android:textSize="14sp" />
+                </RelativeLayout>
+            </ScrollView>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentTop="false"
-                ripple:rv_rippleDuration="300"
+                android:layout_alignParentBottom="true"
                 android:gravity="center"
-                android:layout_below="@+id/tablelayout"
-                android:layout_centerHorizontal="true">
-                <Button
+                android:id="@+id/ServerStatus"
+                android:layout_marginTop="5dp"
+                android:paddingBottom="15sp">
+
+                <RelativeLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:id="@+id/SignIn"
-                    android:layout_below="@+id/tablelayout"
-                    android:textSize="15sp"
-                    android:text="登入系統"
-                    android:enabled="true"
-                    android:width="200dp"
-                    android:textColor="@color/white"
-                    android:background="@color/actionbar_color" />
-            </com.andexert.library.RippleView>
+                    android:id="@+id/relativeLayout">
 
-            <CheckBox
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/more"
-                android:layout_marginTop="5dp"
-                android:text="記住密碼"
-                android:id="@+id/RememberPass"
-                android:layout_gravity="center_horizontal"
-                android:layout_alignLeft="@+id/more"
-                android:layout_toRightOf="@+id/tablelayout"
-                android:textSize="14sp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="校務"
+                        android:id="@+id/textView1"
+                        android:layout_centerHorizontal="true"
+                        android:textSize="12sp"
+                        android:textColor="#ff000000" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="●"
+                        android:id="@+id/ap"
+                        android:layout_below="@id/textView1"
+                        android:layout_centerHorizontal="true"
+                        android:textSize="16sp"
+                        android:textColor="@color/red" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_toRightOf="@+id/relativeLayout"
+                    android:layout_toEndOf="@+id/relativeLayout"
+                    android:id="@+id/RelativeLayout2"
+                    android:layout_marginLeft="50sp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="請假"
+                        android:id="@+id/textView2"
+                        android:layout_centerHorizontal="true"
+                        android:textSize="12sp"
+                        android:textColor="#ff000000"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="●"
+                        android:id="@+id/leave"
+                        android:layout_below="@id/textView2"
+                        android:layout_centerHorizontal="true"
+                        android:textSize="16sp"
+                        android:textColor="@color/red"/>
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_toRightOf="@+id/RelativeLayout2"
+                    android:layout_toEndOf="@+id/RelativeLayout2"
+                    android:id="@+id/RelativeLayout3"
+                    android:layout_marginLeft="50sp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="校車"
+                        android:id="@+id/textView3"
+                        android:layout_centerHorizontal="true"
+                        android:textSize="12sp"
+                        android:textColor="#ff000000"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="●"
+                        android:id="@+id/bus"
+                        android:layout_below="@id/textView3"
+                        android:layout_centerHorizontal="true"
+                        android:textSize="16sp"
+                        android:textColor="@color/red" />
+                </RelativeLayout>
+            </RelativeLayout>
         </RelativeLayout>
 
         <RelativeLayout
