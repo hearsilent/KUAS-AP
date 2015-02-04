@@ -1,9 +1,10 @@
-package silent.kuasap;
+package com.kuas.ap;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -149,6 +150,7 @@ public class MainActivity extends ActionBarActivity {
     boolean isNightClass = false;
     boolean isHolidayNightClass = false;
     boolean isHolidayClass = false;
+    String OfflineCourseData = "";
 
     // Leave
     Runnable ReadLeaveRunnable;
@@ -291,6 +293,33 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
+    public boolean CheckVersion()
+    {
+        String ServerVersion = get_url_contents(api_server + "android_version", null, cookieStore);
+        String ClientVersion = "";
+
+        try{
+            PackageInfo pkgInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            ClientVersion = pkgInfo.versionName;
+            TextView version = (TextView) findViewById(R.id.version);
+            version.setText("v" + ClientVersion);
+            //ClientVersion += "." + pkgInfo.versionCode;
+
+            if (Integer.parseInt(ServerVersion.split("\\.")[0]) > Integer.parseInt(ClientVersion.split("\\.")[0]))
+                return true;
+            else
+            if (Integer.parseInt(ServerVersion.split("\\.")[1]) > Integer.parseInt(ClientVersion.split("\\.")[1]))
+                return true;
+            else
+            if (Integer.parseInt(ServerVersion.split("\\.")[2]) > Integer.parseInt(ClientVersion.split("\\.")[2]))
+                return true;
+            else
+                return false;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     public Boolean CheckLoginState()
     {
         try {
@@ -376,8 +405,8 @@ public class MainActivity extends ActionBarActivity {
 
         mDrawerList = (ListView)findViewById(R.id.drawerlistView);
         mAboutList = (ListView)findViewById(R.id.aboutlistView);
-        final String[] aboutvalues = new String[]{ "關於我們" };
-        final String[] values = new String[]{ "校園資訊" };
+        final String[] aboutvalues = new String[]{  "關於我們" };
+        final String[] values = new String[]{ "離線課表", "校園資訊" };
         ArrayAdapter<String> adapter=new ArrayAdapter<String>(
                 this,R.layout.menulistview_item, values){
             private LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
@@ -449,6 +478,9 @@ public class MainActivity extends ActionBarActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch (position) {
                     case 0:
+                        initCourse(false, false, false);
+                        break;
+                    case 1:
                         initEvent1(false, true);
                         break;
                 }
@@ -487,6 +519,30 @@ public class MainActivity extends ActionBarActivity {
         });
 
         restorePrefs();
+
+        if (CheckVersion())
+        {
+            AlertDialogPro.Builder builder = new AlertDialogPro.Builder(MainActivity.this);
+            builder.setTitle("發現新版本").
+                    setMessage("要到「Google Play」安裝新版嗎？").
+                    setPositiveButton("安裝新版本", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.kuas.ap"));
+                            startActivity(browserIntent);
+                            finish();
+                            onDestroy();
+                        }
+                    }).
+                    setNegativeButton("離開程式", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            finish();
+                            onDestroy();
+                        }
+                    }).setCancelable(false).show();
+            return;
+        }
 
         LoginRunnable = new Runnable() {
             @Override
@@ -605,7 +661,7 @@ public class MainActivity extends ActionBarActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch (position) {
                     case 0:
-                        initCourse(false, false);
+                        initCourse(false, false, true);
                         break;
                     case 1:
                         initScore(false, false);
@@ -709,7 +765,7 @@ public class MainActivity extends ActionBarActivity {
                     cancel = true;
                 ymsScore = SemesterValue.get(position);
                 if (_fncid.equals("AG222"))
-                    initCourse(true, cancel);
+                    initCourse(true, cancel, true);
                 else if (_fncid.equals("AG008"))
                     initScore(true, cancel);
                 else if (_fncid.equals("AK002"))
@@ -720,7 +776,7 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 if (_fncid.equals("AG222"))
-                    initCourse(true, true);
+                    initCourse(true, true, true);
                 else if (_fncid.equals("AG008"))
                     initScore(true, true);
                 else if (_fncid.equals("AK002"))
@@ -739,31 +795,44 @@ public class MainActivity extends ActionBarActivity {
             }
     }
 
-    public void initCourse(boolean select, boolean cancel){
-        setContentView(R.layout.course);
+    public void initCourse(boolean select, boolean cancel, final boolean _isLogin){
+        if (_isLogin)
+            setContentView(R.layout.course);
+        else
+            setContentView(R.layout.offlinecourse);
         TextView textView = (TextView) findViewById(R.id.textView);
         textView.setVisibility(View.GONE);
 
-        RelativeLayout Select = (RelativeLayout) findViewById(R.id.select);
-        Select.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                _fncid = "AG222";
-                initSelect();
-            }
-        });
+        if (_isLogin)
+        {
+            RelativeLayout Select = (RelativeLayout) findViewById(R.id.select);
+            Select.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    _fncid = "AG222";
+                    initSelect();
+                }
+            });
+        }
 
         ImageView Logout = (ImageView) findViewById(R.id.Logout);
         Logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                initLogout();
+                if (_isLogin)
+                    initLogout();
+                else
+                    initLogin();
             }
         });
         mDrawerList = (ListView)findViewById(R.id.drawerlistView);
         mAboutList = (ListView)findViewById(R.id.aboutlistView);
         final String[] aboutvalues = new String[]{ "關於我們"};
-        final String[] values = new String[]{ "學期成績", "缺曠系統", "校車系統", "校園資訊" };
+        final String[] values;
+        if (_isLogin)
+            values = new String[]{ "學期成績", "缺曠系統", "校車系統", "校園資訊" };
+        else
+            values = new String[]{ "校園資訊" };
         ArrayAdapter<String> adapter=new ArrayAdapter<String>(
                 this,R.layout.menulistview_item, values){
             private LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
@@ -834,7 +903,10 @@ public class MainActivity extends ActionBarActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch (position) {
                     case 0:
-                        initScore(false, false);
+                        if (_isLogin)
+                            initScore(false, false);
+                        else
+                            initEvent1(false, true);
                         break;
                     case 1:
                         initLeave1(false, false);
@@ -909,7 +981,8 @@ public class MainActivity extends ActionBarActivity {
                     params.add(new BasicNameValuePair("arg01", ymsScore.split(",")[0]));
                     params.add(new BasicNameValuePair("arg02", ymsScore.split(",")[1]));
                     try {
-                        JSONArray jsonObj = new JSONArray( post_url_contents(api_server + "ap/query", params, cookieStore));
+                        OfflineCourseData = post_url_contents(api_server + "ap/query", params, cookieStore);
+                        JSONArray jsonObj = new JSONArray(OfflineCourseData);
                         for (int i = 0; i < jsonObj.getJSONObject(0).length(); i++) {
                             JSONObject item = jsonObj.getJSONObject(0).getJSONObject(Integer.toString(i));
                             ArrayList<CourseList> CourseList2 = new ArrayList<>();
@@ -973,21 +1046,66 @@ public class MainActivity extends ActionBarActivity {
             }
         };
 
-        if (!select)
-            new Thread(ReadSemesterRunnable).start();
-        else
-        {
-            if (!cancel)
-            {
-                ReadCourseHandler.sendEmptyMessage(-1);
-                new Thread(ReadCourseRunnable).start();
-                initSelectSemester();
+        final TextView ymsTextView = (TextView) findViewById(R.id.selecttextView);
+        RelativeLayout OffineScore = (RelativeLayout) findViewById(R.id.OfflineCourse);
+        OffineScore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (_isLogin)
+                {
+                    AlertDialogPro.Builder builder = new AlertDialogPro.Builder(MainActivity.this);
+                    builder.setTitle("離線課表").
+                            setMessage("是否要將「" + ymsTextView.getText().toString() + "」設為離線課表？").
+                            setPositiveButton("確定", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    SharedPreferences setting = getSharedPreferences("KUAS AP", 0);
+                                    setting.edit().putString("OfflineCourse", OfflineCourseData).apply();
+                                }
+                            }).
+                            setNegativeButton("取消", null).setCancelable(false).show();
+                }
+                else
+                {
+                    AlertDialogPro.Builder builder = new AlertDialogPro.Builder(MainActivity.this);
+                    builder.setTitle("離線課表").
+                            setMessage("是否要將離線課表清除？").
+                            setPositiveButton("確定", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    SharedPreferences setting = getSharedPreferences("KUAS AP", 0);
+                                    setting.edit().putString("OfflineCourse", "").apply();
+                                    addOfflineCourse();
+                                }
+                            }).
+                            setNegativeButton("取消", null).setCancelable(false).show();
+                }
             }
+        });
+
+
+        if (_isLogin)
+        {
+            if (!select)
+                new Thread(ReadSemesterRunnable).start();
             else
             {
-                initSelectSemester();
-                addCourse();
+                if (!cancel)
+                {
+                    ReadCourseHandler.sendEmptyMessage(-1);
+                    new Thread(ReadCourseRunnable).start();
+                    initSelectSemester();
+                }
+                else
+                {
+                    initSelectSemester();
+                    addCourse();
+                }
             }
+        }
+        else
+        {
+            addOfflineCourse();
         }
     }
 
@@ -1084,7 +1202,7 @@ public class MainActivity extends ActionBarActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch (position) {
                     case 0:
-                        initCourse(false, false);
+                        initCourse(false, false, true);
                         break;
                     case 1:
                         initLeave1(false, false);
@@ -1310,7 +1428,7 @@ public class MainActivity extends ActionBarActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch (position) {
                     case 0:
-                        initCourse(false, false);
+                        initCourse(false, false, true);
                         break;
                     case 1:
                         initScore(false, false);
@@ -1584,7 +1702,7 @@ public class MainActivity extends ActionBarActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch (position) {
                     case 0:
-                        initCourse(false, false);
+                        initCourse(false, false, true);
                         break;
                     case 1:
                         initScore(false, false);
@@ -1930,7 +2048,11 @@ public class MainActivity extends ActionBarActivity {
         mDrawerList = (ListView)findViewById(R.id.drawerlistView);
         mAboutList = (ListView)findViewById(R.id.aboutlistView);
         final String[] aboutvalues = new String[]{ "關於我們"};
-        final String[] values = new String[]{ "學期課表", "學期成績", "缺曠系統", "校車系統" };
+        final String[] values;
+        if (_isLogin)
+            values = new String[]{ "學期課表", "學期成績", "缺曠系統", "校車系統" };
+        else
+            values = new String[]{ "離線課表" };
         ArrayAdapter<String> adapter=new ArrayAdapter<String>(
                 this,R.layout.menulistview_item, values){
             private LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
@@ -1985,8 +2107,7 @@ public class MainActivity extends ActionBarActivity {
             }
         };
         mAboutList.setAdapter(aboutadapter);
-        if (_isLogin)
-            mDrawerList.setAdapter(adapter);
+        mDrawerList.setAdapter(adapter);
         mAboutList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -2002,7 +2123,10 @@ public class MainActivity extends ActionBarActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch (position) {
                     case 0:
-                        initCourse(false, false);
+                        if (_isLogin)
+                            initCourse(false, false, true);
+                        else
+                            initCourse(false, false, false);
                         break;
                     case 1:
                         initScore(false, false);
@@ -2160,7 +2284,11 @@ public class MainActivity extends ActionBarActivity {
         mDrawerList = (ListView)findViewById(R.id.drawerlistView);
         mAboutList = (ListView)findViewById(R.id.aboutlistView);
         final String[] aboutvalues = new String[]{ "關於我們"};
-        final String[] values = new String[]{ "學期課表", "學期成績", "缺曠系統", "校車系統" };
+        final String[] values;
+        if (_isLogin)
+            values = new String[]{ "學期課表", "學期成績", "缺曠系統", "校車系統" };
+        else
+            values = new String[]{ "離線課表" };
         ArrayAdapter<String> adapter=new ArrayAdapter<String>(
                 this,R.layout.menulistview_item, values){
             private LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
@@ -2215,8 +2343,7 @@ public class MainActivity extends ActionBarActivity {
             }
         };
         mAboutList.setAdapter(aboutadapter);
-        if (_isLogin)
-            mDrawerList.setAdapter(adapter);
+        mDrawerList.setAdapter(adapter);
         mAboutList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -2232,7 +2359,10 @@ public class MainActivity extends ActionBarActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch (position) {
                     case 0:
-                        initCourse(false, false);
+                        if (_isLogin)
+                            initCourse(false, false, true);
+                        else
+                            initCourse(false, false, false);
                         break;
                     case 1:
                         initScore(false, false);
@@ -2314,7 +2444,11 @@ public class MainActivity extends ActionBarActivity {
         mDrawerList = (ListView)findViewById(R.id.drawerlistView);
         mAboutList = (ListView)findViewById(R.id.aboutlistView);
         final String[] aboutvalues = new String[]{ "關於我們"};
-        final String[] values = new String[]{ "學期課表", "學期成績", "缺曠系統", "校車系統" };
+        final String[] values;
+        if (_isLogin)
+            values = new String[]{ "學期課表", "學期成績", "缺曠系統", "校車系統" };
+        else
+            values = new String[]{ "離線課表" };
         ArrayAdapter<String> adapter=new ArrayAdapter<String>(
                 this,R.layout.menulistview_item, values){
             private LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
@@ -2369,8 +2503,7 @@ public class MainActivity extends ActionBarActivity {
             }
         };
         mAboutList.setAdapter(aboutadapter);
-        if (_isLogin)
-            mDrawerList.setAdapter(adapter);
+        mDrawerList.setAdapter(adapter);
         mAboutList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -2386,7 +2519,10 @@ public class MainActivity extends ActionBarActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch (position) {
                     case 0:
-                        initCourse(false, false);
+                        if (_isLogin)
+                            initCourse(false, false, true);
+                        else
+                            initCourse(false, false, false);
                         break;
                     case 1:
                         initScore(false, false);
@@ -2559,7 +2695,7 @@ public class MainActivity extends ActionBarActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch (position) {
                     case 0:
-                        initCourse(false, false);
+                        initCourse(false, false, true);
                         break;
                     case 1:
                         initScore(false, false);
@@ -2829,7 +2965,7 @@ public class MainActivity extends ActionBarActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch (position) {
                     case 0:
-                        initCourse(false, false);
+                        initCourse(false, false, true);
                         break;
                     case 1:
                         initScore(false, false);
@@ -3010,7 +3146,7 @@ public class MainActivity extends ActionBarActivity {
                 switch (position) {
                     case 0:
                         if (_isLogin)
-                            initCourse(false, false);
+                            initCourse(false, false, true);
                         else
                             initEvent1(_isLogin, true);
                         break;
@@ -3091,7 +3227,7 @@ public class MainActivity extends ActionBarActivity {
 
     private Handler ReadScoreHandler = new Handler() {
         @Override
-        public void handleMessage(android.os.Message msg) {
+        public void handleMessage(Message msg) {
             switch (msg.what)
             {
                 case -1:
@@ -3113,7 +3249,7 @@ public class MainActivity extends ActionBarActivity {
 
     private Handler ReadCourseHandler = new Handler() {
         @Override
-        public void handleMessage(android.os.Message msg) {
+        public void handleMessage(Message msg) {
             switch (msg.what)
             {
                 case -1:
@@ -3135,7 +3271,7 @@ public class MainActivity extends ActionBarActivity {
 
     private Handler ReadLeaveHandler = new Handler() {
         @Override
-        public void handleMessage(android.os.Message msg) {
+        public void handleMessage(Message msg) {
             switch (msg.what)
             {
                 case -1:
@@ -3157,7 +3293,7 @@ public class MainActivity extends ActionBarActivity {
 
     private Handler LeaveSubmitHandler = new Handler() {
         @Override
-        public void handleMessage(android.os.Message msg) {
+        public void handleMessage(Message msg) {
             switch (msg.what)
             {
                 case -1:
@@ -3182,7 +3318,7 @@ public class MainActivity extends ActionBarActivity {
 
     private Handler ReadSemesterHandler = new Handler() {
         @Override
-        public void handleMessage(android.os.Message msg) {
+        public void handleMessage(Message msg) {
             switch (msg.what)
             {
                 case -1:
@@ -3209,7 +3345,7 @@ public class MainActivity extends ActionBarActivity {
 
     private Handler ReadBusHandler = new Handler() {
         @Override
-        public void handleMessage(android.os.Message msg) {
+        public void handleMessage(Message msg) {
             switch (msg.what)
             {
                 case -1:
@@ -3245,7 +3381,7 @@ public class MainActivity extends ActionBarActivity {
 
     private Handler ReadNotificationHandler = new Handler() {
         @Override
-        public void handleMessage(android.os.Message msg) {
+        public void handleMessage(Message msg) {
             switch (msg.what)
             {
                 case -1:
@@ -3267,7 +3403,7 @@ public class MainActivity extends ActionBarActivity {
 
     private Handler LoginHandler = new Handler() {
         @Override
-        public void handleMessage(android.os.Message msg) {
+        public void handleMessage(Message msg) {
             switch (msg.what)
             {
                 case -1:
@@ -3307,7 +3443,7 @@ public class MainActivity extends ActionBarActivity {
 
     private Handler CheckServerStatusHandler = new Handler() {
         @Override
-        public void handleMessage(android.os.Message msg) {
+        public void handleMessage(Message msg) {
             switch (msg.what)
             {
                 case 1:
@@ -3451,6 +3587,16 @@ public class MainActivity extends ActionBarActivity {
 
     public void addBus() {
         TextView noBusTextView = (TextView) findViewById(R.id.noBusTextView);
+
+        final ArrayList<BusList> NewBusList = new ArrayList<>();
+        for (int i = 0; i < BusList.size(); i ++)
+            if (BusList.get(i).endStation.equals(BusEndStation))
+                NewBusList.add(BusList.get(i));
+
+        TableLayout table = (TableLayout) findViewById(R.id.tablelayout);
+        table.setStretchAllColumns(true);
+        table.removeAllViews();
+
         if (BusList.size() == 0)
         {
             noBusTextView.setVisibility(View.VISIBLE);
@@ -3461,14 +3607,6 @@ public class MainActivity extends ActionBarActivity {
             noBusTextView.setVisibility(View.GONE);
         }
 
-        final ArrayList<BusList> NewBusList = new ArrayList<>();
-        for (int i = 0; i < BusList.size(); i ++)
-            if (BusList.get(i).endStation.equals(BusEndStation))
-                NewBusList.add(BusList.get(i));
-
-        TableLayout table = (TableLayout) findViewById(R.id.tablelayout);
-        table.setStretchAllColumns(true);
-        table.removeAllViews();
         for (int i = 0; i < NewBusList.size(); i++)
         {
             final String Station;
@@ -3732,6 +3870,64 @@ public class MainActivity extends ActionBarActivity {
             }
             table.addView(tablerow);
         }
+    }
+
+    public void addOfflineCourse() {
+        TableLayout table = (TableLayout) findViewById(R.id.tablelayout);
+        table.setStretchAllColumns(true);
+        table.removeAllViews();
+        TextView textView = (TextView) findViewById(R.id.textView);
+        textView.setVisibility(View.GONE);
+
+        isHolidayClass = false;
+        isHolidayNightClass = false;
+        isNightClass = false;
+        CourseList = new ArrayList<>();
+
+        SharedPreferences setting = getSharedPreferences("KUAS AP", 0);
+        OfflineCourseData = setting.getString("OfflineCourse", "");
+
+        TextView noOfflineCoureTextView = (TextView) findViewById(R.id.noOfflineCourseTextView);
+        RelativeLayout OfflineCourse = (RelativeLayout) findViewById(R.id.OfflineCourse);
+        if (OfflineCourseData.equals(""))
+        {
+            noOfflineCoureTextView.setVisibility(View.VISIBLE);
+            OfflineCourse.setVisibility(View.GONE);
+            return;
+        }
+        else
+        {
+            noOfflineCoureTextView.setVisibility(View.GONE);
+        }
+
+        try {
+            JSONArray jsonObj = new JSONArray(OfflineCourseData);
+            for (int i = 0; i < jsonObj.getJSONObject(0).length(); i++) {
+                JSONObject item = jsonObj.getJSONObject(0).getJSONObject(Integer.toString(i));
+                ArrayList<CourseList> CourseList2 = new ArrayList<>();
+                for (int j = 1; j < 8; j ++)
+                {
+                    JSONObject itemdata = item.getJSONObject(Integer.toString(j));
+                    if (j >= 6 && !itemdata.getString("course_name").equals(""))
+                    {
+                        isHolidayClass = true;
+                        if (i >= 10)
+                            isHolidayNightClass = true;
+                    }
+                    else if (!itemdata.getString("course_name").equals("") && i >= 10)
+                        isNightClass = true;
+
+                    CourseList2.add(new CourseList(itemdata.getString("course_name"),
+                            itemdata.getString("course_teacher"),
+                            itemdata.getString("course_classroom"),
+                            item.getString("time")));
+                }
+                CourseList.add(CourseList2);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        addCourse();
     }
 
     public void addCourse() {
@@ -4115,5 +4311,11 @@ public class MainActivity extends ActionBarActivity {
             addCourse();
         else if (_fncid.equals("AK002") && !LoadingDialog.isShowing())
             addLeave();
+    }
+
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+        android.os.Process.killProcess(android.os.Process.myPid());
     }
 }

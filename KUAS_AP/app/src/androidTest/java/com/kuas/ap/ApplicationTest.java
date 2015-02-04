@@ -1,4 +1,4 @@
-package silent.kuasap;
+package com.kuas.ap;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

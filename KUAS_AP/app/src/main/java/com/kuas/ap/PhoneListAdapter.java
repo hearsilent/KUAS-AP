@@ -1,4 +1,4 @@
-package silent.kuasap;
+package com.kuas.ap;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,23 +10,23 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NotificationListAdapter extends BaseAdapter {
-    private List<NotificationList> mData = new ArrayList<>();
+public class PhoneListAdapter extends BaseAdapter {
+    private List<PhoneList> mData = new ArrayList<>();
     private LayoutInflater mInflater;
 
     public static class ViewHolder {
         public TextView title;
-        public TextView from;
+        public TextView number;
         public TextView time;
     }
 
 
-    public NotificationListAdapter(Context context) {
+    public PhoneListAdapter(Context context) {
         mInflater = LayoutInflater.from(context);
     }
 
 
-    public void setData(List<NotificationList> items) {
+    public void setData(List<PhoneList> items) {
         this.mData = items;
     }
 
@@ -37,7 +37,7 @@ public class NotificationListAdapter extends BaseAdapter {
     }
 
     @Override
-    public NotificationList getItem(int position) {
+    public PhoneList getItem(int position) {
         return mData.get(position);
     }
 
@@ -51,20 +51,15 @@ public class NotificationListAdapter extends BaseAdapter {
         ViewHolder holder;
         if (convertView == null) {
             holder = new ViewHolder();
-            convertView = mInflater.inflate(R.layout.notification_item, null);
+            convertView = mInflater.inflate(R.layout.phone_item, null);
             holder.title = (TextView) convertView.findViewById(R.id.title);
-            holder.from = (TextView) convertView.findViewById(R.id.from);
-            holder.time = (TextView) convertView.findViewById(R.id.time);
+            holder.number = (TextView) convertView.findViewById(R.id.number);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder)convertView.getTag();
         }
-        if (position < mData.size())
-        {
-            holder.title.setText(mData.get(position).title);
-            holder.from.setText(mData.get(position).from);
-            holder.time.setText(mData.get(position).time);
-        }
+        holder.title.setText(mData.get(position).title);
+        holder.number.setText(mData.get(position).number);
         return convertView;
     }
 }

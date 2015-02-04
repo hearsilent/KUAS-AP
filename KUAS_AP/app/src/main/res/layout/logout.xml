@@ -145,7 +145,7 @@
                         android:id="@+id/ap"
                         android:layout_below="@id/textView1"
                         android:layout_centerHorizontal="true"
-                        android:textSize="16sp"
+                        android:textSize="14sp"
                         android:textColor="@color/red" />
                 </RelativeLayout>
 
@@ -156,7 +156,7 @@
                     android:layout_toRightOf="@+id/relativeLayout"
                     android:layout_toEndOf="@+id/relativeLayout"
                     android:id="@+id/RelativeLayout2"
-                    android:layout_marginLeft="50sp">
+                    android:layout_marginLeft="20sp">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -174,7 +174,7 @@
                         android:id="@+id/leave"
                         android:layout_below="@id/textView4"
                         android:layout_centerHorizontal="true"
-                        android:textSize="16sp"
+                        android:textSize="14sp"
                         android:textColor="@color/red"/>
                 </RelativeLayout>
 
@@ -185,7 +185,7 @@
                     android:layout_toRightOf="@+id/RelativeLayout2"
                     android:layout_toEndOf="@+id/RelativeLayout2"
                     android:id="@+id/RelativeLayout3"
-                    android:layout_marginLeft="50sp">
+                    android:layout_marginLeft="20sp">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -203,7 +203,7 @@
                         android:id="@+id/bus"
                         android:layout_below="@id/textView3"
                         android:layout_centerHorizontal="true"
-                        android:textSize="16sp"
+                        android:textSize="14sp"
                         android:textColor="@color/red" />
                 </RelativeLayout>
             </RelativeLayout>

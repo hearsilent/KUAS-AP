@@ -1,4 +1,4 @@
-package silent.kuasap;
+package com.kuas.ap;
 
 public class BusList {
     String busId;

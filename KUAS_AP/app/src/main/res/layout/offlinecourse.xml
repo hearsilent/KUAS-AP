@@ -63,45 +63,28 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/select"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="5dp"
-                android:gravity="center_horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="103學年度第1學期"
-                    android:id="@+id/selecttextView"
-                    android:layout_alignParentTop="true"
-                    android:layout_centerHorizontal="true"
-                    android:textSize="18sp"
-                    android:layout_marginTop="15dp"
-                    android:textColor="#ff000000" />
-
-                <ImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:id="@+id/selectimageView"
-                    android:layout_alignParentTop="true"
-                    android:layout_toRightOf="@+id/selecttextView"
-                    android:layout_toEndOf="@+id/selecttextView"
-                    android:layout_marginTop="6dp"
-                    android:background="@drawable/ic_keyboard_arrow_down_black_48dp" />
-            </RelativeLayout>
-
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="轉橫向即可查看周末課程"
                 android:layout_marginBottom="5sp"
                 android:id="@+id/textView"
+                android:layout_marginTop="20dp"
                 android:layout_below="@+id/select"
                 android:layout_centerHorizontal="true"
                 android:textSize="15sp"
+                android:textColor="#ff000000" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="目前沒有任何離線課表"
+                android:layout_marginBottom="5sp"
+                android:id="@+id/noOfflineCourseTextView"
+                android:layout_below="@+id/select"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="20dp"
+                android:textSize="20sp"
                 android:textColor="#ff000000" />
 
             <ScrollView
@@ -109,6 +92,7 @@
                 android:layout_below="@+id/textView"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
+                android:layout_marginTop="15dp"
                 android:layout_above="@+id/OfflineCourse">
 
                 <TableLayout
@@ -143,12 +127,12 @@
                     android:layout_height="35dp"
                     android:id="@+id/OfflineCourseImageView"
                     android:layout_centerHorizontal="true"
-                    android:background="@drawable/ic_save_black_48dp" />
+                    android:background="@drawable/ic_delete_black_48dp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="儲存離線課表"
+                    android:text="清除離線課表"
                     android:id="@+id/OfflineCourseTextView"
                     android:textSize="15sp"
                     android:textColor="#ff000000"

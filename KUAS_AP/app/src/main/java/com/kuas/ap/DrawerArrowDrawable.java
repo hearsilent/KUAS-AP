@@ -1,4 +1,4 @@
-package silent.kuasap;
+package com.kuas.ap;
 
 import android.content.res.Resources;
 import android.graphics.Canvas;
@@ -9,21 +9,19 @@ import android.graphics.Path;
 import android.graphics.PathMeasure;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.view.View;
+
 import static android.graphics.Color.BLACK;
 import static android.graphics.Paint.ANTI_ALIAS_FLAG;
-import static android.graphics.Paint.Cap;
 import static android.graphics.Paint.Cap.BUTT;
 import static android.graphics.Paint.Cap.ROUND;
 import static android.graphics.Paint.SUBPIXEL_TEXT_FLAG;
 import static android.graphics.Paint.Style.STROKE;
 import static android.graphics.PixelFormat.TRANSLUCENT;
-import static android.support.v4.widget.DrawerLayout.DrawerListener;
 import static java.lang.Math.sqrt;
 /** A drawable that rotates between a drawer icon and a back arrow based on parameter. */
 public class DrawerArrowDrawable extends Drawable {
     /**
-     * Joins two {@link Path}s as if they were one where the first 50% of the path is {@code
+     * Joins two {@link android.graphics.Path}s as if they were one where the first 50% of the path is {@code
      * PathFirst} and the second 50% of the path is {@code pathSecond}.
      */
     private static class JoinedPath {
@@ -55,7 +53,7 @@ public class DrawerArrowDrawable extends Drawable {
             }
         }
     }
-    /** Draws a line between two {@link JoinedPath}s at distance {@code parameter} along each path. */
+    /** Draws a line between two {@link com.kuas.ap.DrawerArrowDrawable.JoinedPath}s at distance {@code parameter} along each path. */
     private class BridgingLine {
         private final JoinedPath pathA;
         private final JoinedPath pathB;
@@ -75,7 +73,7 @@ public class DrawerArrowDrawable extends Drawable {
         }
         /**
          * Insets the end points of the current line to account for the protruding
-         * ends drawn for {@link Cap#ROUND} style lines.
+         * ends drawn for {@link android.graphics.Paint.Cap#ROUND} style lines.
          */
         private void insetPointsForRoundCaps() {
             vX = coordsB[0] - coordsA[0];
@@ -91,7 +89,7 @@ public class DrawerArrowDrawable extends Drawable {
     }
     /** Paths were generated at a 3px/dp density; this is the scale factor for different densities. */
     private final static float PATH_GEN_DENSITY = 3;
-    /** Paths were generated with at this size for {@link DrawerArrowDrawable#PATH_GEN_DENSITY}. */
+    /** Paths were generated with at this size for {@link com.kuas.ap.DrawerArrowDrawable#PATH_GEN_DENSITY}. */
     private final static float DIMEN_DP = 23.5f;
     /**
      * Paths were generated targeting this stroke width to form the arrowhead properly, modification
@@ -222,7 +220,7 @@ public class DrawerArrowDrawable extends Drawable {
     }
     /**
      * Sets the rotation of this drawable based on {@code parameter} between 0 and 1. Usually driven
-     * via {@link DrawerListener#onDrawerSlide(View, float)}'s {@code slideOffset} parameter.
+     * via {@link android.support.v4.widget.DrawerLayout.DrawerListener#onDrawerSlide(android.view.View, float)}'s {@code slideOffset} parameter.
      */
     public void setParameter(float parameter) {
         if (parameter > 1 || parameter < 0) {
@@ -241,7 +239,7 @@ public class DrawerArrowDrawable extends Drawable {
     }
     /**
      * Scales the paths to the given screen density. If the density matches the
-     * {@link DrawerArrowDrawable#PATH_GEN_DENSITY}, no scaling needs to be done.
+     * {@link com.kuas.ap.DrawerArrowDrawable#PATH_GEN_DENSITY}, no scaling needs to be done.
      */
     private static void scalePath(Path path, float density) {
         if (density == PATH_GEN_DENSITY) return;
