@@ -67,14 +67,15 @@
                 android:id="@+id/scrollView"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:layout_above="@+id/Page">
+                android:layout_above="@+id/Page"
+                android:layout_marginBottom="10sp">
 
                 <TableLayout
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
                     android:layout_alignParentTop="true"
                     android:id="@+id/tablelayout"
-                    android:layout_centerHorizontal="true"></TableLayout>
+                    android:layout_centerHorizontal="true"/>
             </ScrollView>
 
             <RelativeLayout
@@ -113,7 +114,7 @@
                 <View android:layout_height="25sp" android:background="@color/bar_grey"
                     android:layout_toRightOf="@+id/RelativeLayout"
                     android:layout_centerVertical="true"
-                    android:layout_width="1sp"></View>
+                    android:layout_width="1sp"/>
 
                 <RelativeLayout
                     android:layout_width="wrap_content"
@@ -146,7 +147,7 @@
                 <View android:layout_height="25sp" android:background="@color/bar_grey"
                     android:layout_toRightOf="@+id/RelativeLayout2"
                     android:layout_centerVertical="true"
-                    android:layout_width="1sp"></View>
+                    android:layout_width="1sp"/>
 
                 <RelativeLayout
                     android:layout_width="wrap_content"

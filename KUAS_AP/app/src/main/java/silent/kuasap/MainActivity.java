@@ -6,11 +6,14 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.StrictMode;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Gravity;
@@ -19,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -69,8 +73,10 @@ import org.mozilla.javascript.ScriptableObject;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
@@ -147,6 +153,14 @@ public class MainActivity extends ActionBarActivity {
     // Leave
     Runnable ReadLeaveRunnable;
     ArrayList<LeaveList> LeaveList = new ArrayList<>();
+    boolean isNightLeave = false;
+    String startTime = "";
+    String endTime = "";
+    String leaveType = "";
+    String leaveReason = "";
+    String leavePeriod = "";
+    ArrayList<String> leavePeriodMap = new ArrayList<>();
+    Runnable LeaveSubmitRunnable;
 
     // Bus
     Runnable BusLoginRunnable;
@@ -166,11 +180,17 @@ public class MainActivity extends ActionBarActivity {
     Integer NotificationPage = 1;
     ArrayList<PhoneList> PhoneList = new ArrayList<>();
     String scheduleData = "[{\"events\":[\"(2/1) 103學年度第2學期開始日\",\"(2/3 - 2/5) 寄發103學年度第1學期學生成績單\",\"(2/4) 核對103學年度第1學期成績優良排名表\",\"(2/4) 核發103學年度寒畢畢業證書\",\"(2/5 - 2/9) 103學年度第1學期學業成績優良排名表送生輔組協查有無記過紀錄\",\"(2/10 - 2/16) 第1次公告103學年度第1學期學業成績優良名單\"],\"week\":\"寒\"},{\"events\":[\"(2/16) 新進教師研習會\",\"(2/18 - 2/23) 春節放假\",\"(2/17 - 2/24) 第2次公告103學年度第1學期學業成績優良名單\"],\"week\":\"預備週\"},{\"events\":[\"(2/23) 補假一天(補2/21春節初三)\",\"(2/25) 日間部、進修推廣處開學\",\"(2/27) 補假一天(補2/28和平紀念日)\",\"(2/24) 教學研討會（導師會議、導師輔導知能研習）\",\"(2/24) 研究生辦理103學年度第1學期離校手續截止日\",\"(2/24) 註冊繳費截止日\",\"(2/25) 網路公布103學年度第2學期加退選日程及相關辦法\",\"(2/25) 輔系、雙主修、轉學生學分抵免申請開始\",\"(2/25) 校際選課開始申請\",\"(2/25 - 3/4) 通知103學年度第1學期學業成績優良學生至學校網站登載銀行帳號(限郵局及台灣企銀)\",\"(2/25) 研究生自完成註冊手續後開始辦理學位考試申請\"],\"week\":\"第一週\"},{\"events\":[\"(3/4) 轉學生學分抵免申請截止日\",\"(3/4 - 3/11) 日間部學生加退選課申請作業(選課時間另行公布)\",\"(3/4) 輔系、雙主修申請截止日\",\"(3/6) 校際選課截止日\"],\"week\":\"第二週\"},{\"events\":[\"(3/12) 103學年度第2學期人工加掛選課申請截止日\"],\"week\":\"第三週\"},{\"events\":[\"(3/18) 103學年度第2學期第1次教務會議\"],\"week\":\"第四週\"},{\"events\":[\"(3/27 - 3/31) 學生加退選課繳費\"],\"week\":\"第五週\"},{\"events\":[\"(4/3) 補假一天(補4/4兒童節)\",\"(3/30) 加退選結束教師自行列印點名單及成績冊(web)\",\"(3/30 - 4/8) 教師上網登錄期中考考試時間\",\"(3/30 - 4/2) 核算103學年度第2學期教師鐘點費\",\"(4/1) 學生逕修讀博士學位開始申請\"],\"week\":\"第六週\"},{\"events\":[\"(4/6) 補假一天(補4/5民族掃墓節)\",\"(4/7) 學生辦理休、退學學雜費退2/3截止日\",\"(4/8 - 4/14) 103學年度暑修意願網路調查\"],\"week\":\"第七週\"},{\"events\":[\"(4/13 - 4/25) 上網公布期中考考試時間、開放同學查詢\",\"(4/15) 學生逕修讀博士學位申請截止日\",\"(4/15 - 5/3) 教師登錄期中成績暨預警作業\",\"(4/17) 教師期中考試卷申印製卷截止日\"],\"week\":\"第八週\"},{\"events\":[\"(4/20 - 4/25) 日間部、進修推廣處期中考試\"],\"week\":\"第九週\"},{\"events\":[\"(4/27) 103學年度第三次校務會議\",\"(4/27) 103學年度第2學期停修課程開始申請\",\"(4/27) 登錄教師研究計畫案及義務授課減授時數\",\"(4/27 - 5/1) 第一次修訂104學年度第1學期註冊須知\",\"(4/28) 公告103學年度暑修初步課表\",\"(4/30) 103學年度第2學期研究生學位考試申請期限截止日\",\"(5/1) 日間部大學部學生轉系(組)開始申請\",\"(5/2 - 5/3) 104學年度四技統一入學測驗考試\"],\"week\":\"第十週\"},{\"events\":[\"(5/3) 104學年度二技統一入學測驗考試\",\"(5/4 - 5/8) 103學年度暑修網路選課\",\"(5/3) 教師登錄期中成績暨預警作業截止日\"],\"week\":\"第十一週\"},{\"events\":[\"(5/11 - 5/13) 發放期中預警學生名單予各系、班級導師、任課老師\",\"(5/11 - 5/15) 第二次修訂104學年度第1學期註冊須知\",\"(5/11 - 5/31) 導師填報期中預警輔導紀錄表(web)\",\"(5/15) 103學年度第2學期停修課程申請截止日\",\"(5/15) 日間部大學部學生轉系(組)申請期限截止日\"],\"week\":\"第十二週\"},{\"events\":[\"(5/19) 學生辦理休、退學學雜費退1/3截止日\",\"(5/20 - 5/22) 寄發104學年度第1學期復學通知\"],\"week\":\"第十三週\"},{\"events\":[\"(5/25 - 5/27) 核算停修後教師鐘點費\",\"(5/27) 發放舊生註冊須知\"],\"week\":\"第十四週\"},{\"events\":[\"(6/3) 103學年度第2學期第2次教務會議\",\"(6/1 - 6/5) 103學年度暑修繳費\",\"(6/1 - 6/10) 教師上網登錄期末考時間\",\"(6/4) 開放上網查詢104學年度第1學期課程表\"],\"week\":\"第十五週\"},{\"events\":[\"(6/13) 畢業典禮\",\"(6/8 - 6/12) 日間部學生104學年度第1學期選課登記志願(初選第一階段)\"],\"week\":\"第十六週\"},{\"events\":[\"(6/19) 補假一天(補6/20端午節)\",\"(6/15) 103學年度第四次校務會議\",\"(6/15 - 6/27) 上網公佈期末考時間，開放學生查詢\",\"(6/16 - 6/23) 日間部學生104學年度第1學期選課電腦篩選\",\"(6/18) 學生期末考扣考資料通知學生、家長、老師\",\"(6/18) 教師期末考試卷申印製卷截止日\"],\"week\":\"第十七週\"},{\"events\":[\"(6/24 - 6/30) 日間部、進修推廣處期末考試\",\"(6/24 - 6/26) 日間部學生104學年度第1學期選課電腦篩選分發結果公告\"],\"week\":\"第十八週\"},{\"events\":[\"(6/29 - 7/2) 日間部學生104學年度第1學期初選第二階段選課\",\"(7/5) 教師送交畢業班學期考試成績截止日\",\"(7/6 - 7/8) 本學期修課不及格者辦理暑修報名並繳費\",\"(7/6 - 7/8) 外校生至本校暑修選課報名並同時繳費\",\"(7/7) 教師送交103學年度第2學期學生學期成績截止日\",\"(7/8 - 7/10) 彙算103學年度第2學期學生學業成績\",\"(7/13) 暑修開始上課，預計8/22上課結束\",\"(7/14) 寄發103學年度第2學期退學通知\",\"(7/20) 核發103學年度畢業生畢業證書\",\"(7/20 - 7/22) 寄發103學年度第2學期學生成績單\",\"(7/31) 103學年度第2學期研究生學位考試截止日\",\"(7/31) 103學年度第2學期結束日\"],\"week\":\"暑\"}]";
+
+    // News
+    Integer news_id = -1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
 
         ReadSemesterRunnable = new Runnable() {
             @Override
@@ -339,7 +359,9 @@ public class MainActivity extends ActionBarActivity {
         SignInButton = (Button) findViewById(R.id.SignIn);
         RememberPass = (CheckBox) findViewById(R.id.RememberPass);
 
-        LoadingDialog = new ProgressDialogPro(this, R.style.Theme_AlertDialogPro_Material);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
+        LoadingDialog = new ProgressDialogPro(this, R.style.Theme_AlertDialogPro_Material_Light);
 
         SignInButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -503,6 +525,7 @@ public class MainActivity extends ActionBarActivity {
         };
 
         new Thread(CheckServerStatusRunnable).start();
+        showNews();
     }
 
     public void initLogout(){
@@ -1343,8 +1366,10 @@ public class MainActivity extends ActionBarActivity {
 
                     List<NameValuePair> params = new LinkedList<>();
                     LeaveList = new ArrayList<>();
+                    isNightLeave = false;
 
                     // Client
+                    /*
                     params.add(new BasicNameValuePair("yms", ymsScore));
                     params.add(new BasicNameValuePair("arg01", ymsScore.split(",")[0]));
                     params.add(new BasicNameValuePair("arg02", ymsScore.split(",")[1]));
@@ -1390,36 +1415,58 @@ public class MainActivity extends ActionBarActivity {
                                     getData.split(" ")[16],
                                     getData.split(" ")[17]));
                     }
+                    */
 
                     // Server
-                    /*
                     params.clear();
                     params.add(new BasicNameValuePair("arg01", ymsScore.split(",")[0]));
                     params.add(new BasicNameValuePair("arg02", ymsScore.split(",")[1]));
                     try {
                         JSONArray jsonObj = new JSONArray(post_url_contents(api_server + "leave", params, cookieStore));
                         for (int i = 1; i < jsonObj.length(); i++) {
-                            LeaveList.add(new LeaveList(jsonObj.getJSONArray(i).get(0).toString(),
-                                    jsonObj.getJSONArray(i).get(1).toString(),
-                                    jsonObj.getJSONArray(i).get(2).toString(),
-                                    jsonObj.getJSONArray(i).get(3).toString(),
-                                    jsonObj.getJSONArray(i).get(4).toString(),
-                                    jsonObj.getJSONArray(i).get(5).toString(),
-                                    jsonObj.getJSONArray(i).get(6).toString(),
-                                    jsonObj.getJSONArray(i).get(7).toString(),
-                                    jsonObj.getJSONArray(i).get(8).toString(),
-                                    jsonObj.getJSONArray(i).get(9).toString(),
-                                    jsonObj.getJSONArray(i).get(10).toString(),
-                                    "",
-                                    "",
-                                    "",
-                                    "",
-                                    ""));
+                            if (jsonObj.getJSONArray(i).length() == 11)
+                            {
+                                LeaveList.add(new LeaveList(jsonObj.getJSONArray(i).get(0).toString(),
+                                        jsonObj.getJSONArray(i).get(1).toString(),
+                                        jsonObj.getJSONArray(i).get(2).toString(),
+                                        jsonObj.getJSONArray(i).get(3).toString(),
+                                        jsonObj.getJSONArray(i).get(4).toString(),
+                                        jsonObj.getJSONArray(i).get(5).toString(),
+                                        jsonObj.getJSONArray(i).get(6).toString(),
+                                        jsonObj.getJSONArray(i).get(7).toString(),
+                                        jsonObj.getJSONArray(i).get(8).toString(),
+                                        jsonObj.getJSONArray(i).get(9).toString(),
+                                        jsonObj.getJSONArray(i).get(10).toString(),
+                                        "",
+                                        "",
+                                        "",
+                                        "",
+                                        ""));
+                            }
+                            else
+                            {
+                                LeaveList.add(new LeaveList(jsonObj.getJSONArray(i).get(0).toString(),
+                                        jsonObj.getJSONArray(i).get(1).toString(),
+                                        jsonObj.getJSONArray(i).get(2).toString(),
+                                        jsonObj.getJSONArray(i).get(3).toString(),
+                                        jsonObj.getJSONArray(i).get(4).toString(),
+                                        jsonObj.getJSONArray(i).get(5).toString(),
+                                        jsonObj.getJSONArray(i).get(6).toString(),
+                                        jsonObj.getJSONArray(i).get(7).toString(),
+                                        jsonObj.getJSONArray(i).get(8).toString(),
+                                        jsonObj.getJSONArray(i).get(9).toString(),
+                                        jsonObj.getJSONArray(i).get(10).toString(),
+                                        jsonObj.getJSONArray(i).get(11).toString(),
+                                        jsonObj.getJSONArray(i).get(12).toString(),
+                                        jsonObj.getJSONArray(i).get(13).toString(),
+                                        jsonObj.getJSONArray(i).get(14).toString(),
+                                        jsonObj.getJSONArray(i).get(15).toString()));
+                                isNightLeave = true;
+                            }
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    */
                     ReadLeaveHandler.sendEmptyMessage(1);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -1584,6 +1631,271 @@ public class MainActivity extends ActionBarActivity {
         });
 
         _fncid = "";
+
+        startTime = "";
+        endTime = "";
+        leaveType = "";
+        leavePeriod = "";
+        leavePeriodMap = new ArrayList<>();
+
+        final CaldroidFragment startDialogCaldroidFragment = CaldroidFragment.newInstance("選擇起始時間", (Calendar.getInstance().get(Calendar.MONTH)+1), Calendar.getInstance().get(Calendar.YEAR));
+        final CaldroidFragment endDialogCaldroidFragment = CaldroidFragment.newInstance("選擇結束時間", (Calendar.getInstance().get(Calendar.MONTH)+1), Calendar.getInstance().get(Calendar.YEAR));
+        final SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
+        startDialogCaldroidFragment.setMinDate(Calendar.getInstance().getTime());
+        endDialogCaldroidFragment.setMinDate(Calendar.getInstance().getTime());
+
+        final TextView startTimeTextView = (TextView) findViewById(R.id.startTimeTextView);
+        final CaldroidListener startListener = new CaldroidListener() {
+            @Override
+            public void onSelectDate(Date date, View view) {
+                startTime = formatter.format(date);
+                startTimeTextView.setText("起始時間 " + startTime.replace("/","-"));
+                endDialogCaldroidFragment.setMinDate(date);
+                startDialogCaldroidFragment.dismiss();
+            }
+            @Override
+            public void onChangeMonth(int month, int year) {}
+            @Override
+            public void onLongClickDate(Date date, View view) {}
+            @Override
+            public void onCaldroidViewCreated() {
+                startDialogCaldroidFragment.setEnableSwipe(true);
+                startDialogCaldroidFragment.refreshView();
+            }
+        };
+        startDialogCaldroidFragment.setCaldroidListener(startListener);
+
+        final TextView endTimeTextView = (TextView) findViewById(R.id.endTimeTextView);
+        final CaldroidListener endListener = new CaldroidListener() {
+            @Override
+            public void onSelectDate(Date date, View view) {
+                endTime = formatter.format(date);
+                endTimeTextView.setText("結束時間 " + endTime.replace("/","-"));
+                endDialogCaldroidFragment.dismiss();
+            }
+            @Override
+            public void onChangeMonth(int month, int year) {}
+            @Override
+            public void onLongClickDate(Date date, View view) {}
+            @Override
+            public void onCaldroidViewCreated() {
+                endDialogCaldroidFragment.setEnableSwipe(true);
+                endDialogCaldroidFragment.refreshView();
+            }
+        };
+        endDialogCaldroidFragment.setCaldroidListener(endListener);
+
+        RelativeLayout startTimePick = (RelativeLayout) findViewById(R.id.startTime);
+        startTimePick.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startDialogCaldroidFragment.show(getSupportFragmentManager(), "Caldroid");
+            }
+        });
+
+        RelativeLayout endTimePick = (RelativeLayout) findViewById(R.id.endTime);
+        endTimePick.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (startTime.equals(""))
+                {
+                    AlertDialogPro.Builder builder = new AlertDialogPro.Builder(MainActivity.this);
+                    builder.setMessage("請先選擇起始時間").setPositiveButton("確定", null).show();
+                }
+                else
+                    endDialogCaldroidFragment.show(getSupportFragmentManager(), "Caldroid");
+            }
+        });
+
+        RelativeLayout selectLeaveType = (RelativeLayout) findViewById(R.id.leaveType);
+        final TextView leaveTypeText = (TextView) findViewById(R.id.leaveTypeTextView);
+        selectLeaveType.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final String[] leave_type_list = new String[]{"事假", "病假", "公假", "喪假", "產假"};
+                final String[] leave_type_map = new String[]{"21", "22", "23", "24", "26"};
+                final ArrayList<String> map =  new ArrayList<>(Arrays.asList("21", "22", "23", "24", "26"));
+                Integer selectItem;
+                if (leaveType.equals(""))
+                    selectItem = 0;
+                else
+                    selectItem = map.indexOf(leaveType);
+                AlertDialogPro.Builder builder = new AlertDialogPro.Builder(MainActivity.this);
+                builder.setTitle("選擇請假類別")
+                        .setSingleChoiceItems(leave_type_list,
+                                selectItem,
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        leaveType = leave_type_map[which];
+                                        leaveTypeText.setText("請假類別 " + leave_type_list[which]);
+                                    }
+                                })
+                        .setPositiveButton("確定", null)
+                        .show();
+            }
+        });
+
+        RelativeLayout selectLeavePeriod = (RelativeLayout) findViewById(R.id.leavePeriod);
+        final TextView leavePeriodText = (TextView) findViewById(R.id.leavePeriodTextView);
+        selectLeavePeriod.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final String[] leave_period_list = new String[]{"M", "1", "2", "3", "4", "A", "5", "6", "7", "8", "B", "11", "12", "13", "14"};
+                final String[] leave_period_map = new String[]{"A", "1", "2", "3", "4", "B", "5", "6", "7", "8", "C", "11", "12", "13", "14"};
+                final ArrayList<String> list =  new ArrayList<>(Arrays.asList("M", "1", "2", "3", "4", "A", "5", "6", "7", "8", "B", "11", "12", "13", "14"));
+                final ArrayList<String> map =  new ArrayList<>(Arrays.asList("A", "1", "2", "3", "4", "B", "5", "6", "7", "8", "C", "11", "12", "13", "14"));
+                final ArrayList<String> leavePeriodList = new ArrayList<>();
+                boolean[] selectedItems = new boolean[]{false, false, false, false, false, false, false, false, false, false, false, false, false, false, false};
+                for (int i = 0; i < leavePeriodMap.size(); i ++)
+                {
+                    leavePeriodList.add(list.get(map.indexOf(leavePeriodMap.get(i))));
+                    selectedItems[map.indexOf(leavePeriodMap.get(i))] = true;
+                }
+                AlertDialogPro.Builder builder = new AlertDialogPro.Builder(MainActivity.this);
+                builder.setTitle("選擇請假節次")
+                        .setMultiChoiceItems(leave_period_list,
+                                selectedItems,
+                                new DialogInterface.OnMultiChoiceClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                                        if (isChecked) {
+                                            leavePeriodMap.add(leave_period_map[which]);
+                                            leavePeriodList.add(leave_period_list[which]);
+                                        } else {
+                                            leavePeriodMap.remove(leave_period_map[which]);
+                                            leavePeriodList.remove(leave_period_list[which]);
+                                        }
+                                        String show = "";
+
+                                        for (int i = 0; i < leavePeriodList.size(); i ++)
+                                        {
+                                            for (int j = i+1; j < leavePeriodList.size(); j ++)
+                                            {
+                                                if (list.indexOf(leavePeriodList.get(i)) > list.indexOf(leavePeriodList.get(j)))
+                                                {
+                                                    String tmp = leavePeriodList.get(i);
+                                                    leavePeriodList.set(i, leavePeriodList.get(j));
+                                                    leavePeriodList.set(j, tmp);
+                                                }
+                                            }
+                                        }
+
+                                        for (int i = 0; i < leavePeriodList.size(); i ++)
+                                            show += "," + leavePeriodList.get(i);
+                                        if (show.length() > 1)
+                                            leavePeriodText.setText("請假節次 " + show.substring(1));
+                                        else
+                                            leavePeriodText.setText("選擇請假節次");
+                                    }
+                                })
+                        .setPositiveButton("確定", null)
+                        .show();
+            }
+        });
+
+        LeaveSubmitRunnable = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    if (!CheckLoginState())
+                        ReLogin();
+
+                    List<NameValuePair> params = new LinkedList<>();
+                    // Server
+                    params.add(new BasicNameValuePair("start_date", startTime));
+                    params.add(new BasicNameValuePair("end_date", endTime));
+                    params.add(new BasicNameValuePair("reason_id", leaveType));
+                    params.add(new BasicNameValuePair("reason_text", leaveReason));
+                    params.add(new BasicNameValuePair("section", leavePeriod));
+                    Message msg = new Message();
+                    msg.what = 1;
+                    try {
+                        JSONArray jsonObj = new JSONArray(post_url_contents(api_server + "leave/submit", params, cookieStore));
+                        msg.obj = jsonObj.get(1).toString();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    LeaveSubmitHandler.sendMessage(msg);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        final EditText leaveReasonEditText = (EditText) findViewById(R.id.leaveReasonEditText);
+        RelativeLayout leaveSend = (RelativeLayout) findViewById(R.id.leaveSend);
+        leaveSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final ArrayList<String> leave_period_list =  new ArrayList<>(Arrays.asList("M", "1", "2", "3", "4", "A", "5", "6", "7", "8", "B", "11", "12", "13", "14"));
+                final ArrayList<String> leave_period_map =  new ArrayList<>(Arrays.asList("A", "1", "2", "3", "4", "B", "5", "6", "7", "8", "C", "11", "12", "13", "14"));
+                String leavePeriodx = "";
+                for (int i = 0; i < leavePeriodMap.size(); i ++)
+                {
+                    for (int j = i+1; j < leavePeriodMap.size(); j ++)
+                    {
+                        if (leave_period_map.indexOf(leavePeriodMap.get(i)) > leave_period_map.indexOf(leavePeriodMap.get(j)))
+                        {
+                            String tmp = leavePeriodMap.get(i);
+                            leavePeriodMap.set(i, leavePeriodMap.get(j));
+                            leavePeriodMap.set(j, tmp);
+                        }
+                    }
+                }
+                JSONArray jsonObj =new JSONArray();
+                for (int i = 0; i < leavePeriodMap.size(); i ++)
+                {
+                    leavePeriodx += "," + leave_period_list.get(leave_period_map.indexOf(leavePeriodMap.get(i)));
+                    jsonObj.put(Integer.toString(leave_period_map.indexOf(leavePeriodMap.get(i))));
+                }
+                final String leavePeriodxx = leavePeriodx;
+                if (!jsonObj.toString().equals("[]"))
+                    leavePeriod = jsonObj.toString();
+                else
+                    leavePeriod = "";
+                leaveReason = leaveReasonEditText.getText().toString();
+                if (startTime.equals("") ||
+                        endTime.equals("") ||
+                        leaveType.equals("") ||
+                        leaveReasonEditText.getText().toString().equals("") ||
+                        leavePeriod.equals(""))
+                {
+                    AlertDialogPro.Builder builder = new AlertDialogPro.Builder(MainActivity.this);
+                    builder.setMessage("尚有項目未選擇或填寫").setPositiveButton("確定", null).show();
+                }
+                else
+                {
+                    final String[] leave_type_list = new String[]{"事假", "病假", "公假", "喪假", "產假"};
+                    final ArrayList<String> leave_type_map =  new ArrayList<>(Arrays.asList("21", "22", "23", "24", "26"));
+                    final AlertDialogPro.Builder builder = new AlertDialogPro.Builder(MainActivity.this);
+                    builder.setTitle("請假登錄測試中").
+                            setMessage("注意！本功能將送出假單, 請在送出前再次確認您的請假節次，請務必特別留意。\n\n" +
+                                    "如要查詢單號，請上網頁版查詢。\n\n" +
+                                    "其餘請假規定，請自行查閱。").
+                            setPositiveButton("我知道了", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    builder.setTitle("確認請假資訊").
+                                            setMessage("起始時間：" + startTime +
+                                                    "\n結束時間：" + endTime +
+                                                    "\n請假類別：" + leave_type_list[leave_type_map.indexOf(leaveType)] +
+                                                    "\n請假事由：" + leaveReasonEditText.getText() +
+                                                    "\n請假節次：" + leavePeriodxx.substring(1)).
+                                            setPositiveButton("確認送出", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    LeaveSubmitHandler.sendEmptyMessage(-1);
+                                                    new Thread(LeaveSubmitRunnable).start();
+                                                }
+                                            }).
+                                            setNegativeButton("返回修改", null).show();
+                                }
+                            }).
+                            setNegativeButton("算了返回", null).show();
+                }
+            }
+        });
     }
 
     public void initEvent1(final boolean _isLogin, boolean ReLoad){
@@ -2163,6 +2475,9 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
+        TextView noBusTextView = (TextView) findViewById(R.id.noBusTextView);
+        noBusTextView.setVisibility(View.GONE);
+
         ImageView Logout = (ImageView) findViewById(R.id.Logout);
         Logout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -2333,7 +2648,7 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onCaldroidViewCreated() {
                 dialogCaldroidFragment.setEnableSwipe(true);
-                dialogCaldroidFragment.setCancelable(false);
+                //dialogCaldroidFragment.setCancelable(false);
                 dialogCaldroidFragment.refreshView();
             }
         };
@@ -2840,6 +3155,31 @@ public class MainActivity extends ActionBarActivity {
         };
     };
 
+    private Handler LeaveSubmitHandler = new Handler() {
+        @Override
+        public void handleMessage(android.os.Message msg) {
+            switch (msg.what)
+            {
+                case -1:
+                    LoadingDialog.setMessage("Loading...");
+                    ProgressDialogPro progressDialog = (ProgressDialogPro) LoadingDialog;
+                    progressDialog.setProgressStyle(ProgressDialogPro.STYLE_SPINNER);
+                    progressDialog.setIndeterminate(true);
+                    LoadingDialog.setCancelable(false);
+                    LoadingDialog.setCanceledOnTouchOutside(false);
+                    LoadingDialog.show();
+                    break;
+                case 1:
+                    AlertDialogPro.Builder builder = new AlertDialogPro.Builder(MainActivity.this);
+                    builder.setTitle("假單送出結果").
+                            setMessage((String) msg.obj).
+                            setPositiveButton("OK", null).show();
+                    LoadingDialog.dismiss();
+                    break;
+            }
+        };
+    };
+
     private Handler ReadSemesterHandler = new Handler() {
         @Override
         public void handleMessage(android.os.Message msg) {
@@ -2977,6 +3317,62 @@ public class MainActivity extends ActionBarActivity {
         };
     };
 
+    public Bitmap getBitmapFromURL(String src) {
+        try {
+            java.net.URL url = new java.net.URL(src);
+            HttpURLConnection connection = (HttpURLConnection) url
+                    .openConnection();
+            connection.setDoInput(true);
+            connection.connect();
+            InputStream input = connection.getInputStream();
+            Bitmap myBitmap = BitmapFactory.decodeStream(input);
+            return myBitmap;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public void showNews(){
+        try {
+            JSONArray jsonObj = new JSONArray(get_url_contents(api_server + "news/status", null, cookieStore));
+            if (jsonObj.getInt(0) == 1 && jsonObj.getInt(1) > news_id)
+            {
+                news_id = jsonObj.getInt(1);
+                SharedPreferences setting = getSharedPreferences("KUAS AP", 0);
+                setting.edit().putInt("news_id", news_id).apply();
+                jsonObj = new JSONArray(get_url_contents(api_server + "news", null, cookieStore));
+                WebView image = new WebView(MainActivity.this);
+                image.setBackgroundColor(0);
+                image.loadDataWithBaseURL("", jsonObj.getString(3),"text/html", "UTF-8", "");
+                AlertDialogPro.Builder builder = new AlertDialogPro.Builder(MainActivity.this);
+                final String Url = jsonObj.getString(4);
+                if (!Url.equals(""))
+                {
+                    builder.setTitle(jsonObj.getString(2)).
+                            setView(image).
+                            setPositiveButton("立即前往", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(Url));
+                                    startActivity(browserIntent);
+                                }
+                            }).
+                            setNegativeButton("朕知道了", null).setCancelable(false).show();
+                }
+                else
+                {
+                    builder.setTitle(jsonObj.getString(2)).
+                            setView(image).
+                            setPositiveButton("朕知道了", null)
+                            .setCancelable(false).show();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public void addPhone() {
         PhoneListAdapter adapter = new PhoneListAdapter(MainActivity.this);
         PhoneList.clear();
@@ -3054,6 +3450,17 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void addBus() {
+        TextView noBusTextView = (TextView) findViewById(R.id.noBusTextView);
+        if (BusList.size() == 0)
+        {
+            noBusTextView.setVisibility(View.VISIBLE);
+            return;
+        }
+        else
+        {
+            noBusTextView.setVisibility(View.GONE);
+        }
+
         final ArrayList<BusList> NewBusList = new ArrayList<>();
         for (int i = 0; i < BusList.size(); i ++)
             if (BusList.get(i).endStation.equals(BusEndStation))
@@ -3211,11 +3618,15 @@ public class MainActivity extends ActionBarActivity {
         if (getResources().getConfiguration().orientation == 2) //橫向
         {
             textView.setVisibility(View.GONE);
-            titles = new String[]{"日期", "M", "1", "2", "3", "4", "A", "5", "6", "7", "8", "B", "11", "12", "13", "14"};
+            if (isNightLeave)
+                titles = new String[]{"日期", "M", "1", "2", "3", "4", "A", "5", "6", "7", "8", "B", "11", "12", "13", "14"};
+            else
+                titles = new String[]{"日期", "M", "1", "2", "3", "4", "A", "5", "6", "7", "8"};
         }
         else //垂直
         {
-            textView.setVisibility(View.VISIBLE);
+            if (isNightLeave)
+                textView.setVisibility(View.VISIBLE);
             titles = new String[]{"日期", "M", "1", "2", "3", "4", "A", "5", "6", "7", "8"};
         }
 
@@ -3676,6 +4087,7 @@ public class MainActivity extends ActionBarActivity {
         String username = setting.getString("User", "");
         String password = setting.getString("Pwd", "");
         Boolean remember = setting.getBoolean("Remember", true);
+        news_id = setting.getInt("news_id", -1);
         UserNameEditText.setText(username);
         PasswordEditText.setText(password);
         RememberPass.setChecked(remember);
@@ -3683,6 +4095,7 @@ public class MainActivity extends ActionBarActivity {
     private void savePrefs() {
         SharedPreferences setting = getSharedPreferences("KUAS AP", 0);
         setting.edit().putString("User", UserNameEditText.getText().toString()).apply();
+        setting.edit().putInt("news_id", news_id).apply();
         if (RememberPass.isChecked())
             setting.edit().putString("Pwd", PasswordEditText.getText().toString()).apply();
         else

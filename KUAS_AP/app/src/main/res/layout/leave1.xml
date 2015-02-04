@@ -109,7 +109,8 @@
                 android:layout_below="@+id/textView"
                 android:layout_width="fill_parent"
                 android:layout_above="@id/Page"
-                android:layout_height="fill_parent">
+                android:layout_height="fill_parent"
+                android:layout_marginBottom="10sp">
 
                 <TableLayout
                     android:id="@+id/tablelayout"
@@ -159,7 +160,7 @@
                 <View android:layout_height="25sp" android:background="@color/bar_grey"
                     android:layout_toRightOf="@+id/relativeLayout"
                     android:layout_centerVertical="true"
-                    android:layout_width="1sp"></View>
+                    android:layout_width="1sp"/>
 
                 <RelativeLayout
                     android:layout_width="wrap_content"

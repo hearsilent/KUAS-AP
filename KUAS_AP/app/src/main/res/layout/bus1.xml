@@ -67,7 +67,8 @@
                 android:id="@+id/scrollView"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:layout_above="@+id/Page">
+                android:layout_above="@+id/Page"
+                android:layout_marginBottom="10sp">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -75,7 +76,7 @@
 
                     <View android:layout_height="1sp" android:background="@color/bar_grey"
                         android:layout_width="fill_parent"
-                        android:layout_alignTop="@+id/time"></View>
+                        android:layout_alignTop="@+id/time"/>
 
                     <RelativeLayout
                         android:layout_width="match_parent"
@@ -99,7 +100,7 @@
                     <View android:layout_height="1sp" android:background="@color/bar_grey"
                         android:layout_width="fill_parent"
                         android:layout_alignBottom="@+id/time"
-                        android:layout_marginTop="1sp"></View>
+                        android:layout_marginTop="1sp"/>
 
                     <LinearLayout
                         android:layout_below="@id/time"
@@ -145,12 +146,22 @@
 
                     </LinearLayout>
 
+                    <TextView
+                        android:id="@+id/noBusTextView"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:layout_below="@+id/location"
+                        android:text="本日無任何校車班次，請重新選擇"
+                        android:textColor="@color/grey"
+                        android:textSize="16sp"
+                        android:gravity="center"/>
+
                     <TableLayout
                         android:id="@+id/tablelayout"
                         android:layout_width="fill_parent"
                         android:layout_height="fill_parent"
                         android:layout_below="@+id/location"
-                        android:stretchColumns="*"></TableLayout>
+                        android:stretchColumns="*"/>
                 </RelativeLayout>
             </ScrollView>
 
@@ -190,7 +201,7 @@
                 <View android:layout_height="25sp" android:background="@color/bar_grey"
                     android:layout_toRightOf="@+id/relativeLayout"
                     android:layout_centerVertical="true"
-                    android:layout_width="1sp"></View>
+                    android:layout_width="1sp"/>
 
                 <RelativeLayout
                     android:layout_width="wrap_content"
