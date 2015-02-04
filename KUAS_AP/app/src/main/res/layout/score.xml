@@ -97,6 +97,7 @@
                 android:id="@+id/scrollView"
                 android:layout_below="@+id/select"
                 android:layout_width="fill_parent"
+                android:layout_marginBottom="15sp"
                 android:layout_height="wrap_content" >
 
                 <RelativeLayout

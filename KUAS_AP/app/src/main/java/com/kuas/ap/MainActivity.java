@@ -185,6 +185,9 @@ public class MainActivity extends ActionBarActivity {
 
     // News
     Integer news_id = -1;
+
+    // Select
+    boolean isSelecting = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -308,13 +311,34 @@ public class MainActivity extends ActionBarActivity {
             if (Integer.parseInt(ServerVersion.split("\\.")[0]) > Integer.parseInt(ClientVersion.split("\\.")[0]))
                 return true;
             else
-            if (Integer.parseInt(ServerVersion.split("\\.")[1]) > Integer.parseInt(ClientVersion.split("\\.")[1]))
-                return true;
-            else
-            if (Integer.parseInt(ServerVersion.split("\\.")[2]) > Integer.parseInt(ClientVersion.split("\\.")[2]))
-                return true;
-            else
-                return false;
+            {
+                if (Integer.parseInt(ServerVersion.split("\\.")[0]) == Integer.parseInt(ClientVersion.split("\\.")[0]))
+                {
+                    if (Integer.parseInt(ServerVersion.split("\\.")[1]) > Integer.parseInt(ClientVersion.split("\\.")[1]))
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        if (Integer.parseInt(ServerVersion.split("\\.")[1]) == Integer.parseInt(ClientVersion.split("\\.")[1]))
+                        {
+                            if (Integer.parseInt(ServerVersion.split("\\.")[2]) > Integer.parseInt(ClientVersion.split("\\.")[2]))
+                                return true;
+                            else
+                                return false;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
         } catch (Exception e) {
             return false;
         }
@@ -724,6 +748,8 @@ public class MainActivity extends ActionBarActivity {
 
     public void initSelect(){
         setContentView(R.layout.select);
+        isSelecting = true;
+
         ListView selectListView = (ListView) findViewById(R.id.listView);
         TextView cancel = (TextView) findViewById(R.id.cancel);
         ArrayAdapter<String> adapter=new ArrayAdapter<String>(
@@ -764,6 +790,7 @@ public class MainActivity extends ActionBarActivity {
                 if (ymsScore.equals(SemesterValue.get(position)))
                     cancel = true;
                 ymsScore = SemesterValue.get(position);
+                isSelecting = false;
                 if (_fncid.equals("AG222"))
                     initCourse(true, cancel, true);
                 else if (_fncid.equals("AG008"))
@@ -775,6 +802,7 @@ public class MainActivity extends ActionBarActivity {
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                isSelecting = false;
                 if (_fncid.equals("AG222"))
                     initCourse(true, true, true);
                 else if (_fncid.equals("AG008"))
@@ -1949,6 +1977,21 @@ public class MainActivity extends ActionBarActivity {
                 final ArrayList<String> leave_period_list =  new ArrayList<>(Arrays.asList("M", "1", "2", "3", "4", "A", "5", "6", "7", "8", "B", "11", "12", "13", "14"));
                 final ArrayList<String> leave_period_map =  new ArrayList<>(Arrays.asList("A", "1", "2", "3", "4", "B", "5", "6", "7", "8", "C", "11", "12", "13", "14"));
                 String leavePeriodx = "";
+
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+                Integer Days = 0;
+                try{
+                    Calendar c1 = Calendar.getInstance();
+                    Calendar c2 = Calendar.getInstance();
+                    Date dt1 = sdf.parse(startTime);
+                    Date dt2 =sdf.parse(endTime);
+                    c1.setTime(dt1);
+                    c2.setTime(dt2);
+                    Days =  c2.get(Calendar.DAY_OF_YEAR) - c1.get(Calendar.DAY_OF_YEAR);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
                 for (int i = 0; i < leavePeriodMap.size(); i ++)
                 {
                     for (int j = i+1; j < leavePeriodMap.size(); j ++)
@@ -1963,9 +2006,14 @@ public class MainActivity extends ActionBarActivity {
                 }
                 JSONArray jsonObj =new JSONArray();
                 for (int i = 0; i < leavePeriodMap.size(); i ++)
-                {
                     leavePeriodx += "," + leave_period_list.get(leave_period_map.indexOf(leavePeriodMap.get(i)));
-                    jsonObj.put(Integer.toString(leave_period_map.indexOf(leavePeriodMap.get(i))));
+
+                for (int j = 0; j <= Days; j++)
+                {
+                    for (int i = 0; i < leavePeriodMap.size(); i ++)
+                    {
+                        jsonObj.put(Integer.toString(leave_period_map.indexOf(leavePeriodMap.get(i)) + j * 15));
+                    }
                 }
                 final String leavePeriodxx = leavePeriodx;
                 if (!jsonObj.toString().equals("[]"))
@@ -4307,9 +4355,9 @@ public class MainActivity extends ActionBarActivity {
 
         if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) { }
         else { }
-        if (_fncid.equals("AG222") && !LoadingDialog.isShowing())
+        if (_fncid.equals("AG222") && !LoadingDialog.isShowing() && !isSelecting)
             addCourse();
-        else if (_fncid.equals("AK002") && !LoadingDialog.isShowing())
+        else if (_fncid.equals("AK002") && !LoadingDialog.isShowing() && !isSelecting)
             addLeave();
     }
 
