@@ -86,6 +86,7 @@ import java.util.List;
 
 import us.codecraft.xsoup.Xsoup;
 
+import static android.view.Gravity.CENTER;
 import static android.view.Gravity.START;
 
 
@@ -190,6 +191,9 @@ public class MainActivity extends ActionBarActivity {
 
     // Select
     boolean isSelecting = false;
+
+    // Debug
+    public static final boolean NewsDebug = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -559,10 +563,8 @@ public class MainActivity extends ActionBarActivity {
 
         if (CheckVersion())
         {
-            AlertDialogPro.Builder builder = new AlertDialogPro.Builder(MainActivity.this);
-            builder.setTitle("發現新版本").
-                    setMessage("要到「Google Play」安裝新版嗎？").
-                    setPositiveButton("安裝新版本", new DialogInterface.OnClickListener() {
+            AlertDialogPro.Builder builder = CustomDialog("發現新版本", "要到「Google Play」安裝新版嗎？", false);
+            builder.setPositiveButton("安裝新版本", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.kuas.ap"));
@@ -1139,10 +1141,8 @@ public class MainActivity extends ActionBarActivity {
             public void onClick(View v) {
                 if (_isLogin)
                 {
-                    AlertDialogPro.Builder builder = new AlertDialogPro.Builder(MainActivity.this);
-                    builder.setTitle("離線課表").
-                            setMessage("是否要將「" + ymsTextView.getText().toString() + "」設為離線課表？").
-                            setPositiveButton("確定", new DialogInterface.OnClickListener() {
+                    AlertDialogPro.Builder builder = CustomDialog("離線課表", "是否要將「" + ymsTextView.getText().toString() + "」設為離線課表？", false);
+                    builder.setPositiveButton("確定", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     SharedPreferences setting = getSharedPreferences("KUAS AP", 0);
@@ -1153,10 +1153,8 @@ public class MainActivity extends ActionBarActivity {
                 }
                 else
                 {
-                    AlertDialogPro.Builder builder = new AlertDialogPro.Builder(MainActivity.this);
-                    builder.setTitle("離線課表").
-                            setMessage("是否要將離線課表清除？").
-                            setPositiveButton("確定", new DialogInterface.OnClickListener() {
+                    AlertDialogPro.Builder builder = CustomDialog("離線課表", "是否要將離線課表清除？", false);
+                    builder.setPositiveButton("確定", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     SharedPreferences setting = getSharedPreferences("KUAS AP", 0);
@@ -1916,8 +1914,8 @@ public class MainActivity extends ActionBarActivity {
             public void onClick(View v) {
                 if (startTime.equals(""))
                 {
-                    AlertDialogPro.Builder builder = new AlertDialogPro.Builder(MainActivity.this);
-                    builder.setMessage("請先選擇起始時間").setPositiveButton("確定", null).show();
+                    AlertDialogPro.Builder builder = CustomDialog("", "請先選擇起始時間", false);
+                    builder.setPositiveButton("確定", null).show();
                 }
                 else
                     endDialogCaldroidFragment.show(getSupportFragmentManager(), "Caldroid");
@@ -1933,13 +1931,17 @@ public class MainActivity extends ActionBarActivity {
                 final String[] leave_type_map = new String[]{"21", "22", "23", "24", "26"};
                 final ArrayList<String> map =  new ArrayList<>(Arrays.asList("21", "22", "23", "24", "26"));
                 Integer selectItem;
+
                 if (leaveType.equals(""))
+                {
                     selectItem = 0;
+                    leaveType = leave_type_map[0];
+                    leaveTypeText.setText("請假類別 " + leave_type_list[0]);
+                }
                 else
                     selectItem = map.indexOf(leaveType);
-                AlertDialogPro.Builder builder = new AlertDialogPro.Builder(MainActivity.this);
-                builder.setTitle("選擇請假類別")
-                        .setSingleChoiceItems(leave_type_list,
+                AlertDialogPro.Builder builder = CustomDialog("選擇請假類別", "", false);
+                builder.setSingleChoiceItems(leave_type_list,
                                 selectItem,
                                 new DialogInterface.OnClickListener() {
                                     @Override
@@ -1969,9 +1971,8 @@ public class MainActivity extends ActionBarActivity {
                     leavePeriodList.add(list.get(map.indexOf(leavePeriodMap.get(i))));
                     selectedItems[map.indexOf(leavePeriodMap.get(i))] = true;
                 }
-                AlertDialogPro.Builder builder = new AlertDialogPro.Builder(MainActivity.this);
-                builder.setTitle("選擇請假節次")
-                        .setMultiChoiceItems(leave_period_list,
+                AlertDialogPro.Builder builder = CustomDialog("選擇請假節次", "", false);
+                builder.setMultiChoiceItems(leave_period_list,
                                 selectedItems,
                                 new DialogInterface.OnMultiChoiceClickListener() {
                                     @Override
@@ -2104,28 +2105,25 @@ public class MainActivity extends ActionBarActivity {
                         leaveReasonEditText.getText().toString().equals("") ||
                         leavePeriod.equals(""))
                 {
-                    AlertDialogPro.Builder builder = new AlertDialogPro.Builder(MainActivity.this);
-                    builder.setMessage("尚有項目未選擇或填寫").setPositiveButton("確定", null).show();
+                    AlertDialogPro.Builder builder = CustomDialog("", "尚有項目未選擇或填寫", false);
+                    builder.setPositiveButton("確定", null).show();
                 }
                 else
                 {
                     final String[] leave_type_list = new String[]{"事假", "病假", "公假", "喪假", "產假"};
                     final ArrayList<String> leave_type_map =  new ArrayList<>(Arrays.asList("21", "22", "23", "24", "26"));
-                    final AlertDialogPro.Builder builder = new AlertDialogPro.Builder(MainActivity.this);
-                    builder.setTitle("請假登錄測試中").
-                            setMessage("注意！本功能將送出假單, 請在送出前再次確認您的請假節次，請務必特別留意。\n\n" +
-                                    "如要查詢單號，請上網頁版查詢。\n\n" +
-                                    "其餘請假規定，請自行查閱。").
-                            setPositiveButton("我知道了", new DialogInterface.OnClickListener() {
+                    final AlertDialogPro.Builder builder = CustomDialog("請假登錄測試中", "注意！本功能將送出假單, 請在送出前再次確認您的請假節次，請務必特別留意。\n\n" +
+                            "如要查詢單號，請上網頁版查詢。\n\n" +
+                            "其餘請假規定，請自行查閱。", false);
+                    builder.setPositiveButton("我知道了", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    builder.setTitle("確認請假資訊").
-                                            setMessage("起始時間：" + startTime +
-                                                    "\n結束時間：" + endTime +
-                                                    "\n請假類別：" + leave_type_list[leave_type_map.indexOf(leaveType)] +
-                                                    "\n請假事由：" + leaveReasonEditText.getText() +
-                                                    "\n請假節次：" + leavePeriodxx.substring(1)).
-                                            setPositiveButton("確認送出", new DialogInterface.OnClickListener() {
+                                    final AlertDialogPro.Builder builderx = CustomDialog("確認請假資訊", "起始時間：" + startTime +
+                                            "\n結束時間：" + endTime +
+                                            "\n請假類別：" + leave_type_list[leave_type_map.indexOf(leaveType)] +
+                                            "\n請假事由：" + leaveReasonEditText.getText() +
+                                            "\n請假節次：" + leavePeriodxx.substring(1), false);
+                                    builderx.setPositiveButton("確認送出", new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialog, int which) {
                                                     LeaveSubmitHandler.sendEmptyMessage(-1);
@@ -3455,10 +3453,8 @@ public class MainActivity extends ActionBarActivity {
                     LoadingDialog.show();
                     break;
                 case 1:
-                    AlertDialogPro.Builder builder = new AlertDialogPro.Builder(MainActivity.this);
-                    builder.setTitle("假單送出結果").
-                            setMessage((String) msg.obj).
-                            setPositiveButton("OK", null).show();
+                    AlertDialogPro.Builder builder = CustomDialog("假單送出結果",(String) msg.obj, false);
+                    builder.setPositiveButton("OK", null).show();
                     LoadingDialog.dismiss();
                     break;
             }
@@ -3566,11 +3562,8 @@ public class MainActivity extends ActionBarActivity {
                     break;
                 case 1:
                     LoadingDialog.dismiss();
-                    AlertDialogPro.Builder builder = new AlertDialogPro.Builder(MainActivity.this);
-                    builder.setTitle("Error").
-                            setMessage("帳號或密碼輸入錯誤 !").
-                            //setIcon(R.drawable.ic_error_red_48dp).
-                                    setPositiveButton("確定", null).show();
+                    AlertDialogPro.Builder builder = CustomDialog("Error", "帳號或密碼輸入錯誤 !", false);
+                    builder.setPositiveButton("確定", null).show();
                     SignInButton.setEnabled(true);
                     UserNameEditText.setEnabled(true);
                     PasswordEditText.setEnabled(true);
@@ -3634,7 +3627,7 @@ public class MainActivity extends ActionBarActivity {
     public void showNews(){
         try {
             JSONArray jsonObj = new JSONArray(get_url_contents(api_server + "news/status", null, cookieStore));
-            if (jsonObj.getInt(0) == 1 && jsonObj.getInt(1) > news_id)
+            if ((jsonObj.getInt(0) == 1 && jsonObj.getInt(1) > news_id) || NewsDebug)
             {
                 news_id = jsonObj.getInt(1);
                 SharedPreferences setting = getSharedPreferences("KUAS AP", 0);
@@ -3643,12 +3636,12 @@ public class MainActivity extends ActionBarActivity {
                 WebView image = new WebView(MainActivity.this);
                 image.setBackgroundColor(0);
                 image.loadDataWithBaseURL("", jsonObj.getString(3),"text/html", "UTF-8", "");
-                AlertDialogPro.Builder builder = new AlertDialogPro.Builder(MainActivity.this);
+                AlertDialogPro.Builder builder;
                 final String Url = jsonObj.getString(4);
                 if (!Url.equals(""))
                 {
-                    builder.setTitle(jsonObj.getString(2)).
-                            setView(image).
+                    builder = CustomDialog(jsonObj.getString(2), "", true);
+                    builder.setView(image).
                             setPositiveButton("立即前往", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
@@ -3660,8 +3653,8 @@ public class MainActivity extends ActionBarActivity {
                 }
                 else
                 {
-                    builder.setTitle(jsonObj.getString(2)).
-                            setView(image).
+                    builder = CustomDialog(jsonObj.getString(2), "", true);
+                    builder.setView(image).
                             setPositiveButton("朕知道了", null)
                             .setCancelable(false).show();
                 }
@@ -3691,10 +3684,8 @@ public class MainActivity extends ActionBarActivity {
         PhoneListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
-                AlertDialogPro.Builder builder = new AlertDialogPro.Builder(MainActivity.this);
-                builder.setTitle("撥出電話").
-                        setMessage("確定要撥給「" + PhoneList.get(position).title + "」？").
-                        setPositiveButton("撥出", new DialogInterface.OnClickListener() {
+                AlertDialogPro.Builder builder = CustomDialog("撥出電話", "確定要撥給「" + PhoneList.get(position).title + "」？", false);
+                builder.setPositiveButton("撥出", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 Intent myIntentDial = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:"+ PhoneList.get(position).number.replace("#", ",")));
@@ -3789,10 +3780,8 @@ public class MainActivity extends ActionBarActivity {
                 row.findViewById(R.id.RelativeLayout).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        AlertDialogPro.Builder builder = new AlertDialogPro.Builder(MainActivity.this);
-                        builder.setTitle("確定要 預定 本校車車次？").
-                                setMessage("要預定從" + Station + time + "的校車嗎？").
-                                setPositiveButton("預定校車", new DialogInterface.OnClickListener() {
+                        AlertDialogPro.Builder builder = CustomDialog("確定要 預定 本校車車次？", "要預定從" + Station + time + "的校車嗎？", false);
+                        builder.setPositiveButton("預定校車", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         _busId = busId;
@@ -3811,10 +3800,8 @@ public class MainActivity extends ActionBarActivity {
                 row.findViewById(R.id.RelativeLayout).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        AlertDialogPro.Builder builder = new AlertDialogPro.Builder(MainActivity.this);
-                        builder.setTitle("確定要 取消 本校車車次？").
-                                setMessage("要取消從" + Station + time + "的校車嗎？").
-                                setPositiveButton("取消校車", new DialogInterface.OnClickListener() {
+                        AlertDialogPro.Builder builder = CustomDialog("確定要 取消 本校車車次？", "要取消從" + Station + time + "的校車嗎？", false);
+                        builder.setPositiveButton("取消校車", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         _busId = runDate;
@@ -3871,10 +3858,8 @@ public class MainActivity extends ActionBarActivity {
             row.findViewById(R.id.relativelayout).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    AlertDialogPro.Builder builder = new AlertDialogPro.Builder(MainActivity.this);
-                    builder.setTitle("確定要 取消 本校車車次？").
-                            setMessage("要取消從" + Station + time + "的校車嗎？").
-                            setPositiveButton("取消校車", new DialogInterface.OnClickListener() {
+                    AlertDialogPro.Builder builder = CustomDialog("確定要 取消 本校車車次？", "要取消從" + Station + time + "的校車嗎？", false);
+                    builder.setPositiveButton("取消校車", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     _busId = runDate;
@@ -4176,13 +4161,11 @@ public class MainActivity extends ActionBarActivity {
                     testview.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            AlertDialogPro.Builder builder = new AlertDialogPro.Builder(MainActivity.this);
-                            builder.
-                                    setMessage("課程名稱：" + CourseList.get(yy).get(xx).ID
-                                            + "\n授課老師：" +  CourseList.get(yy).get(xx).Teacher
-                                            + "\n教室位置：" + CourseList.get(yy).get(xx).Place
-                                            + "\n上課時間：" + CourseList.get(yy).get(xx).Time).
-                                    setPositiveButton("確定", null).show();
+                            AlertDialogPro.Builder builder = CustomDialog("" , "\n課程名稱：" + CourseList.get(yy).get(xx).ID
+                                    + "\n授課老師：" +  CourseList.get(yy).get(xx).Teacher
+                                    + "\n教室位置：" + CourseList.get(yy).get(xx).Place
+                                    + "\n上課時間：" + CourseList.get(yy).get(xx).Time + "\n", false);
+                            builder.setPositiveButton("確定", null).show();
                         }
                     });
             }
@@ -4296,13 +4279,11 @@ public class MainActivity extends ActionBarActivity {
                     testview.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            AlertDialogPro.Builder builder = new AlertDialogPro.Builder(MainActivity.this);
-                            builder.
-                                    setMessage("課程名稱：" + CourseList.get(yy).get(xx - 1).ID
-                                            + "\n授課老師：" +  CourseList.get(yy).get(xx - 1).Teacher
-                                            + "\n教室位置：" + CourseList.get(yy).get(xx - 1).Place
-                                            + "\n上課時間：" + CourseList.get(yy).get(xx - 1).Time).
-                                            setPositiveButton("確定", null).show();
+                            AlertDialogPro.Builder builder = CustomDialog("", "課程名稱：" + CourseList.get(yy).get(xx - 1).ID
+                                    + "\n授課老師：" +  CourseList.get(yy).get(xx - 1).Teacher
+                                    + "\n教室位置：" + CourseList.get(yy).get(xx - 1).Place
+                                    + "\n上課時間：" + CourseList.get(yy).get(xx - 1).Time, false);
+                            builder.setPositiveButton("確定", null).show();
                         }
                     });
 
@@ -4561,6 +4542,44 @@ public class MainActivity extends ActionBarActivity {
 
     }
 
+    public AlertDialogPro.Builder CustomDialog(String Title, String Message, boolean _HighLight)
+    {
+        AlertDialogPro.Builder builder = new AlertDialogPro.Builder(MainActivity.this);
+        TextView dialogTitle = new TextView(MainActivity.this);
+        dialogTitle.setText(Title);
+        dialogTitle.setPadding(0, 20, 0, 20);
+        if (_HighLight)
+        {
+            dialogTitle.setTextColor(getResources().getColor(R.color.blue));
+            dialogTitle.setTextSize(20);
+        }
+        else
+        {
+            dialogTitle.setTextColor(Color.BLACK);
+            dialogTitle.setTextSize(18);
+        }
+        dialogTitle.setGravity(CENTER);
+
+        TextView dialogMessage = new TextView(MainActivity.this);
+        dialogMessage.setGravity(CENTER);
+        dialogMessage.setTextColor(getResources().getColor(R.color.dialog_grey));
+        dialogMessage.setTextSize(16);
+        dialogMessage.setText(Message);
+        if (Title.equals(""))
+            dialogMessage.setPadding(40, 40, 40, 0);
+        else
+            dialogMessage.setPadding(40, 0, 40, 0);
+
+        if (Title.equals(""))
+            builder.setView(dialogMessage);
+        else if (Message.equals(""))
+            builder.setCustomTitle(dialogTitle);
+        else
+            builder.setCustomTitle(dialogTitle).
+                    setView(dialogMessage);
+
+        return builder;
+    }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
