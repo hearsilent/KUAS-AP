@@ -109,18 +109,11 @@
                 android:layout_below="@+id/textView"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
+                android:layout_marginLeft="20sp"
+                android:layout_marginRight="20sp"
+                android:layout_marginBottom="10sp"
+                android:fillViewport="true"
                 android:layout_above="@+id/OfflineCourse">
-
-                <TableLayout
-                    android:id="@+id/tablelayout"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:shrinkColumns="0"
-                    android:layout_marginLeft="20sp"
-                    android:layout_marginRight="20sp"
-                    android:layout_marginBottom="20sp"
-                    android:stretchColumns="*">
-                </TableLayout>
             </ScrollView>
 
             <View android:layout_height="1sp" android:background="@color/bar_grey"

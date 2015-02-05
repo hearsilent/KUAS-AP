@@ -32,6 +32,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -151,6 +152,7 @@ public class MainActivity extends ActionBarActivity {
     boolean isHolidayNightClass = false;
     boolean isHolidayClass = false;
     String OfflineCourseData = "";
+    boolean isOfflineCourse = false;
 
     // Leave
     Runnable ReadLeaveRunnable;
@@ -385,22 +387,26 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void initServerStatus(){
-        TextView ap = (TextView) findViewById(R.id.ap);
-        TextView leave = (TextView) findViewById(R.id.leave);
-        TextView bus = (TextView) findViewById(R.id.bus);
+        try {
+            TextView ap = (TextView) findViewById(R.id.ap);
+            TextView leave = (TextView) findViewById(R.id.leave);
+            TextView bus = (TextView) findViewById(R.id.bus);
 
-        if (ap_status)
-            ap.setTextColor(getResources().getColor(R.color.green));
-        else
-            ap.setTextColor(getResources().getColor(R.color.red));
-        if (leave_status)
-            leave.setTextColor(getResources().getColor(R.color.green));
-        else
-            leave.setTextColor(getResources().getColor(R.color.red));
-        if (ap_status)
-            bus.setTextColor(getResources().getColor(R.color.green));
-        else
-            bus.setTextColor(getResources().getColor(R.color.red));
+            if (ap_status)
+                ap.setTextColor(getResources().getColor(R.color.green));
+            else
+                ap.setTextColor(getResources().getColor(R.color.red));
+            if (leave_status)
+                leave.setTextColor(getResources().getColor(R.color.green));
+            else
+                leave.setTextColor(getResources().getColor(R.color.red));
+            if (ap_status)
+                bus.setTextColor(getResources().getColor(R.color.green));
+            else
+                bus.setTextColor(getResources().getColor(R.color.red));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void initLogin(){
@@ -823,6 +829,42 @@ public class MainActivity extends ActionBarActivity {
             }
     }
 
+    public void initReLogin(){
+        setContentView(R.layout.relogin);
+
+        ImageView Logout = (ImageView) findViewById(R.id.Logout);
+        Logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                initLogin();
+            }
+        });
+
+        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        final ImageView imageView = (ImageView) findViewById(R.id.drawer_indicator);
+        final Resources resources = getResources();
+        drawerArrowDrawable = new DrawerArrowDrawable(resources, true);
+        drawerArrowDrawable.setStrokeColor(Color.WHITE);
+        imageView.setImageDrawable(drawerArrowDrawable);
+        drawer.setDrawerListener(new DrawerLayout.SimpleDrawerListener() {
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+                offset = slideOffset;
+                // Sometimes slideOffset ends up so close to but not quite 1 or 0.
+                if (slideOffset >= .995) {
+                    flipped = true;
+                    drawerArrowDrawable.setFlip(flipped);
+                } else if (slideOffset <= .005) {
+                    flipped = false;
+                    drawerArrowDrawable.setFlip(flipped);
+                }
+                drawerArrowDrawable.setParameter(offset);
+            }
+        });
+
+        _fncid = "";
+    }
+
     public void initCourse(boolean select, boolean cancel, final boolean _isLogin){
         if (_isLogin)
             setContentView(R.layout.course);
@@ -830,6 +872,8 @@ public class MainActivity extends ActionBarActivity {
             setContentView(R.layout.offlinecourse);
         TextView textView = (TextView) findViewById(R.id.textView);
         textView.setVisibility(View.GONE);
+
+        isOfflineCourse = !_isLogin;
 
         if (_isLogin)
         {
@@ -986,7 +1030,14 @@ public class MainActivity extends ActionBarActivity {
             public void run() {
                 try {
                     if (!CheckLoginState())
-                        ReLogin();
+                    {
+                        if (!ReLogin())
+                        {
+                            ReLoginHandler.sendEmptyMessage(-1);
+                            return;
+                        }
+                    }
+
 
                     List<NameValuePair> params = new LinkedList<>();
 
@@ -1282,7 +1333,14 @@ public class MainActivity extends ActionBarActivity {
             public void run() {
                 try {
                     if (!CheckLoginState())
-                        ReLogin();
+                    {
+                        if (!ReLogin())
+                        {
+                            ReLoginHandler.sendEmptyMessage(-1);
+                            return;
+                        }
+                    }
+
                     List<NameValuePair> params = new LinkedList<>();
                     // Client
                     /*
@@ -1508,7 +1566,13 @@ public class MainActivity extends ActionBarActivity {
             public void run() {
                 try {
                     if (!CheckLoginState())
-                        ReLogin();
+                    {
+                        if (!ReLogin())
+                        {
+                            ReLoginHandler.sendEmptyMessage(-1);
+                            return;
+                        }
+                    }
 
                     List<NameValuePair> params = new LinkedList<>();
                     LeaveList = new ArrayList<>();
@@ -1945,7 +2009,13 @@ public class MainActivity extends ActionBarActivity {
             public void run() {
                 try {
                     if (!CheckLoginState())
-                        ReLogin();
+                    {
+                        if (!ReLogin())
+                        {
+                            ReLoginHandler.sendEmptyMessage(-1);
+                            return;
+                        }
+                    }
 
                     List<NameValuePair> params = new LinkedList<>();
                     // Server
@@ -2851,7 +2921,13 @@ public class MainActivity extends ActionBarActivity {
             public void run() {
                 try {
                     if (!CheckLoginState())
-                        ReLogin();
+                    {
+                        if (!ReLogin())
+                        {
+                            ReLoginHandler.sendEmptyMessage(-1);
+                            return;
+                        }
+                    }
 
                     // Server
                     List<NameValuePair> params = new LinkedList<>();
@@ -2877,7 +2953,13 @@ public class MainActivity extends ActionBarActivity {
             public void run() {
                 try {
                     if (!CheckLoginState())
-                        ReLogin();
+                    {
+                        if (!ReLogin())
+                        {
+                            ReLoginHandler.sendEmptyMessage(-1);
+                            return;
+                        }
+                    }
 
                     // Server
                     List<NameValuePair> params = new LinkedList<>();
@@ -3085,7 +3167,13 @@ public class MainActivity extends ActionBarActivity {
             public void run() {
                 try {
                     if (!CheckLoginState())
-                        ReLogin();
+                    {
+                        if (!ReLogin())
+                        {
+                            ReLoginHandler.sendEmptyMessage(-1);
+                            return;
+                        }
+                    }
 
                     // Server
                     List<NameValuePair> params = new LinkedList<>();
@@ -3111,7 +3199,13 @@ public class MainActivity extends ActionBarActivity {
             public void run() {
             try {
                 if (!CheckLoginState())
-                    ReLogin();
+                {
+                    if (!ReLogin())
+                    {
+                        ReLoginHandler.sendEmptyMessage(-1);
+                        return;
+                    }
+                }
 
                 // Server
                 BusReserveList.clear();
@@ -3469,7 +3563,7 @@ public class MainActivity extends ActionBarActivity {
                     builder.setTitle("Error").
                             setMessage("帳號或密碼輸入錯誤 !").
                             //setIcon(R.drawable.ic_error_red_48dp).
-                            setPositiveButton("確定", null).show();
+                                    setPositiveButton("確定", null).show();
                     SignInButton.setEnabled(true);
                     UserNameEditText.setEnabled(true);
                     PasswordEditText.setEnabled(true);
@@ -3484,6 +3578,19 @@ public class MainActivity extends ActionBarActivity {
                 case 3:
                     break;
                 case 4:
+                    break;
+            }
+        };
+    };
+
+    private Handler ReLoginHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what)
+            {
+                case -1:
+                    LoadingDialog.dismiss();
+                    initReLogin();
                     break;
             }
         };
@@ -3921,9 +4028,12 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void addOfflineCourse() {
-        TableLayout table = (TableLayout) findViewById(R.id.tablelayout);
-        table.setStretchAllColumns(true);
-        table.removeAllViews();
+        //TableLayout table = (TableLayout) findViewById(R.id.tablelayout);
+        //table.setStretchAllColumns(true);
+        //table.removeAllViews();
+        ScrollView scrollView = (ScrollView) findViewById(R.id.scrollView);
+        scrollView.removeAllViews();
+
         TextView textView = (TextView) findViewById(R.id.textView);
         textView.setVisibility(View.GONE);
 
@@ -3979,6 +4089,102 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void addCourse() {
+        ScrollView scrollView = (ScrollView) findViewById(R.id.scrollView);
+        scrollView.removeAllViews();
+        TableLayout table;
+        int x, y;
+
+        TextView textView = (TextView) findViewById(R.id.textView);
+        if (!isHolidayClass)
+            textView.setVisibility(View.GONE);
+        else
+            textView.setVisibility(View.VISIBLE);
+
+        if (getResources().getConfiguration().orientation == 2) //橫向
+        {
+            textView.setVisibility(View.GONE);
+            if (isHolidayClass)
+            {
+                if (isNightClass || isHolidayNightClass)
+                    table = (TableLayout) LayoutInflater.from(MainActivity.this).inflate(R.layout.course_tablelayout_holiday_night, null);
+                else
+                    table = (TableLayout) LayoutInflater.from(MainActivity.this).inflate(R.layout.course_tablelayout_holiday, null);
+
+                if (isNightClass || isHolidayNightClass)
+                    y = CourseList.size();
+                else
+                    y = 10;
+                x = 7;
+            }
+            else
+            {
+                if (isNightClass)
+                    table = (TableLayout) LayoutInflater.from(MainActivity.this).inflate(R.layout.course_tablelayout_normal_night, null);
+                else
+                    table = (TableLayout) LayoutInflater.from(MainActivity.this).inflate(R.layout.course_tablelayout_normal, null);
+
+                if (isNightClass)
+                    y = CourseList.size();
+                else
+                    y = 10;
+                x = 5;
+            }
+        }
+        else
+        {
+            if (isNightClass)
+                table = (TableLayout) LayoutInflater.from(MainActivity.this).inflate(R.layout.course_tablelayout_normal_night, null);
+            else
+                table = (TableLayout) LayoutInflater.from(MainActivity.this).inflate(R.layout.course_tablelayout_normal, null);
+
+            if (isNightClass)
+                y = CourseList.size();
+            else
+                y = 10;
+            x = 5;
+        }
+
+        table.setStretchAllColumns(true);
+
+        if (CourseList.size() == 0)
+        {
+            table = (TableLayout) LayoutInflater.from(MainActivity.this).inflate(R.layout.course_tablelayout_nocourse, null);
+            scrollView.addView(table);
+            return;
+        }
+
+        for (int i = 0; i < y; i++) {
+            for (int j = 0; j < x; j++) {
+                int id = getResources().getIdentifier("textView" +  i + "_" + (j+1), "id", getPackageName());
+                final TextView testview = (TextView) table.findViewById(id);
+
+                if (CourseList.get(i).get(j).ID.length() > 0)
+                    testview.setText(CourseList.get(i).get(j).ID.substring(0,2));
+                else
+                    testview.setText("　　");
+
+                final int yy = i;
+                final int xx = j;
+                if (!CourseList.get(i).get(j).ID.equals(""))
+                    testview.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            AlertDialogPro.Builder builder = new AlertDialogPro.Builder(MainActivity.this);
+                            builder.
+                                    setMessage("課程名稱：" + CourseList.get(yy).get(xx).ID
+                                            + "\n授課老師：" +  CourseList.get(yy).get(xx).Teacher
+                                            + "\n教室位置：" + CourseList.get(yy).get(xx).Place
+                                            + "\n上課時間：" + CourseList.get(yy).get(xx).Time).
+                                    setPositiveButton("確定", null).show();
+                        }
+                    });
+            }
+        }
+
+        scrollView.addView(table);
+    }
+
+    public void addCourseOld() {
         TableLayout table = (TableLayout) findViewById(R.id.tablelayout);
         table.setStretchAllColumns(true);
         table.removeAllViews();
@@ -4356,7 +4562,12 @@ public class MainActivity extends ActionBarActivity {
         if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) { }
         else { }
         if (_fncid.equals("AG222") && !LoadingDialog.isShowing() && !isSelecting)
-            addCourse();
+        {
+            if (isOfflineCourse)
+                addOfflineCourse();
+            else
+                addCourse();
+        }
         else if (_fncid.equals("AK002") && !LoadingDialog.isShowing() && !isSelecting)
             addLeave();
     }
