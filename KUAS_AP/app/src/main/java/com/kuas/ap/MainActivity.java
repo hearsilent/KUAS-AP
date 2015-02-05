@@ -203,10 +203,17 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void run() {
                 try {
-                    if (!CheckLoginState())
-                        ReLogin();
-
                     ReadSemesterHandler.sendEmptyMessage(-1);
+
+                    if (!CheckLoginState())
+                    {
+                        if (!ReLogin())
+                        {
+                            ReLoginHandler.sendEmptyMessage(-1);
+                            return;
+                        }
+                    }
+
                     List<NameValuePair> params = new LinkedList<>();
                     params.add(new BasicNameValuePair("fncid", _fncid));
                     if (Calendar.getInstance().get(Calendar.MONTH) > 9 && Calendar.getInstance().get(Calendar.MONTH) < 2)
