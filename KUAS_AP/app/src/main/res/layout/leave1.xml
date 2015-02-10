@@ -76,10 +76,12 @@
                     android:layout_height="wrap_content"
                     android:text="103學年度第1學期"
                     android:id="@+id/selecttextView"
-                    android:layout_alignParentTop="true"
                     android:layout_centerHorizontal="true"
                     android:textSize="18sp"
-                    android:layout_marginTop="15dp"
+                    android:gravity="center_vertical"
+                    android:layout_alignTop="@+id/selectimageView"
+                    android:layout_alignBottom="@+id/selectimageView"
+                    android:layout_alignBaseline="@id/selectimageView"
                     android:textColor="#ff000000" />
 
                 <ImageView

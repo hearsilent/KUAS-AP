@@ -89,7 +89,6 @@ import us.codecraft.xsoup.Xsoup;
 import static android.view.Gravity.CENTER;
 import static android.view.Gravity.START;
 
-
 public class MainActivity extends ActionBarActivity {
     public static final String USER_AGENT = "Mozilla/5.0 (Windows NT 6.3; WOW64; rv:35.0) Gecko/20100101 Firefox/35.0";
     String BusJs = "function baseEncryption(e) {function h(b, a) { var d, c, e, f, g; e = b & 2147483648; f = a & 2147483648; d = b & 1073741824; c = a & 1073741824; g = (b & 1073741823) + (a & 1073741823); return d & c ? g ^ 2147483648 ^ e ^ f : d | c ? g & 1073741824 ? g ^ 3221225472 ^ e ^ f : g ^ 1073741824 ^ e ^ f : g ^ e ^ f } function g(b, a, d, c, e, f, g) { b = h(b, h(h(a & d | ~a & c, e), g)); return h(b << f | b >>> 32 - f, a) } function i(b, a, d, c, e, f, g) { b = h(b, h(h(a & c | d & ~c, e), g)); return h(b << f | b >>> 32 - f, a) } function j(b, a, c, d, e, f, g) { b = h(b, h(h(a ^ c ^ d, e), g)); return h(b << f | b >>> 32 - f, a) } function k(b, a, c, d, e, f, g) {b = h(b, h(h(c ^(a | ~d), e), g)); return h(b << f | b >>> 32 - f, a)} function l(b) { var a = \"\", c = \"\", d; for (d = 0; 3 >= d; d++) c = b >>> 8 * d & 255, c = \"0\" + c.toString(16), a += c.substr(c.length - 2, 2); return a } var f = [], m, n, o, p, b, a, d, c, f = function (b) { var a, c = b.length; a = c + 8; for (var d = 16 * ((a - a % 64) / 64 + 1), e = Array(d - 1), f = 0, g = 0; g < c; ) a = (g - g % 4) / 4, f = 8 * (g % 4), e[a] |= b.charCodeAt(g) << f, g++; a = (g - g % 4) / 4; e[a] |= 128 << 8 * (g % 4); e[d - 2] = c << 3; e[d - 1] = c >>> 29; return e } (e); b = 1732584193; a = 4023233417; d = 2562383102; c = 271733878; for (e = 0; e < f.length; e += 16) m = b, n = a, o = d, p = c, b = g(b, a, d, c, f[e +0], 7, 3614090360), c = g(c, b, a, d, f[e + 1], 12, 3905402710), d = g(d, c, b, a, f[e + 2], 17, 606105819), a = g(a, d, c, b, f[e + 3], 22, 3250441966), b = g(b, a, d, c, f[e + 4], 7, 4118548399), c = g(c, b, a, d, f[e + 5], 12, 1200080426), d = g(d, c, b, a, f[e + 6], 17, 2821735955), a = g(a, d, c, b, f[e + 7], 22, 4249261313), b = g(b, a, d, c, f[e + 8], 7, 1770035416), c = g(c, b, a, d, f[e + 9], 12, 2336552879), d = g(d, c, b, a, f[e + 10], 17, 4294925233), a = g(a, d, c, b, f[e + 11], 22, 2304563134), b = g(b, a, d, c, f[e + 12], 7, 1804603682), c = g(c, b, a, d, f[e + 13], 12, 4254626195), d = g(d, c, b, a, f[e + 14], 17, 2792965006), a = g(a, d,c, b, f[e + 15], 22, 1236535329), b = i(b, a, d, c, f[e + 1], 5, 4129170786), c = i(c, b, a, d, f[e + 6], 9, 3225465664), d = i(d, c, b, a, f[e + 11], 14, 643717713), a = i(a, d, c, b, f[e + 0], 20, 3921069994), b = i(b, a, d, c, f[e + 5], 5, 3593408605), c = i(c, b, a, d, f[e + 10], 9, 38016083), d = i(d, c, b, a, f[e + 15], 14, 3634488961), a = i(a, d, c, b, f[e + 4], 20, 3889429448), b = i(b, a, d, c, f[e + 9], 5, 568446438), c = i(c, b, a, d, f[e + 14], 9, 3275163606), d = i(d, c, b, a, f[e + 3], 14, 4107603335), a = i(a, d, c, b, f[e + 8], 20, 1163531501), b = i(b, a, d, c, f[e + 13], 5, 2850285829), c = i(c, b, a, d, f[e + 2], 9, 4243563512), d = i(d,c, b, a, f[e + 7], 14, 1735328473), a = i(a, d, c, b, f[e + 12], 20, 2368359562), b = j(b, a, d, c, f[e + 5], 4, 4294588738), c = j(c, b, a, d, f[e + 8], 11, 2272392833), d = j(d, c, b, a, f[e + 11], 16, 1839030562), a = j(a, d, c, b, f[e + 14], 23, 4259657740), b = j(b, a, d, c, f[e + 1], 4, 2763975236), c = j(c, b, a, d, f[e + 4], 11, 1272893353), d = j(d, c, b, a, f[e + 7], 16, 4139469664), a = j(a, d, c, b, f[e + 10], 23, 3200236656), b = j(b, a, d, c, f[e + 13], 4, 681279174), c = j(c, b, a, d, f[e + 0], 11, 3936430074), d = j(d, c, b, a, f[e + 3], 16, 3572445317), a = j(a, d, c, b, f[e + 6], 23, 76029189), b = j(b, a, d, c, f[e + 9], 4, 3654602809),c = j(c, b, a, d, f[e + 12], 11, 3873151461), d = j(d, c, b, a, f[e + 15], 16, 530742520), a = j(a, d, c, b, f[e + 2], 23, 3299628645), b = k(b, a, d, c, f[e + 0], 6, 4096336452), c = k(c, b, a, d, f[e + 7], 10, 1126891415), d = k(d, c, b, a, f[e + 14], 15, 2878612391), a = k(a, d, c, b, f[e + 5], 21, 4237533241), b = k(b, a, d, c, f[e + 12], 6, 1700485571), c = k(c, b, a, d, f[e + 3], 10, 2399980690), d = k(d, c, b, a, f[e + 10], 15, 4293915773), a = k(a, d, c, b, f[e + 1], 21, 2240044497), b = k(b, a, d, c, f[e + 8], 6, 1873313359), c = k(c, b, a, d, f[e + 15], 10, 4264355552), d = k(d, c, b, a, f[e + 6], 15, 2734768916), a = k(a, d, c, b, f[e + 13], 21,1309151649), b = k(b, a, d, c, f[e + 4], 6, 4149444226), c = k(c, b, a, d, f[e + 11], 10, 3174756917), d = k(d, c, b, a, f[e + 2], 15, 718787259), a = k(a, d, c, b, f[e + 9], 21, 3951481745), b = h(b, m), a = h(a, n), d = h(d, o), c = h(c, p); return (l(b) + l(a) + l(d) + l(c)).toLowerCase()}loginEncryption = function (e, h) {var g = Math.floor(1163531501 * Math.random()) + 15441, i = Math.floor(1163531502 * Math.random()) + 0, j = Math.floor(1163531502 * Math.random()) + 0, k = Math.floor(1163531502 * Math.random()) + 0, g = baseEncryption(\"J\" + g), i = baseEncryption(\"E\" + i), j = baseEncryption(\"R\" + j), k = baseEncryption(\"Y\" + k), e = baseEncryption(e + encA1(g)), h = baseEncryption(e + h + \"JERRY\" + encA1(i)), l = baseEncryption(e + h + \"KUAS\" + encA1(j)), l = baseEncryption(l + e + encA1(\"ITALAB\") + encA1(k)), l = baseEncryption(l + h + \"MIS\" + k); return '{ a:\"' + l + '\",b:\"' +g + '\",c:\"' + i + '\",d:\"' + j + '\",e:\"' + k + '\",f:\"' + h + '\" }'}; function encA2(e) { return baseEncryption(e) };";
@@ -207,7 +206,7 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void run() {
                 try {
-                    ReadSemesterHandler.sendEmptyMessage(-1);
+                    LoadingDialogHandler.sendEmptyMessage(-1);
 
                     if (!CheckLoginState())
                     {
@@ -444,120 +443,7 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
-        mDrawerList = (ListView)findViewById(R.id.drawerlistView);
-        mAboutList = (ListView)findViewById(R.id.aboutlistView);
-        final String[] aboutvalues = new String[]{  "關於我們" };
-        final String[] values = new String[]{ "離線課表", "校園資訊" };
-        ArrayAdapter<String> adapter=new ArrayAdapter<String>(
-                this,R.layout.menulistview_item, values){
-            private LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
-
-            class ViewHolder {
-                public TextView textView;
-                public ImageView imageView;
-            }
-
-            @Override
-            public View getView(int position, View convertView,
-                                ViewGroup parent) {
-                ViewHolder holder;
-                if (convertView == null) {
-                    holder = new ViewHolder();
-                    convertView = mInflater.inflate(R.layout.menulistview_item, null);
-                    holder.textView = (TextView) convertView.findViewById(R.id.textView);
-                    holder.imageView = (ImageView) convertView.findViewById(R.id.imageView);
-                    convertView.setTag(holder);
-                } else {
-                    holder = (ViewHolder)convertView.getTag();
-                }
-                holder.textView.setText(values[position]);
-                return convertView;
-            }
-        };
-
-        ArrayAdapter<String> aboutadapter=new ArrayAdapter<String>(
-                this,R.layout.menulistview_item, aboutvalues){
-            private LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
-
-            class ViewHolder {
-                public TextView textView;
-                public ImageView imageView;
-            }
-
-            @Override
-            public View getView(int position, View convertView,
-                                ViewGroup parent) {
-                ViewHolder holder;
-                if (convertView == null) {
-                    holder = new ViewHolder();
-                    convertView = mInflater.inflate(R.layout.menulistview_item, null);
-                    holder.textView = (TextView) convertView.findViewById(R.id.textView);
-                    holder.imageView = (ImageView) convertView.findViewById(R.id.imageView);
-                    convertView.setTag(holder);
-                } else {
-                    holder = (ViewHolder)convertView.getTag();
-                }
-                holder.textView.setText(aboutvalues[position]);
-                holder.imageView.setBackgroundResource(R.drawable.ic_thumb_up_black_48dp);
-                return convertView;
-            }
-        };
-        mAboutList.setAdapter(aboutadapter);
-        mDrawerList.setAdapter(adapter);
-        mAboutList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                switch (position) {
-                    case 0:
-                        initAbout(false);
-                        break;
-                }
-            }
-        });
-        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                switch (position) {
-                    case 0:
-                        initCourse(false, false, false);
-                        break;
-                    case 1:
-                        initEvent1(false, true);
-                        break;
-                }
-            }
-        });
-        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        final ImageView imageView = (ImageView) findViewById(R.id.drawer_indicator);
-        final Resources resources = getResources();
-        drawerArrowDrawable = new DrawerArrowDrawable(resources, true);
-        drawerArrowDrawable.setStrokeColor(Color.WHITE);
-        imageView.setImageDrawable(drawerArrowDrawable);
-        drawer.setDrawerListener(new DrawerLayout.SimpleDrawerListener() {
-            @Override
-            public void onDrawerSlide(View drawerView, float slideOffset) {
-                offset = slideOffset;
-                // Sometimes slideOffset ends up so close to but not quite 1 or 0.
-                if (slideOffset >= .995) {
-                    flipped = true;
-                    drawerArrowDrawable.setFlip(flipped);
-                } else if (slideOffset <= .005) {
-                    flipped = false;
-                    drawerArrowDrawable.setFlip(flipped);
-                }
-                drawerArrowDrawable.setParameter(offset);
-            }
-        });
-        imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (drawer.isDrawerVisible(START)) {
-                    drawer.closeDrawer(START);
-                } else {
-                    drawer.openDrawer(START);
-                }
-            }
-        });
+        initDrawer(new String[]{ "離線課表", "校園資訊" }, new String[]{ "關於我們" }, false, false);
 
         restorePrefs();
 
@@ -588,7 +474,7 @@ public class MainActivity extends ActionBarActivity {
             public void run() {
                 try {
                     cookieStore = new BasicCookieStore();
-                    LoginHandler.sendEmptyMessage(LoginInit);
+                    LoadingDialogHandler.sendEmptyMessage(LoginInit);
                     List<NameValuePair> params = new LinkedList<>();
                     // Cilent
                     params.add(new BasicNameValuePair("uid", UserNameEditText.getText().toString()));
@@ -626,128 +512,8 @@ public class MainActivity extends ActionBarActivity {
     public void initLogout(){
         setContentView(R.layout.logout);
         _fncid = "";
-        mDrawerList = (ListView)findViewById(R.id.drawerlistView);
-        mAboutList = (ListView)findViewById(R.id.aboutlistView);
-        final String[] aboutvalues = new String[]{ "關於我們"};
-        final String[] values = new String[]{ "學期課表", "學期成績", "缺曠系統", "校車系統", "校園資訊" };
-        ArrayAdapter<String> adapter=new ArrayAdapter<String>(
-                this,R.layout.menulistview_item, values){
-            private LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
 
-            class ViewHolder {
-                public TextView textView;
-                public ImageView imageView;
-            }
-
-            @Override
-            public View getView(int position, View convertView,
-                                ViewGroup parent) {
-                ViewHolder holder;
-                if (convertView == null) {
-                    holder = new ViewHolder();
-                    convertView = mInflater.inflate(R.layout.menulistview_item, null);
-                    holder.textView = (TextView) convertView.findViewById(R.id.textView);
-                    holder.imageView = (ImageView) convertView.findViewById(R.id.imageView);
-                    convertView.setTag(holder);
-                } else {
-                    holder = (ViewHolder)convertView.getTag();
-                }
-                holder.textView.setText(values[position]);
-                return convertView;
-            }
-        };
-        ArrayAdapter<String> aboutadapter=new ArrayAdapter<String>(
-                this,R.layout.menulistview_item, aboutvalues){
-            private LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
-
-            class ViewHolder {
-                public TextView textView;
-                public ImageView imageView;
-            }
-
-            @Override
-            public View getView(int position, View convertView,
-                                ViewGroup parent) {
-                ViewHolder holder;
-                if (convertView == null) {
-                    holder = new ViewHolder();
-                    convertView = mInflater.inflate(R.layout.menulistview_item, null);
-                    holder.textView = (TextView) convertView.findViewById(R.id.textView);
-                    holder.imageView = (ImageView) convertView.findViewById(R.id.imageView);
-                    convertView.setTag(holder);
-                } else {
-                    holder = (ViewHolder)convertView.getTag();
-                }
-                holder.textView.setText(aboutvalues[position]);
-                holder.imageView.setBackgroundResource(R.drawable.ic_thumb_up_black_48dp);
-                return convertView;
-            }
-        };
-        mAboutList.setAdapter(aboutadapter);
-        mDrawerList.setAdapter(adapter);
-        mAboutList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                switch (position) {
-                    case 0:
-                        initAbout(true);
-                        break;
-                }
-            }
-        });
-        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                switch (position) {
-                    case 0:
-                        initCourse(false, false, true);
-                        break;
-                    case 1:
-                        initScore(false, false);
-                        break;
-                    case 2:
-                        initLeave1(false, false);
-                        break;
-                    case 3:
-                        initBus1(true);
-                        break;
-                    case 4:
-                        initEvent1(true, true);
-                        break;
-                }
-            }
-        });
-        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        final ImageView imageView = (ImageView) findViewById(R.id.drawer_indicator);
-        final Resources resources = getResources();
-        drawerArrowDrawable = new DrawerArrowDrawable(resources, true);
-        drawerArrowDrawable.setStrokeColor(Color.WHITE);
-        imageView.setImageDrawable(drawerArrowDrawable);
-        drawer.setDrawerListener(new DrawerLayout.SimpleDrawerListener() {
-            @Override
-            public void onDrawerSlide(View drawerView, float slideOffset) {
-                offset = slideOffset;
-                // Sometimes slideOffset ends up so close to but not quite 1 or 0.
-                if (slideOffset >= .995) {
-                    flipped = true;
-                    drawerArrowDrawable.setFlip(flipped);
-                } else if (slideOffset <= .005) {
-                    flipped = false;
-                    drawerArrowDrawable.setFlip(flipped);
-                }
-                drawerArrowDrawable.setParameter(offset);
-            }
-        });
-        imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (drawer.isDrawerVisible(START)) {
-                    drawer.closeDrawer(START);
-                } else {
-                    drawer.openDrawer(START);
-                }
-            }
-        });
+        initDrawer(new String[]{ "學期課表", "學期成績", "缺曠系統", "校車系統", "校園資訊" }, new String[]{ "關於我們" }, true, false);
 
         Button Logout = (Button) findViewById(R.id.Logout);
         Logout.setOnClickListener(new View.OnClickListener() {
@@ -841,14 +607,119 @@ public class MainActivity extends ActionBarActivity {
     public void initReLogin(){
         setContentView(R.layout.relogin);
 
-        ImageView Logout = (ImageView) findViewById(R.id.Logout);
-        Logout.setOnClickListener(new View.OnClickListener() {
+        initDrawer(new String[]{}, new String[]{}, false, true);
+
+        _fncid = "";
+    }
+
+    private void initDrawer(final String[] DrawerListValue, final String[] AboutListValue, final boolean _isLogin , boolean _isLogout)
+    {
+        if (_isLogout)
+        {
+            ImageView Logout = (ImageView) findViewById(R.id.Logout);
+            Logout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (_isLogin)
+                        initLogout();
+                    else
+                        initLogin();
+                }
+            });
+        }
+        mDrawerList = (ListView)findViewById(R.id.drawerlistView);
+        mAboutList = (ListView)findViewById(R.id.aboutlistView);
+        ArrayAdapter<String> adapter=new ArrayAdapter<String>(
+                this,R.layout.menulistview_item, DrawerListValue){
+            private LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
+
+            class ViewHolder {
+                public TextView textView;
+                public ImageView imageView;
+            }
+
             @Override
-            public void onClick(View v) {
-                initLogin();
+            public View getView(int position, View convertView,
+                                ViewGroup parent) {
+                ViewHolder holder;
+                if (convertView == null) {
+                    holder = new ViewHolder();
+                    convertView = mInflater.inflate(R.layout.menulistview_item, null);
+                    holder.textView = (TextView) convertView.findViewById(R.id.textView);
+                    holder.imageView = (ImageView) convertView.findViewById(R.id.imageView);
+                    convertView.setTag(holder);
+                } else {
+                    holder = (ViewHolder)convertView.getTag();
+                }
+                holder.textView.setText(DrawerListValue[position]);
+                return convertView;
+            }
+        };
+        ArrayAdapter<String> aboutadapter=new ArrayAdapter<String>(
+                this,R.layout.menulistview_item, AboutListValue){
+            private LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
+
+            class ViewHolder {
+                public TextView textView;
+                public ImageView imageView;
+            }
+
+            @Override
+            public View getView(int position, View convertView,
+                                ViewGroup parent) {
+                ViewHolder holder;
+                if (convertView == null) {
+                    holder = new ViewHolder();
+                    convertView = mInflater.inflate(R.layout.menulistview_item, null);
+                    holder.textView = (TextView) convertView.findViewById(R.id.textView);
+                    holder.imageView = (ImageView) convertView.findViewById(R.id.imageView);
+                    convertView.setTag(holder);
+                } else {
+                    holder = (ViewHolder)convertView.getTag();
+                }
+                holder.textView.setText(AboutListValue[position]);
+                holder.imageView.setBackgroundResource(R.drawable.ic_thumb_up_black_48dp);
+                return convertView;
+            }
+        };
+        if (AboutListValue.length != 0)
+            mAboutList.setAdapter(aboutadapter);
+        if (DrawerListValue.length != 0)
+            mDrawerList.setAdapter(adapter);
+        mAboutList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if (AboutListValue[position].equals("關於我們"))
+                {
+                    initAbout(_isLogin);
+                }
             }
         });
-
+        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if (DrawerListValue[position].equals("學期課表") || DrawerListValue[position].equals("離線課表"))
+                {
+                    initCourse(false, false, _isLogin);
+                }
+                else if (DrawerListValue[position].equals("學期成績"))
+                {
+                    initScore(false, false);
+                }
+                else if (DrawerListValue[position].equals("缺曠系統"))
+                {
+                    initLeave1(false, false);
+                }
+                else if (DrawerListValue[position].equals("校車系統"))
+                {
+                    initBus1(true);
+                }
+                else if (DrawerListValue[position].equals("校園資訊"))
+                {
+                    initEvent1(_isLogin, true);
+                }
+            }
+        });
         final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         final ImageView imageView = (ImageView) findViewById(R.id.drawer_indicator);
         final Resources resources = getResources();
@@ -870,8 +741,19 @@ public class MainActivity extends ActionBarActivity {
                 drawerArrowDrawable.setParameter(offset);
             }
         });
-
-        _fncid = "";
+        if (!(DrawerListValue.length == 0 && AboutListValue.length == 0))
+        {
+            imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (drawer.isDrawerVisible(START)) {
+                        drawer.closeDrawer(START);
+                    } else {
+                        drawer.openDrawer(START);
+                    }
+                }
+            });
+        }
     }
 
     public void initCourse(boolean select, boolean cancel, final boolean _isLogin){
@@ -896,142 +778,10 @@ public class MainActivity extends ActionBarActivity {
             });
         }
 
-        ImageView Logout = (ImageView) findViewById(R.id.Logout);
-        Logout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (_isLogin)
-                    initLogout();
-                else
-                    initLogin();
-            }
-        });
-        mDrawerList = (ListView)findViewById(R.id.drawerlistView);
-        mAboutList = (ListView)findViewById(R.id.aboutlistView);
-        final String[] aboutvalues = new String[]{ "關於我們"};
-        final String[] values;
         if (_isLogin)
-            values = new String[]{ "學期成績", "缺曠系統", "校車系統", "校園資訊" };
+            initDrawer(new String[]{ "學期成績", "缺曠系統", "校車系統", "校園資訊" }, new String[]{ "關於我們" }, _isLogin, true);
         else
-            values = new String[]{ "校園資訊" };
-        ArrayAdapter<String> adapter=new ArrayAdapter<String>(
-                this,R.layout.menulistview_item, values){
-            private LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
-
-            class ViewHolder {
-                public TextView textView;
-                public ImageView imageView;
-            }
-
-            @Override
-            public View getView(int position, View convertView,
-                                ViewGroup parent) {
-                ViewHolder holder;
-                if (convertView == null) {
-                    holder = new ViewHolder();
-                    convertView = mInflater.inflate(R.layout.menulistview_item, null);
-                    holder.textView = (TextView) convertView.findViewById(R.id.textView);
-                    holder.imageView = (ImageView) convertView.findViewById(R.id.imageView);
-                    convertView.setTag(holder);
-                } else {
-                    holder = (ViewHolder)convertView.getTag();
-                }
-                holder.textView.setText(values[position]);
-                return convertView;
-            }
-        };
-        ArrayAdapter<String> aboutadapter=new ArrayAdapter<String>(
-                this,R.layout.menulistview_item, aboutvalues){
-            private LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
-
-            class ViewHolder {
-                public TextView textView;
-                public ImageView imageView;
-            }
-
-            @Override
-            public View getView(int position, View convertView,
-                                ViewGroup parent) {
-                ViewHolder holder;
-                if (convertView == null) {
-                    holder = new ViewHolder();
-                    convertView = mInflater.inflate(R.layout.menulistview_item, null);
-                    holder.textView = (TextView) convertView.findViewById(R.id.textView);
-                    holder.imageView = (ImageView) convertView.findViewById(R.id.imageView);
-                    convertView.setTag(holder);
-                } else {
-                    holder = (ViewHolder)convertView.getTag();
-                }
-                holder.textView.setText(aboutvalues[position]);
-                holder.imageView.setBackgroundResource(R.drawable.ic_thumb_up_black_48dp);
-                return convertView;
-            }
-        };
-        mAboutList.setAdapter(aboutadapter);
-        mDrawerList.setAdapter(adapter);
-        mAboutList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                switch (position) {
-                    case 0:
-                        initAbout(true);
-                        break;
-                }
-            }
-        });
-        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                switch (position) {
-                    case 0:
-                        if (_isLogin)
-                            initScore(false, false);
-                        else
-                            initEvent1(false, true);
-                        break;
-                    case 1:
-                        initLeave1(false, false);
-                        break;
-                    case 2:
-                        initBus1(true);
-                        break;
-                    case 3:
-                        initEvent1(true, true);
-                        break;
-                }
-            }
-        });
-        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        final ImageView imageView = (ImageView) findViewById(R.id.drawer_indicator);
-        final Resources resources = getResources();
-        drawerArrowDrawable = new DrawerArrowDrawable(resources, true);
-        drawerArrowDrawable.setStrokeColor(Color.WHITE);
-        imageView.setImageDrawable(drawerArrowDrawable);
-        drawer.setDrawerListener(new DrawerLayout.SimpleDrawerListener() {
-            @Override
-            public void onDrawerSlide(View drawerView, float slideOffset) {
-                offset = slideOffset;
-                // Sometimes slideOffset ends up so close to but not quite 1 or 0.
-                if (slideOffset >= .995) {
-                    flipped = true;
-                    drawerArrowDrawable.setFlip(flipped);
-                } else if (slideOffset <= .005) {
-                    flipped = false;
-                    drawerArrowDrawable.setFlip(flipped);
-                }
-                drawerArrowDrawable.setParameter(offset);
-            }
-        });
-        imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (drawer.isDrawerVisible(START)) {
-                    drawer.closeDrawer(START);
-                } else {
-                    drawer.openDrawer(START);
-                }
-            }
-        });
+            initDrawer(new String[]{ "校園資訊" }, new String[]{ "關於我們" }, _isLogin, true);
 
         _fncid = "AG222";
         ReadCourseRunnable = new Runnable() {
@@ -1176,7 +926,7 @@ public class MainActivity extends ActionBarActivity {
             {
                 if (!cancel)
                 {
-                    ReadCourseHandler.sendEmptyMessage(-1);
+                    LoadingDialogHandler.sendEmptyMessage(-1);
                     new Thread(ReadCourseRunnable).start();
                     initSelectSemester();
                 }
@@ -1205,132 +955,7 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
-        ImageView Logout = (ImageView) findViewById(R.id.Logout);
-        Logout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                initLogout();
-            }
-        });
-        mDrawerList = (ListView)findViewById(R.id.drawerlistView);
-        mAboutList = (ListView)findViewById(R.id.aboutlistView);
-        final String[] aboutvalues = new String[]{ "關於我們"};
-        final String[] values = new String[]{ "學期課表", "缺曠系統", "校車系統", "校園資訊" };
-        ArrayAdapter<String> adapter=new ArrayAdapter<String>(
-                this,R.layout.menulistview_item, values){
-            private LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
-
-            class ViewHolder {
-                public TextView textView;
-                public ImageView imageView;
-            }
-
-            @Override
-            public View getView(int position, View convertView,
-                                ViewGroup parent) {
-                ViewHolder holder;
-                if (convertView == null) {
-                    holder = new ViewHolder();
-                    convertView = mInflater.inflate(R.layout.menulistview_item, null);
-                    holder.textView = (TextView) convertView.findViewById(R.id.textView);
-                    holder.imageView = (ImageView) convertView.findViewById(R.id.imageView);
-                    convertView.setTag(holder);
-                } else {
-                    holder = (ViewHolder)convertView.getTag();
-                }
-                holder.textView.setText(values[position]);
-                return convertView;
-            }
-        };
-        ArrayAdapter<String> aboutadapter=new ArrayAdapter<String>(
-                this,R.layout.menulistview_item, aboutvalues){
-            private LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
-
-            class ViewHolder {
-                public TextView textView;
-                public ImageView imageView;
-            }
-
-            @Override
-            public View getView(int position, View convertView,
-                                ViewGroup parent) {
-                ViewHolder holder;
-                if (convertView == null) {
-                    holder = new ViewHolder();
-                    convertView = mInflater.inflate(R.layout.menulistview_item, null);
-                    holder.textView = (TextView) convertView.findViewById(R.id.textView);
-                    holder.imageView = (ImageView) convertView.findViewById(R.id.imageView);
-                    convertView.setTag(holder);
-                } else {
-                    holder = (ViewHolder)convertView.getTag();
-                }
-                holder.textView.setText(aboutvalues[position]);
-                holder.imageView.setBackgroundResource(R.drawable.ic_thumb_up_black_48dp);
-                return convertView;
-            }
-        };
-        mAboutList.setAdapter(aboutadapter);
-        mDrawerList.setAdapter(adapter);
-        mAboutList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                switch (position) {
-                    case 0:
-                        initAbout(true);
-                        break;
-                }
-            }
-        });
-        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                switch (position) {
-                    case 0:
-                        initCourse(false, false, true);
-                        break;
-                    case 1:
-                        initLeave1(false, false);
-                        break;
-                    case 2:
-                        initBus1(true);
-                        break;
-                    case 3:
-                        initEvent1(true, true);
-                        break;
-                }
-            }
-        });
-        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        final ImageView imageView = (ImageView) findViewById(R.id.drawer_indicator);
-        final Resources resources = getResources();
-        drawerArrowDrawable = new DrawerArrowDrawable(resources, true);
-        drawerArrowDrawable.setStrokeColor(Color.WHITE);
-        imageView.setImageDrawable(drawerArrowDrawable);
-        drawer.setDrawerListener(new DrawerLayout.SimpleDrawerListener() {
-            @Override
-            public void onDrawerSlide(View drawerView, float slideOffset) {
-                offset = slideOffset;
-                // Sometimes slideOffset ends up so close to but not quite 1 or 0.
-                if (slideOffset >= .995) {
-                    flipped = true;
-                    drawerArrowDrawable.setFlip(flipped);
-                } else if (slideOffset <= .005) {
-                    flipped = false;
-                    drawerArrowDrawable.setFlip(flipped);
-                }
-                drawerArrowDrawable.setParameter(offset);
-            }
-        });
-        imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (drawer.isDrawerVisible(START)) {
-                    drawer.closeDrawer(START);
-                } else {
-                    drawer.openDrawer(START);
-                }
-            }
-        });
+        initDrawer(new String[]{ "學期課表", "缺曠系統", "校車系統", "校園資訊" }, new String[]{ "關於我們" }, true, true);
 
         _fncid = "AG008";
         ReadScoreRunnable = new Runnable() {
@@ -1403,7 +1028,7 @@ public class MainActivity extends ActionBarActivity {
         {
             if (!cancel)
             {
-                ReadScoreHandler.sendEmptyMessage(-1);
+                LoadingDialogHandler.sendEmptyMessage(-1);
                 new Thread(ReadScoreRunnable).start();
                 initSelectSemester();
             }
@@ -1438,132 +1063,7 @@ public class MainActivity extends ActionBarActivity {
         TextView textView = (TextView) findViewById(R.id.textView);
         textView.setVisibility(View.GONE);
 
-        ImageView Logout = (ImageView) findViewById(R.id.Logout);
-        Logout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                initLogout();
-            }
-        });
-        mDrawerList = (ListView)findViewById(R.id.drawerlistView);
-        mAboutList = (ListView)findViewById(R.id.aboutlistView);
-        final String[] aboutvalues = new String[]{ "關於我們"};
-        final String[] values = new String[]{ "學期課表", "學期成績", "校車系統", "校園資訊" };
-        ArrayAdapter<String> adapter=new ArrayAdapter<String>(
-                this,R.layout.menulistview_item, values){
-            private LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
-
-            class ViewHolder {
-                public TextView textView;
-                public ImageView imageView;
-            }
-
-            @Override
-            public View getView(int position, View convertView,
-                                ViewGroup parent) {
-                ViewHolder holder;
-                if (convertView == null) {
-                    holder = new ViewHolder();
-                    convertView = mInflater.inflate(R.layout.menulistview_item, null);
-                    holder.textView = (TextView) convertView.findViewById(R.id.textView);
-                    holder.imageView = (ImageView) convertView.findViewById(R.id.imageView);
-                    convertView.setTag(holder);
-                } else {
-                    holder = (ViewHolder)convertView.getTag();
-                }
-                holder.textView.setText(values[position]);
-                return convertView;
-            }
-        };
-        ArrayAdapter<String> aboutadapter=new ArrayAdapter<String>(
-                this,R.layout.menulistview_item, aboutvalues){
-            private LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
-
-            class ViewHolder {
-                public TextView textView;
-                public ImageView imageView;
-            }
-
-            @Override
-            public View getView(int position, View convertView,
-                                ViewGroup parent) {
-                ViewHolder holder;
-                if (convertView == null) {
-                    holder = new ViewHolder();
-                    convertView = mInflater.inflate(R.layout.menulistview_item, null);
-                    holder.textView = (TextView) convertView.findViewById(R.id.textView);
-                    holder.imageView = (ImageView) convertView.findViewById(R.id.imageView);
-                    convertView.setTag(holder);
-                } else {
-                    holder = (ViewHolder)convertView.getTag();
-                }
-                holder.textView.setText(aboutvalues[position]);
-                holder.imageView.setBackgroundResource(R.drawable.ic_thumb_up_black_48dp);
-                return convertView;
-            }
-        };
-        mAboutList.setAdapter(aboutadapter);
-        mDrawerList.setAdapter(adapter);
-        mAboutList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                switch (position) {
-                    case 0:
-                        initAbout(true);
-                        break;
-                }
-            }
-        });
-        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                switch (position) {
-                    case 0:
-                        initCourse(false, false, true);
-                        break;
-                    case 1:
-                        initScore(false, false);
-                        break;
-                    case 2:
-                        initBus1(true);
-                        break;
-                    case 3:
-                        initEvent1(true, true);
-                        break;
-                }
-            }
-        });
-        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        final ImageView imageView = (ImageView) findViewById(R.id.drawer_indicator);
-        final Resources resources = getResources();
-        drawerArrowDrawable = new DrawerArrowDrawable(resources, true);
-        drawerArrowDrawable.setStrokeColor(Color.WHITE);
-        imageView.setImageDrawable(drawerArrowDrawable);
-        drawer.setDrawerListener(new DrawerLayout.SimpleDrawerListener() {
-            @Override
-            public void onDrawerSlide(View drawerView, float slideOffset) {
-                offset = slideOffset;
-                // Sometimes slideOffset ends up so close to but not quite 1 or 0.
-                if (slideOffset >= .995) {
-                    flipped = true;
-                    drawerArrowDrawable.setFlip(flipped);
-                } else if (slideOffset <= .005) {
-                    flipped = false;
-                    drawerArrowDrawable.setFlip(flipped);
-                }
-                drawerArrowDrawable.setParameter(offset);
-            }
-        });
-        imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (drawer.isDrawerVisible(START)) {
-                    drawer.closeDrawer(START);
-                } else {
-                    drawer.openDrawer(START);
-                }
-            }
-        });
+        initDrawer(new String[]{ "學期課表", "學期成績", "校車系統", "校園資訊" }, new String[]{ "關於我們" }, true, true);
 
         _fncid = "AK002";
         ReadLeaveRunnable = new Runnable() {
@@ -1695,7 +1195,7 @@ public class MainActivity extends ActionBarActivity {
         {
             if (!cancel)
             {
-                ReadLeaveHandler.sendEmptyMessage(-1);
+                LoadingDialogHandler.sendEmptyMessage(-1);
                 new Thread(ReadLeaveRunnable).start();
                 initSelectSemester();
             }
@@ -1718,132 +1218,7 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
-        ImageView Logout = (ImageView) findViewById(R.id.Logout);
-        Logout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                initLogout();
-            }
-        });
-        mDrawerList = (ListView)findViewById(R.id.drawerlistView);
-        mAboutList = (ListView)findViewById(R.id.aboutlistView);
-        final String[] aboutvalues = new String[]{ "關於我們"};
-        final String[] values = new String[]{ "學期課表", "學期成績", "校車系統", "校園資訊" };
-        ArrayAdapter<String> adapter=new ArrayAdapter<String>(
-                this,R.layout.menulistview_item, values){
-            private LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
-
-            class ViewHolder {
-                public TextView textView;
-                public ImageView imageView;
-            }
-
-            @Override
-            public View getView(int position, View convertView,
-                                ViewGroup parent) {
-                ViewHolder holder;
-                if (convertView == null) {
-                    holder = new ViewHolder();
-                    convertView = mInflater.inflate(R.layout.menulistview_item, null);
-                    holder.textView = (TextView) convertView.findViewById(R.id.textView);
-                    holder.imageView = (ImageView) convertView.findViewById(R.id.imageView);
-                    convertView.setTag(holder);
-                } else {
-                    holder = (ViewHolder)convertView.getTag();
-                }
-                holder.textView.setText(values[position]);
-                return convertView;
-            }
-        };
-        ArrayAdapter<String> aboutadapter=new ArrayAdapter<String>(
-                this,R.layout.menulistview_item, aboutvalues){
-            private LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
-
-            class ViewHolder {
-                public TextView textView;
-                public ImageView imageView;
-            }
-
-            @Override
-            public View getView(int position, View convertView,
-                                ViewGroup parent) {
-                ViewHolder holder;
-                if (convertView == null) {
-                    holder = new ViewHolder();
-                    convertView = mInflater.inflate(R.layout.menulistview_item, null);
-                    holder.textView = (TextView) convertView.findViewById(R.id.textView);
-                    holder.imageView = (ImageView) convertView.findViewById(R.id.imageView);
-                    convertView.setTag(holder);
-                } else {
-                    holder = (ViewHolder)convertView.getTag();
-                }
-                holder.textView.setText(aboutvalues[position]);
-                holder.imageView.setBackgroundResource(R.drawable.ic_thumb_up_black_48dp);
-                return convertView;
-            }
-        };
-        mAboutList.setAdapter(aboutadapter);
-        mDrawerList.setAdapter(adapter);
-        mAboutList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                switch (position) {
-                    case 0:
-                        initAbout(true);
-                        break;
-                }
-            }
-        });
-        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                switch (position) {
-                    case 0:
-                        initCourse(false, false, true);
-                        break;
-                    case 1:
-                        initScore(false, false);
-                        break;
-                    case 2:
-                        initBus1(true);
-                        break;
-                    case 3:
-                        initEvent1(true, true);
-                        break;
-                }
-            }
-        });
-        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        final ImageView imageView = (ImageView) findViewById(R.id.drawer_indicator);
-        final Resources resources = getResources();
-        drawerArrowDrawable = new DrawerArrowDrawable(resources, true);
-        drawerArrowDrawable.setStrokeColor(Color.WHITE);
-        imageView.setImageDrawable(drawerArrowDrawable);
-        drawer.setDrawerListener(new DrawerLayout.SimpleDrawerListener() {
-            @Override
-            public void onDrawerSlide(View drawerView, float slideOffset) {
-                offset = slideOffset;
-                // Sometimes slideOffset ends up so close to but not quite 1 or 0.
-                if (slideOffset >= .995) {
-                    flipped = true;
-                    drawerArrowDrawable.setFlip(flipped);
-                } else if (slideOffset <= .005) {
-                    flipped = false;
-                    drawerArrowDrawable.setFlip(flipped);
-                }
-                drawerArrowDrawable.setParameter(offset);
-            }
-        });
-        imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (drawer.isDrawerVisible(START)) {
-                    drawer.closeDrawer(START);
-                } else {
-                    drawer.openDrawer(START);
-                }
-            }
-        });
+        initDrawer(new String[]{ "學期課表", "學期成績", "校車系統", "校園資訊" }, new String[]{ "關於我們" }, true, true);
 
         _fncid = "";
 
@@ -2126,7 +1501,7 @@ public class MainActivity extends ActionBarActivity {
                                     builderx.setPositiveButton("確認送出", new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialog, int which) {
-                                                    LeaveSubmitHandler.sendEmptyMessage(-1);
+                                                    LoadingDialogHandler.sendEmptyMessage(-1);
                                                     new Thread(LeaveSubmitRunnable).start();
                                                 }
                                             }).
@@ -2158,142 +1533,10 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
-        ImageView Logout = (ImageView) findViewById(R.id.Logout);
-        Logout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (_isLogin)
-                    initLogout();
-                else
-                    initLogin();
-            }
-        });
-        mDrawerList = (ListView)findViewById(R.id.drawerlistView);
-        mAboutList = (ListView)findViewById(R.id.aboutlistView);
-        final String[] aboutvalues = new String[]{ "關於我們"};
-        final String[] values;
         if (_isLogin)
-            values = new String[]{ "學期課表", "學期成績", "缺曠系統", "校車系統" };
+            initDrawer(new String[]{ "學期課表", "學期成績", "缺曠系統", "校車系統" }, new String[]{ "關於我們" }, _isLogin, true);
         else
-            values = new String[]{ "離線課表" };
-        ArrayAdapter<String> adapter=new ArrayAdapter<String>(
-                this,R.layout.menulistview_item, values){
-            private LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
-
-            class ViewHolder {
-                public TextView textView;
-                public ImageView imageView;
-            }
-
-            @Override
-            public View getView(int position, View convertView,
-                                ViewGroup parent) {
-                ViewHolder holder;
-                if (convertView == null) {
-                    holder = new ViewHolder();
-                    convertView = mInflater.inflate(R.layout.menulistview_item, null);
-                    holder.textView = (TextView) convertView.findViewById(R.id.textView);
-                    holder.imageView = (ImageView) convertView.findViewById(R.id.imageView);
-                    convertView.setTag(holder);
-                } else {
-                    holder = (ViewHolder)convertView.getTag();
-                }
-                holder.textView.setText(values[position]);
-                return convertView;
-            }
-        };
-        ArrayAdapter<String> aboutadapter=new ArrayAdapter<String>(
-                this,R.layout.menulistview_item, aboutvalues){
-            private LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
-
-            class ViewHolder {
-                public TextView textView;
-                public ImageView imageView;
-            }
-
-            @Override
-            public View getView(int position, View convertView,
-                                ViewGroup parent) {
-                ViewHolder holder;
-                if (convertView == null) {
-                    holder = new ViewHolder();
-                    convertView = mInflater.inflate(R.layout.menulistview_item, null);
-                    holder.textView = (TextView) convertView.findViewById(R.id.textView);
-                    holder.imageView = (ImageView) convertView.findViewById(R.id.imageView);
-                    convertView.setTag(holder);
-                } else {
-                    holder = (ViewHolder)convertView.getTag();
-                }
-                holder.textView.setText(aboutvalues[position]);
-                holder.imageView.setBackgroundResource(R.drawable.ic_thumb_up_black_48dp);
-                return convertView;
-            }
-        };
-        mAboutList.setAdapter(aboutadapter);
-        mDrawerList.setAdapter(adapter);
-        mAboutList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                switch (position) {
-                    case 0:
-                        initAbout(_isLogin);
-                        break;
-                }
-            }
-        });
-        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                switch (position) {
-                    case 0:
-                        if (_isLogin)
-                            initCourse(false, false, true);
-                        else
-                            initCourse(false, false, false);
-                        break;
-                    case 1:
-                        initScore(false, false);
-                        break;
-                    case 2:
-                        initLeave1(false, false);
-                        break;
-                    case 3:
-                        initBus1(true);
-                        break;
-                }
-            }
-        });
-        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        final ImageView imageView = (ImageView) findViewById(R.id.drawer_indicator);
-        final Resources resources = getResources();
-        drawerArrowDrawable = new DrawerArrowDrawable(resources, true);
-        drawerArrowDrawable.setStrokeColor(Color.WHITE);
-        imageView.setImageDrawable(drawerArrowDrawable);
-        drawer.setDrawerListener(new DrawerLayout.SimpleDrawerListener() {
-            @Override
-            public void onDrawerSlide(View drawerView, float slideOffset) {
-                offset = slideOffset;
-                // Sometimes slideOffset ends up so close to but not quite 1 or 0.
-                if (slideOffset >= .995) {
-                    flipped = true;
-                    drawerArrowDrawable.setFlip(flipped);
-                } else if (slideOffset <= .005) {
-                    flipped = false;
-                    drawerArrowDrawable.setFlip(flipped);
-                }
-                drawerArrowDrawable.setParameter(offset);
-            }
-        });
-        imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (drawer.isDrawerVisible(START)) {
-                    drawer.closeDrawer(START);
-                } else {
-                    drawer.openDrawer(START);
-                }
-            }
-        });
+            initDrawer(new String[]{ "離線課表" }, new String[]{ "關於我們" }, _isLogin, true);
 
         _fncid = "";
 
@@ -2332,7 +1575,7 @@ public class MainActivity extends ActionBarActivity {
                 {
                     NotificationPage --;
                     NowPage.setText("第" + NotificationPage + "頁");
-                    ReadNotificationHandler.sendEmptyMessage(-1);
+                    LoadingDialogHandler.sendEmptyMessage(-1);
                     new Thread(ReadNotificationRunnable).start();
                 }
                 if (NotificationPage == 1)
@@ -2348,7 +1591,7 @@ public class MainActivity extends ActionBarActivity {
             public void onClick(View v) {
                 NotificationPage ++;
                 NowPage.setText("第" + NotificationPage + "頁");
-                ReadNotificationHandler.sendEmptyMessage(-1);
+                LoadingDialogHandler.sendEmptyMessage(-1);
                 new Thread(ReadNotificationRunnable).start();
                 if (NotificationPage == 1)
                     PageUpTextView.setTextColor(getResources().getColor(R.color.bar_grey));
@@ -2360,7 +1603,7 @@ public class MainActivity extends ActionBarActivity {
         if (ReLoad)
         {
             NotificationPage = 1;
-            ReadNotificationHandler.sendEmptyMessage(-1);
+            LoadingDialogHandler.sendEmptyMessage(-1);
             new Thread(ReadNotificationRunnable).start();
         }
         else
@@ -2394,142 +1637,10 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
-        ImageView Logout = (ImageView) findViewById(R.id.Logout);
-        Logout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (_isLogin)
-                    initLogout();
-                else
-                    initLogin();
-            }
-        });
-        mDrawerList = (ListView)findViewById(R.id.drawerlistView);
-        mAboutList = (ListView)findViewById(R.id.aboutlistView);
-        final String[] aboutvalues = new String[]{ "關於我們"};
-        final String[] values;
         if (_isLogin)
-            values = new String[]{ "學期課表", "學期成績", "缺曠系統", "校車系統" };
+            initDrawer(new String[]{ "學期課表", "學期成績", "缺曠系統", "校車系統" }, new String[]{ "關於我們" }, _isLogin, true);
         else
-            values = new String[]{ "離線課表" };
-        ArrayAdapter<String> adapter=new ArrayAdapter<String>(
-                this,R.layout.menulistview_item, values){
-            private LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
-
-            class ViewHolder {
-                public TextView textView;
-                public ImageView imageView;
-            }
-
-            @Override
-            public View getView(int position, View convertView,
-                                ViewGroup parent) {
-                ViewHolder holder;
-                if (convertView == null) {
-                    holder = new ViewHolder();
-                    convertView = mInflater.inflate(R.layout.menulistview_item, null);
-                    holder.textView = (TextView) convertView.findViewById(R.id.textView);
-                    holder.imageView = (ImageView) convertView.findViewById(R.id.imageView);
-                    convertView.setTag(holder);
-                } else {
-                    holder = (ViewHolder)convertView.getTag();
-                }
-                holder.textView.setText(values[position]);
-                return convertView;
-            }
-        };
-        ArrayAdapter<String> aboutadapter=new ArrayAdapter<String>(
-                this,R.layout.menulistview_item, aboutvalues){
-            private LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
-
-            class ViewHolder {
-                public TextView textView;
-                public ImageView imageView;
-            }
-
-            @Override
-            public View getView(int position, View convertView,
-                                ViewGroup parent) {
-                ViewHolder holder;
-                if (convertView == null) {
-                    holder = new ViewHolder();
-                    convertView = mInflater.inflate(R.layout.menulistview_item, null);
-                    holder.textView = (TextView) convertView.findViewById(R.id.textView);
-                    holder.imageView = (ImageView) convertView.findViewById(R.id.imageView);
-                    convertView.setTag(holder);
-                } else {
-                    holder = (ViewHolder)convertView.getTag();
-                }
-                holder.textView.setText(aboutvalues[position]);
-                holder.imageView.setBackgroundResource(R.drawable.ic_thumb_up_black_48dp);
-                return convertView;
-            }
-        };
-        mAboutList.setAdapter(aboutadapter);
-        mDrawerList.setAdapter(adapter);
-        mAboutList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                switch (position) {
-                    case 0:
-                        initAbout(_isLogin);
-                        break;
-                }
-            }
-        });
-        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                switch (position) {
-                    case 0:
-                        if (_isLogin)
-                            initCourse(false, false, true);
-                        else
-                            initCourse(false, false, false);
-                        break;
-                    case 1:
-                        initScore(false, false);
-                        break;
-                    case 2:
-                        initLeave1(false, false);
-                        break;
-                    case 3:
-                        initBus1(true);
-                        break;
-                }
-            }
-        });
-        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        final ImageView imageView = (ImageView) findViewById(R.id.drawer_indicator);
-        final Resources resources = getResources();
-        drawerArrowDrawable = new DrawerArrowDrawable(resources, true);
-        drawerArrowDrawable.setStrokeColor(Color.WHITE);
-        imageView.setImageDrawable(drawerArrowDrawable);
-        drawer.setDrawerListener(new DrawerLayout.SimpleDrawerListener() {
-            @Override
-            public void onDrawerSlide(View drawerView, float slideOffset) {
-                offset = slideOffset;
-                // Sometimes slideOffset ends up so close to but not quite 1 or 0.
-                if (slideOffset >= .995) {
-                    flipped = true;
-                    drawerArrowDrawable.setFlip(flipped);
-                } else if (slideOffset <= .005) {
-                    flipped = false;
-                    drawerArrowDrawable.setFlip(flipped);
-                }
-                drawerArrowDrawable.setParameter(offset);
-            }
-        });
-        imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (drawer.isDrawerVisible(START)) {
-                    drawer.closeDrawer(START);
-                } else {
-                    drawer.openDrawer(START);
-                }
-            }
-        });
+            initDrawer(new String[]{ "離線課表" }, new String[]{ "關於我們" }, _isLogin, true);
 
         _fncid = "";
         addPhone();
@@ -2538,158 +1649,10 @@ public class MainActivity extends ActionBarActivity {
     public void initEvent3(final boolean _isLogin){
         setContentView(R.layout.event3);
 
-        RelativeLayout Page1 = (RelativeLayout) findViewById(R.id.RelativeLayout);
-        Page1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                initEvent1(_isLogin, false);
-            }
-        });
-
-        RelativeLayout Page2 = (RelativeLayout) findViewById(R.id.RelativeLayout2);
-        Page2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                initEvent2(_isLogin);
-            }
-        });
-
-        ImageView Logout = (ImageView) findViewById(R.id.Logout);
-        Logout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (_isLogin)
-                    initLogout();
-                else
-                    initLogin();
-            }
-        });
-        mDrawerList = (ListView)findViewById(R.id.drawerlistView);
-        mAboutList = (ListView)findViewById(R.id.aboutlistView);
-        final String[] aboutvalues = new String[]{ "關於我們"};
-        final String[] values;
         if (_isLogin)
-            values = new String[]{ "學期課表", "學期成績", "缺曠系統", "校車系統" };
+            initDrawer(new String[]{ "學期課表", "學期成績", "缺曠系統", "校車系統" }, new String[]{ "關於我們" }, _isLogin, true);
         else
-            values = new String[]{ "離線課表" };
-        ArrayAdapter<String> adapter=new ArrayAdapter<String>(
-                this,R.layout.menulistview_item, values){
-            private LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
-
-            class ViewHolder {
-                public TextView textView;
-                public ImageView imageView;
-            }
-
-            @Override
-            public View getView(int position, View convertView,
-                                ViewGroup parent) {
-                ViewHolder holder;
-                if (convertView == null) {
-                    holder = new ViewHolder();
-                    convertView = mInflater.inflate(R.layout.menulistview_item, null);
-                    holder.textView = (TextView) convertView.findViewById(R.id.textView);
-                    holder.imageView = (ImageView) convertView.findViewById(R.id.imageView);
-                    convertView.setTag(holder);
-                } else {
-                    holder = (ViewHolder)convertView.getTag();
-                }
-                holder.textView.setText(values[position]);
-                return convertView;
-            }
-        };
-        ArrayAdapter<String> aboutadapter=new ArrayAdapter<String>(
-                this,R.layout.menulistview_item, aboutvalues){
-            private LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
-
-            class ViewHolder {
-                public TextView textView;
-                public ImageView imageView;
-            }
-
-            @Override
-            public View getView(int position, View convertView,
-                                ViewGroup parent) {
-                ViewHolder holder;
-                if (convertView == null) {
-                    holder = new ViewHolder();
-                    convertView = mInflater.inflate(R.layout.menulistview_item, null);
-                    holder.textView = (TextView) convertView.findViewById(R.id.textView);
-                    holder.imageView = (ImageView) convertView.findViewById(R.id.imageView);
-                    convertView.setTag(holder);
-                } else {
-                    holder = (ViewHolder)convertView.getTag();
-                }
-                holder.textView.setText(aboutvalues[position]);
-                holder.imageView.setBackgroundResource(R.drawable.ic_thumb_up_black_48dp);
-                return convertView;
-            }
-        };
-        mAboutList.setAdapter(aboutadapter);
-        mDrawerList.setAdapter(adapter);
-        mAboutList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                switch (position) {
-                    case 0:
-                        initAbout(_isLogin);
-                        break;
-                }
-            }
-        });
-        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                switch (position) {
-                    case 0:
-                        if (_isLogin)
-                            initCourse(false, false, true);
-                        else
-                            initCourse(false, false, false);
-                        break;
-                    case 1:
-                        initScore(false, false);
-                        break;
-                    case 2:
-                        initLeave1(false, false);
-                        break;
-                    case 3:
-                        initBus1(true);
-                        break;
-                }
-            }
-        });
-        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        final ImageView imageView = (ImageView) findViewById(R.id.drawer_indicator);
-        final Resources resources = getResources();
-        drawerArrowDrawable = new DrawerArrowDrawable(resources, true);
-        drawerArrowDrawable.setStrokeColor(Color.WHITE);
-        imageView.setImageDrawable(drawerArrowDrawable);
-        drawer.setDrawerListener(new DrawerLayout.SimpleDrawerListener() {
-            @Override
-            public void onDrawerSlide(View drawerView, float slideOffset) {
-                offset = slideOffset;
-                // Sometimes slideOffset ends up so close to but not quite 1 or 0.
-                if (slideOffset >= .995) {
-                    flipped = true;
-                    drawerArrowDrawable.setFlip(flipped);
-                } else if (slideOffset <= .005) {
-                    flipped = false;
-                    drawerArrowDrawable.setFlip(flipped);
-                }
-                drawerArrowDrawable.setParameter(offset);
-            }
-        });
-        imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (drawer.isDrawerVisible(START)) {
-                    drawer.closeDrawer(START);
-                } else {
-                    drawer.openDrawer(START);
-                }
-            }
-        });
+            initDrawer(new String[]{ "離線課表" }, new String[]{ "關於我們" }, _isLogin, true);
 
         _fncid = "";
         addSchedule();
@@ -2737,153 +1700,9 @@ public class MainActivity extends ActionBarActivity {
         TextView noBusTextView = (TextView) findViewById(R.id.noBusTextView);
         noBusTextView.setVisibility(View.GONE);
 
-        ImageView Logout = (ImageView) findViewById(R.id.Logout);
-        Logout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                initLogout();
-            }
-        });
-        mDrawerList = (ListView)findViewById(R.id.drawerlistView);
-        mAboutList = (ListView)findViewById(R.id.aboutlistView);
-        final String[] aboutvalues = new String[]{ "關於我們"};
-        final String[] values = new String[]{ "學期課表", "學期成績", "缺曠系統", "校園資訊" };
-        ArrayAdapter<String> adapter=new ArrayAdapter<String>(
-                this,R.layout.menulistview_item, values){
-            private LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
-
-            class ViewHolder {
-                public TextView textView;
-                public ImageView imageView;
-            }
-
-            @Override
-            public View getView(int position, View convertView,
-                                ViewGroup parent) {
-                ViewHolder holder;
-                if (convertView == null) {
-                    holder = new ViewHolder();
-                    convertView = mInflater.inflate(R.layout.menulistview_item, null);
-                    holder.textView = (TextView) convertView.findViewById(R.id.textView);
-                    holder.imageView = (ImageView) convertView.findViewById(R.id.imageView);
-                    convertView.setTag(holder);
-                } else {
-                    holder = (ViewHolder)convertView.getTag();
-                }
-                holder.textView.setText(values[position]);
-                return convertView;
-            }
-        };
-        ArrayAdapter<String> aboutadapter=new ArrayAdapter<String>(
-                this,R.layout.menulistview_item, aboutvalues){
-            private LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
-
-            class ViewHolder {
-                public TextView textView;
-                public ImageView imageView;
-            }
-
-            @Override
-            public View getView(int position, View convertView,
-                                ViewGroup parent) {
-                ViewHolder holder;
-                if (convertView == null) {
-                    holder = new ViewHolder();
-                    convertView = mInflater.inflate(R.layout.menulistview_item, null);
-                    holder.textView = (TextView) convertView.findViewById(R.id.textView);
-                    holder.imageView = (ImageView) convertView.findViewById(R.id.imageView);
-                    convertView.setTag(holder);
-                } else {
-                    holder = (ViewHolder)convertView.getTag();
-                }
-                holder.textView.setText(aboutvalues[position]);
-                holder.imageView.setBackgroundResource(R.drawable.ic_thumb_up_black_48dp);
-                return convertView;
-            }
-        };
-        mAboutList.setAdapter(aboutadapter);
-        mDrawerList.setAdapter(adapter);
-        mAboutList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                switch (position) {
-                    case 0:
-                        initAbout(true);
-                        break;
-                }
-            }
-        });
-        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                switch (position) {
-                    case 0:
-                        initCourse(false, false, true);
-                        break;
-                    case 1:
-                        initScore(false, false);
-                        break;
-                    case 2:
-                        initLeave1(false, false);
-                        break;
-                    case 3:
-                        initEvent1(true, true);
-                        break;
-                }
-            }
-        });
-        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        final ImageView imageView = (ImageView) findViewById(R.id.drawer_indicator);
-        final Resources resources = getResources();
-        drawerArrowDrawable = new DrawerArrowDrawable(resources, true);
-        drawerArrowDrawable.setStrokeColor(Color.WHITE);
-        imageView.setImageDrawable(drawerArrowDrawable);
-        drawer.setDrawerListener(new DrawerLayout.SimpleDrawerListener() {
-            @Override
-            public void onDrawerSlide(View drawerView, float slideOffset) {
-                offset = slideOffset;
-                // Sometimes slideOffset ends up so close to but not quite 1 or 0.
-                if (slideOffset >= .995) {
-                    flipped = true;
-                    drawerArrowDrawable.setFlip(flipped);
-                } else if (slideOffset <= .005) {
-                    flipped = false;
-                    drawerArrowDrawable.setFlip(flipped);
-                }
-                drawerArrowDrawable.setParameter(offset);
-            }
-        });
-        imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (drawer.isDrawerVisible(START)) {
-                    drawer.closeDrawer(START);
-                } else {
-                    drawer.openDrawer(START);
-                }
-            }
-        });
+        initDrawer(new String[]{ "學期課表", "學期成績", "缺曠系統", "校園資訊" }, new String[]{ "關於我們" }, true, true);
 
         _fncid = "";
-
-        BusLoginRunnable = new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    get_url_contents("http://bus.kuas.edu.tw/" , null, cookieStore);
-                    String n = runScript(BusJs + get_url_contents("http://bus.kuas.edu.tw/API/Scripts/a1" , null, cookieStore), "loginEncryption", new String[]{Uid, Pwd});
-                    List<NameValuePair> params = new LinkedList<>();
-                    params.add(new BasicNameValuePair("account", Uid));
-                    params.add(new BasicNameValuePair("password", Pwd));
-                    params.add(new BasicNameValuePair("n", n));
-                    System.out.println(post_url_contents(_busLoginUrl , params, cookieStore));
-                    JSONObject jsonObj = new JSONObject(post_url_contents(_busLoginUrl , params, cookieStore));
-                    System.out.println(jsonObj.optString("success"));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        };
 
         final CaldroidFragment dialogCaldroidFragment = CaldroidFragment.newInstance("選擇乘車時間", (Calendar.getInstance().get(Calendar.MONTH)+1), Calendar.getInstance().get(Calendar.YEAR));
         final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
@@ -2896,7 +1715,7 @@ public class MainActivity extends ActionBarActivity {
             public void onSelectDate(Date date, View view) {
                 BusDate = formatter.format(date);
                 timeTextView.setText("乘車時間 " + BusDate);
-                ReadBusHandler.sendEmptyMessage(-1);
+                LoadingDialogHandler.sendEmptyMessage(-1);
                 new Thread(ReadBusRunnable).start();
                 dialogCaldroidFragment.dismiss();
             }
@@ -2997,7 +1816,7 @@ public class MainActivity extends ActionBarActivity {
         else
         {
             timeTextView.setText("乘車時間 " + BusDate);
-            ReadBusHandler.sendEmptyMessage(-1);
+            LoadingDialogHandler.sendEmptyMessage(-1);
             new Thread(ReadBusRunnable).start();
         }
     }
@@ -3019,153 +1838,9 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
-        ImageView Logout = (ImageView) findViewById(R.id.Logout);
-        Logout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                initLogout();
-            }
-        });
-        mDrawerList = (ListView)findViewById(R.id.drawerlistView);
-        mAboutList = (ListView)findViewById(R.id.aboutlistView);
-        final String[] aboutvalues = new String[]{ "關於我們"};
-        final String[] values = new String[]{ "學期課表", "學期成績", "缺曠系統", "校園資訊" };
-        ArrayAdapter<String> adapter=new ArrayAdapter<String>(
-                this,R.layout.menulistview_item, values){
-            private LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
-
-            class ViewHolder {
-                public TextView textView;
-                public ImageView imageView;
-            }
-
-            @Override
-            public View getView(int position, View convertView,
-                                ViewGroup parent) {
-                ViewHolder holder;
-                if (convertView == null) {
-                    holder = new ViewHolder();
-                    convertView = mInflater.inflate(R.layout.menulistview_item, null);
-                    holder.textView = (TextView) convertView.findViewById(R.id.textView);
-                    holder.imageView = (ImageView) convertView.findViewById(R.id.imageView);
-                    convertView.setTag(holder);
-                } else {
-                    holder = (ViewHolder)convertView.getTag();
-                }
-                holder.textView.setText(values[position]);
-                return convertView;
-            }
-        };
-        ArrayAdapter<String> aboutadapter=new ArrayAdapter<String>(
-                this,R.layout.menulistview_item, aboutvalues){
-            private LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
-
-            class ViewHolder {
-                public TextView textView;
-                public ImageView imageView;
-            }
-
-            @Override
-            public View getView(int position, View convertView,
-                                ViewGroup parent) {
-                ViewHolder holder;
-                if (convertView == null) {
-                    holder = new ViewHolder();
-                    convertView = mInflater.inflate(R.layout.menulistview_item, null);
-                    holder.textView = (TextView) convertView.findViewById(R.id.textView);
-                    holder.imageView = (ImageView) convertView.findViewById(R.id.imageView);
-                    convertView.setTag(holder);
-                } else {
-                    holder = (ViewHolder)convertView.getTag();
-                }
-                holder.textView.setText(aboutvalues[position]);
-                holder.imageView.setBackgroundResource(R.drawable.ic_thumb_up_black_48dp);
-                return convertView;
-            }
-        };
-        mAboutList.setAdapter(aboutadapter);
-        mDrawerList.setAdapter(adapter);
-        mAboutList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                switch (position) {
-                    case 0:
-                        initAbout(true);
-                        break;
-                }
-            }
-        });
-        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                switch (position) {
-                    case 0:
-                        initCourse(false, false, true);
-                        break;
-                    case 1:
-                        initScore(false, false);
-                        break;
-                    case 2:
-                        initLeave1(false, false);
-                        break;
-                    case 3:
-                        initEvent1(true, true);
-                        break;
-                }
-            }
-        });
-        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        final ImageView imageView = (ImageView) findViewById(R.id.drawer_indicator);
-        final Resources resources = getResources();
-        drawerArrowDrawable = new DrawerArrowDrawable(resources, true);
-        drawerArrowDrawable.setStrokeColor(Color.WHITE);
-        imageView.setImageDrawable(drawerArrowDrawable);
-        drawer.setDrawerListener(new DrawerLayout.SimpleDrawerListener() {
-            @Override
-            public void onDrawerSlide(View drawerView, float slideOffset) {
-                offset = slideOffset;
-                // Sometimes slideOffset ends up so close to but not quite 1 or 0.
-                if (slideOffset >= .995) {
-                    flipped = true;
-                    drawerArrowDrawable.setFlip(flipped);
-                } else if (slideOffset <= .005) {
-                    flipped = false;
-                    drawerArrowDrawable.setFlip(flipped);
-                }
-                drawerArrowDrawable.setParameter(offset);
-            }
-        });
-        imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (drawer.isDrawerVisible(START)) {
-                    drawer.closeDrawer(START);
-                } else {
-                    drawer.openDrawer(START);
-                }
-            }
-        });
+        initDrawer(new String[]{ "學期課表", "學期成績", "缺曠系統", "校園資訊" }, new String[]{ "關於我們" }, true, true);
 
         _fncid = "";
-
-        BusLoginRunnable = new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    get_url_contents("http://bus.kuas.edu.tw/" , null, cookieStore);
-                    String n = runScript(BusJs + get_url_contents("http://bus.kuas.edu.tw/API/Scripts/a1" , null, cookieStore), "loginEncryption", new String[]{Uid, Pwd});
-                    List<NameValuePair> params = new LinkedList<>();
-                    params.add(new BasicNameValuePair("account", Uid));
-                    params.add(new BasicNameValuePair("password", Pwd));
-                    params.add(new BasicNameValuePair("n", n));
-                    System.out.println(post_url_contents(_busLoginUrl , params, cookieStore));
-                    JSONObject jsonObj = new JSONObject(post_url_contents(_busLoginUrl , params, cookieStore));
-                    System.out.println(jsonObj.optString("success"));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        };
 
         BusBookingRunnable = new Runnable() {
             @Override
@@ -3235,7 +1910,7 @@ public class MainActivity extends ActionBarActivity {
             }
         };
 
-        ReadBusHandler.sendEmptyMessage(-1);
+        LoadingDialogHandler.sendEmptyMessage(-1);
         new Thread(BusReserveRunnable).start();
     }
 
@@ -3243,136 +1918,15 @@ public class MainActivity extends ActionBarActivity {
     {
         setContentView(R.layout.about);
 
-        ImageView Logout = (ImageView) findViewById(R.id.Logout);
-        Logout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (_isLogin)
-                    initLogout();
-                else
-                    initLogin();
-            }
-        });
-        mDrawerList = (ListView)findViewById(R.id.drawerlistView);
-        mAboutList = (ListView)findViewById(R.id.aboutlistView);
-        final String[] values;
         if (_isLogin)
-            values = new String[]{ "學期課表", "學期成績", "缺曠系統", "校車系統", "校園資訊" };
+            initDrawer(new String[]{ "學期課表", "學期成績", "缺曠系統", "校車系統", "校園資訊" }, new String[]{}, _isLogin, true);
         else
-            values = new String[]{ "校園資訊" };
-        ArrayAdapter<String> adapter=new ArrayAdapter<String>(
-                this,R.layout.menulistview_item, values){
-            private LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
-
-            class ViewHolder {
-                public TextView textView;
-                public ImageView imageView;
-            }
-
-            @Override
-            public View getView(int position, View convertView,
-                                ViewGroup parent) {
-                ViewHolder holder;
-                if (convertView == null) {
-                    holder = new ViewHolder();
-                    convertView = mInflater.inflate(R.layout.menulistview_item, null);
-                    holder.textView = (TextView) convertView.findViewById(R.id.textView);
-                    holder.imageView = (ImageView) convertView.findViewById(R.id.imageView);
-                    convertView.setTag(holder);
-                } else {
-                    holder = (ViewHolder)convertView.getTag();
-                }
-                holder.textView.setText(values[position]);
-                return convertView;
-            }
-        };
-        mDrawerList.setAdapter(adapter);
-        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                switch (position) {
-                    case 0:
-                        if (_isLogin)
-                            initCourse(false, false, true);
-                        else
-                            initEvent1(_isLogin, true);
-                        break;
-                    case 1:
-                        initScore(false, false);
-                        break;
-                    case 2:
-                        initLeave1(false, false);
-                        break;
-                    case 3:
-                        initEvent1(true, true);
-                        break;
-                    case 4:
-                        initEvent1(_isLogin, true);
-                        break;
-                }
-            }
-        });
-        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        final ImageView imageView = (ImageView) findViewById(R.id.drawer_indicator);
-        final Resources resources = getResources();
-        drawerArrowDrawable = new DrawerArrowDrawable(resources, true);
-        drawerArrowDrawable.setStrokeColor(Color.WHITE);
-        imageView.setImageDrawable(drawerArrowDrawable);
-        drawer.setDrawerListener(new DrawerLayout.SimpleDrawerListener() {
-            @Override
-            public void onDrawerSlide(View drawerView, float slideOffset) {
-                offset = slideOffset;
-                // Sometimes slideOffset ends up so close to but not quite 1 or 0.
-                if (slideOffset >= .995) {
-                    flipped = true;
-                    drawerArrowDrawable.setFlip(flipped);
-                } else if (slideOffset <= .005) {
-                    flipped = false;
-                    drawerArrowDrawable.setFlip(flipped);
-                }
-                drawerArrowDrawable.setParameter(offset);
-            }
-        });
-        imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (drawer.isDrawerVisible(START)) {
-                    drawer.closeDrawer(START);
-                } else {
-                    drawer.openDrawer(START);
-                }
-            }
-        });
-
-        ImageView facebook = (ImageView) findViewById(R.id.facebook);
-        facebook.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.facebook.com/pages/%E9%AB%98%E6%87%89%E6%A0%A1%E5%8B%99%E9%80%9A/954175941266264?fref=ts"));
-                startActivity(browserIntent);
-            }
-        });
-        ImageView github = (ImageView) findViewById(R.id.github);
-        github.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/kuastw"));
-                startActivity(browserIntent);
-            }
-        });
-        ImageView mail = (ImageView) findViewById(R.id.mail);
-        mail.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("mailto:1102108133@kuas.edu.tw"));
-                startActivity(browserIntent);
-            }
-        });
+            initDrawer(new String[]{ "離線課表", "校園資訊" }, new String[]{}, _isLogin, true);
 
         _fncid = "";
     }
 
-    private Handler ReadScoreHandler = new Handler() {
+    private Handler LoadingDialogHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what)
@@ -3386,6 +1940,18 @@ public class MainActivity extends ActionBarActivity {
                     LoadingDialog.setCanceledOnTouchOutside(false);
                     LoadingDialog.show();
                     break;
+                case 1:
+                    LoadingDialog.dismiss();
+                    break;
+            }
+        };
+    };
+
+    private Handler ReadScoreHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what)
+            {
                 case 1:
                     addScore();
                     LoadingDialog.dismiss();
@@ -3399,15 +1965,6 @@ public class MainActivity extends ActionBarActivity {
         public void handleMessage(Message msg) {
             switch (msg.what)
             {
-                case -1:
-                    LoadingDialog.setMessage("Loading...");
-                    ProgressDialogPro progressDialog = (ProgressDialogPro) LoadingDialog;
-                    progressDialog.setProgressStyle(ProgressDialogPro.STYLE_SPINNER);
-                    progressDialog.setIndeterminate(true);
-                    LoadingDialog.setCancelable(false);
-                    LoadingDialog.setCanceledOnTouchOutside(false);
-                    LoadingDialog.show();
-                    break;
                 case 1:
                     addCourse();
                     LoadingDialog.dismiss();
@@ -3421,15 +1978,6 @@ public class MainActivity extends ActionBarActivity {
         public void handleMessage(Message msg) {
             switch (msg.what)
             {
-                case -1:
-                    LoadingDialog.setMessage("Loading...");
-                    ProgressDialogPro progressDialog = (ProgressDialogPro) LoadingDialog;
-                    progressDialog.setProgressStyle(ProgressDialogPro.STYLE_SPINNER);
-                    progressDialog.setIndeterminate(true);
-                    LoadingDialog.setCancelable(false);
-                    LoadingDialog.setCanceledOnTouchOutside(false);
-                    LoadingDialog.show();
-                    break;
                 case 1:
                     addLeave();
                     LoadingDialog.dismiss();
@@ -3443,15 +1991,6 @@ public class MainActivity extends ActionBarActivity {
         public void handleMessage(Message msg) {
             switch (msg.what)
             {
-                case -1:
-                    LoadingDialog.setMessage("Loading...");
-                    ProgressDialogPro progressDialog = (ProgressDialogPro) LoadingDialog;
-                    progressDialog.setProgressStyle(ProgressDialogPro.STYLE_SPINNER);
-                    progressDialog.setIndeterminate(true);
-                    LoadingDialog.setCancelable(false);
-                    LoadingDialog.setCanceledOnTouchOutside(false);
-                    LoadingDialog.show();
-                    break;
                 case 1:
                     AlertDialogPro.Builder builder = CustomDialog("假單送出結果",(String) msg.obj, false);
                     builder.setPositiveButton("OK", null).show();
@@ -3466,15 +2005,6 @@ public class MainActivity extends ActionBarActivity {
         public void handleMessage(Message msg) {
             switch (msg.what)
             {
-                case -1:
-                    LoadingDialog.setMessage("Loading...");
-                    ProgressDialogPro progressDialog = (ProgressDialogPro) LoadingDialog;
-                    progressDialog.setProgressStyle(ProgressDialogPro.STYLE_SPINNER);
-                    progressDialog.setIndeterminate(true);
-                    LoadingDialog.setCancelable(false);
-                    LoadingDialog.setCanceledOnTouchOutside(false);
-                    LoadingDialog.show();
-                    break;
                 case 1:
                     initSelectSemester();
                     if (_fncid.equals("AG008"))
@@ -3493,15 +2023,6 @@ public class MainActivity extends ActionBarActivity {
         public void handleMessage(Message msg) {
             switch (msg.what)
             {
-                case -1:
-                    LoadingDialog.setMessage("Loading...");
-                    ProgressDialogPro progressDialog = (ProgressDialogPro) LoadingDialog;
-                    progressDialog.setProgressStyle(ProgressDialogPro.STYLE_SPINNER);
-                    progressDialog.setIndeterminate(true);
-                    LoadingDialog.setCancelable(false);
-                    LoadingDialog.setCanceledOnTouchOutside(false);
-                    LoadingDialog.show();
-                    break;
                 case 1:
                     addBus();
                     LoadingDialog.dismiss();
@@ -3512,12 +2033,12 @@ public class MainActivity extends ActionBarActivity {
                     break;
                 case 3:
                     Toast.makeText(getApplicationContext(), (String) msg.obj, Toast.LENGTH_SHORT).show();
-                    ReadBusHandler.sendEmptyMessage(-1);
+                    LoadingDialogHandler.sendEmptyMessage(-1);
                     new Thread(ReadBusRunnable).start();
                     break;
                 case 4:
                     Toast.makeText(getApplicationContext(), (String) msg.obj, Toast.LENGTH_SHORT).show();
-                    ReadBusHandler.sendEmptyMessage(-1);
+                    LoadingDialogHandler.sendEmptyMessage(-1);
                     new Thread(BusReserveRunnable).start();
                     break;
             }
@@ -3529,15 +2050,6 @@ public class MainActivity extends ActionBarActivity {
         public void handleMessage(Message msg) {
             switch (msg.what)
             {
-                case -1:
-                    LoadingDialog.setMessage("Loading...");
-                    ProgressDialogPro progressDialog = (ProgressDialogPro) LoadingDialog;
-                    progressDialog.setProgressStyle(ProgressDialogPro.STYLE_SPINNER);
-                    progressDialog.setIndeterminate(true);
-                    LoadingDialog.setCancelable(false);
-                    LoadingDialog.setCanceledOnTouchOutside(false);
-                    LoadingDialog.show();
-                    break;
                 case 1:
                     addNotification();
                     LoadingDialog.dismiss();
@@ -3551,15 +2063,6 @@ public class MainActivity extends ActionBarActivity {
         public void handleMessage(Message msg) {
             switch (msg.what)
             {
-                case -1:
-                    LoadingDialog.setMessage("Loading...");
-                    ProgressDialogPro progressDialog = (ProgressDialogPro) LoadingDialog;
-                    progressDialog.setProgressStyle(ProgressDialogPro.STYLE_SPINNER);
-                    progressDialog.setIndeterminate(true);
-                    LoadingDialog.setCancelable(false);
-                    LoadingDialog.setCanceledOnTouchOutside(false);
-                    LoadingDialog.show();
-                    break;
                 case 1:
                     LoadingDialog.dismiss();
                     AlertDialogPro.Builder builder = CustomDialog("Error", "帳號或密碼輸入錯誤 !", false);
@@ -4493,6 +2996,26 @@ public class MainActivity extends ActionBarActivity {
         return new String(mByteArrayOutputStream.toByteArray());
     }
 
+    /*
+        BusLoginRunnable = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    get_url_contents("http://bus.kuas.edu.tw/" , null, cookieStore);
+                    String n = runScript(BusJs + get_url_contents("http://bus.kuas.edu.tw/API/Scripts/a1" , null, cookieStore), "loginEncryption", new String[]{Uid, Pwd});
+                    List<NameValuePair> params = new LinkedList<>();
+                    params.add(new BasicNameValuePair("account", Uid));
+                    params.add(new BasicNameValuePair("password", Pwd));
+                    params.add(new BasicNameValuePair("n", n));
+                    System.out.println(post_url_contents(_busLoginUrl , params, cookieStore));
+                    JSONObject jsonObj = new JSONObject(post_url_contents(_busLoginUrl , params, cookieStore));
+                    System.out.println(jsonObj.optString("success"));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+    */
     public String runScript(String js, String functionName, Object[] functionParams) {
         Context rhino = Context.enter();
         rhino.setOptimizationLevel(-1);
