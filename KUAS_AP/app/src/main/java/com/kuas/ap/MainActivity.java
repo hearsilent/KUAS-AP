@@ -1,5 +1,7 @@
 package com.kuas.ap;
 
+import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -7,14 +9,17 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.StrictMode;
+import android.provider.CalendarContract;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Gravity;
@@ -184,6 +189,12 @@ public class MainActivity extends ActionBarActivity {
     Integer NotificationPage = 1;
     ArrayList<PhoneList> PhoneList = new ArrayList<>();
     String scheduleData = "[{\"events\":[\"(2/1) 103學年度第2學期開始日\",\"(2/3 - 2/5) 寄發103學年度第1學期學生成績單\",\"(2/4) 核對103學年度第1學期成績優良排名表\",\"(2/4) 核發103學年度寒畢畢業證書\",\"(2/5 - 2/9) 103學年度第1學期學業成績優良排名表送生輔組協查有無記過紀錄\",\"(2/10 - 2/16) 第1次公告103學年度第1學期學業成績優良名單\"],\"week\":\"寒\"},{\"events\":[\"(2/16) 新進教師研習會\",\"(2/18 - 2/23) 春節放假\",\"(2/17 - 2/24) 第2次公告103學年度第1學期學業成績優良名單\"],\"week\":\"預備週\"},{\"events\":[\"(2/23) 補假一天(補2/21春節初三)\",\"(2/25) 日間部、進修推廣處開學\",\"(2/27) 補假一天(補2/28和平紀念日)\",\"(2/24) 教學研討會（導師會議、導師輔導知能研習）\",\"(2/24) 研究生辦理103學年度第1學期離校手續截止日\",\"(2/24) 註冊繳費截止日\",\"(2/25) 網路公布103學年度第2學期加退選日程及相關辦法\",\"(2/25) 輔系、雙主修、轉學生學分抵免申請開始\",\"(2/25) 校際選課開始申請\",\"(2/25 - 3/4) 通知103學年度第1學期學業成績優良學生至學校網站登載銀行帳號(限郵局及台灣企銀)\",\"(2/25) 研究生自完成註冊手續後開始辦理學位考試申請\"],\"week\":\"第一週\"},{\"events\":[\"(3/4) 轉學生學分抵免申請截止日\",\"(3/4 - 3/11) 日間部學生加退選課申請作業(選課時間另行公布)\",\"(3/4) 輔系、雙主修申請截止日\",\"(3/6) 校際選課截止日\"],\"week\":\"第二週\"},{\"events\":[\"(3/12) 103學年度第2學期人工加掛選課申請截止日\"],\"week\":\"第三週\"},{\"events\":[\"(3/18) 103學年度第2學期第1次教務會議\"],\"week\":\"第四週\"},{\"events\":[\"(3/27 - 3/31) 學生加退選課繳費\"],\"week\":\"第五週\"},{\"events\":[\"(4/3) 補假一天(補4/4兒童節)\",\"(3/30) 加退選結束教師自行列印點名單及成績冊(web)\",\"(3/30 - 4/8) 教師上網登錄期中考考試時間\",\"(3/30 - 4/2) 核算103學年度第2學期教師鐘點費\",\"(4/1) 學生逕修讀博士學位開始申請\"],\"week\":\"第六週\"},{\"events\":[\"(4/6) 補假一天(補4/5民族掃墓節)\",\"(4/7) 學生辦理休、退學學雜費退2/3截止日\",\"(4/8 - 4/14) 103學年度暑修意願網路調查\"],\"week\":\"第七週\"},{\"events\":[\"(4/13 - 4/25) 上網公布期中考考試時間、開放同學查詢\",\"(4/15) 學生逕修讀博士學位申請截止日\",\"(4/15 - 5/3) 教師登錄期中成績暨預警作業\",\"(4/17) 教師期中考試卷申印製卷截止日\"],\"week\":\"第八週\"},{\"events\":[\"(4/20 - 4/25) 日間部、進修推廣處期中考試\"],\"week\":\"第九週\"},{\"events\":[\"(4/27) 103學年度第三次校務會議\",\"(4/27) 103學年度第2學期停修課程開始申請\",\"(4/27) 登錄教師研究計畫案及義務授課減授時數\",\"(4/27 - 5/1) 第一次修訂104學年度第1學期註冊須知\",\"(4/28) 公告103學年度暑修初步課表\",\"(4/30) 103學年度第2學期研究生學位考試申請期限截止日\",\"(5/1) 日間部大學部學生轉系(組)開始申請\",\"(5/2 - 5/3) 104學年度四技統一入學測驗考試\"],\"week\":\"第十週\"},{\"events\":[\"(5/3) 104學年度二技統一入學測驗考試\",\"(5/4 - 5/8) 103學年度暑修網路選課\",\"(5/3) 教師登錄期中成績暨預警作業截止日\"],\"week\":\"第十一週\"},{\"events\":[\"(5/11 - 5/13) 發放期中預警學生名單予各系、班級導師、任課老師\",\"(5/11 - 5/15) 第二次修訂104學年度第1學期註冊須知\",\"(5/11 - 5/31) 導師填報期中預警輔導紀錄表(web)\",\"(5/15) 103學年度第2學期停修課程申請截止日\",\"(5/15) 日間部大學部學生轉系(組)申請期限截止日\"],\"week\":\"第十二週\"},{\"events\":[\"(5/19) 學生辦理休、退學學雜費退1/3截止日\",\"(5/20 - 5/22) 寄發104學年度第1學期復學通知\"],\"week\":\"第十三週\"},{\"events\":[\"(5/25 - 5/27) 核算停修後教師鐘點費\",\"(5/27) 發放舊生註冊須知\"],\"week\":\"第十四週\"},{\"events\":[\"(6/3) 103學年度第2學期第2次教務會議\",\"(6/1 - 6/5) 103學年度暑修繳費\",\"(6/1 - 6/10) 教師上網登錄期末考時間\",\"(6/4) 開放上網查詢104學年度第1學期課程表\"],\"week\":\"第十五週\"},{\"events\":[\"(6/13) 畢業典禮\",\"(6/8 - 6/12) 日間部學生104學年度第1學期選課登記志願(初選第一階段)\"],\"week\":\"第十六週\"},{\"events\":[\"(6/19) 補假一天(補6/20端午節)\",\"(6/15) 103學年度第四次校務會議\",\"(6/15 - 6/27) 上網公佈期末考時間，開放學生查詢\",\"(6/16 - 6/23) 日間部學生104學年度第1學期選課電腦篩選\",\"(6/18) 學生期末考扣考資料通知學生、家長、老師\",\"(6/18) 教師期末考試卷申印製卷截止日\"],\"week\":\"第十七週\"},{\"events\":[\"(6/24 - 6/30) 日間部、進修推廣處期末考試\",\"(6/24 - 6/26) 日間部學生104學年度第1學期選課電腦篩選分發結果公告\"],\"week\":\"第十八週\"},{\"events\":[\"(6/29 - 7/2) 日間部學生104學年度第1學期初選第二階段選課\",\"(7/5) 教師送交畢業班學期考試成績截止日\",\"(7/6 - 7/8) 本學期修課不及格者辦理暑修報名並繳費\",\"(7/6 - 7/8) 外校生至本校暑修選課報名並同時繳費\",\"(7/7) 教師送交103學年度第2學期學生學期成績截止日\",\"(7/8 - 7/10) 彙算103學年度第2學期學生學業成績\",\"(7/13) 暑修開始上課，預計8/22上課結束\",\"(7/14) 寄發103學年度第2學期退學通知\",\"(7/20) 核發103學年度畢業生畢業證書\",\"(7/20 - 7/22) 寄發103學年度第2學期學生成績單\",\"(7/31) 103學年度第2學期研究生學位考試截止日\",\"(7/31) 103學年度第2學期結束日\"],\"week\":\"暑\"}]";
+    Integer NotificationListViewIndex = 0;
+    Integer NotificationListViewTop = 0;
+    Integer PhoneListViewIndex = 0;
+    Integer PhoneListViewTop = 0;
+    Integer Event3TableLayoutX = 0;
+    Integer Event3TableLayoutY = 0;
 
     // News
     Integer news_id = -1;
@@ -268,6 +279,7 @@ public class MainActivity extends ActionBarActivity {
                     ymsScore = Xsoup.compile("//option[@selected]").evaluate(document).getElements().attr("value");
                     ReadSemesterHandler.sendEmptyMessage(1);
                 } catch (Exception e) {
+                    ReLoginHandler.sendEmptyMessage(-1);
                     e.printStackTrace();
                 }
             }
@@ -306,6 +318,30 @@ public class MainActivity extends ActionBarActivity {
             initLogin();
             OnCreateCheck = true;
         }
+    }
+
+    private String getCalendarUriBase(Activity act) {
+
+        String calendarUriBase = null;
+        Uri calendars = Uri.parse("content://calendar/calendars");
+        Cursor managedCursor = null;
+        try {
+            managedCursor = act.managedQuery(calendars, null, null, null, null);
+        } catch (Exception e) {
+        }
+        if (managedCursor != null) {
+            calendarUriBase = "content://calendar/";
+        } else {
+            calendars = Uri.parse("content://com.android.calendar/calendars");
+            try {
+                managedCursor = act.managedQuery(calendars, null, null, null, null);
+            } catch (Exception e) {
+            }
+            if (managedCursor != null) {
+                calendarUriBase = "content://com.android.calendar/";
+            }
+        }
+        return calendarUriBase;
     }
 
     public boolean CheckVersion()
@@ -844,6 +880,7 @@ public class MainActivity extends ActionBarActivity {
                             CourseList.add(CourseList2);
                         }
                     } catch (Exception e) {
+                        ReLoginHandler.sendEmptyMessage(-1);
                         e.printStackTrace();
                     }
 
@@ -879,6 +916,7 @@ public class MainActivity extends ActionBarActivity {
                     */
                     ReadCourseHandler.sendEmptyMessage(1);
                 } catch (Exception e) {
+                    ReLoginHandler.sendEmptyMessage(-1);
                     e.printStackTrace();
                 }
             }
@@ -1013,10 +1051,12 @@ public class MainActivity extends ActionBarActivity {
                         for (int i = 0; i < jsonObj.getJSONArray(1).length(); i++)
                             Score2List.add(jsonObj.getJSONArray(1).get(i).toString());
                     } catch (Exception e) {
+                        ReLoginHandler.sendEmptyMessage(-1);
                         e.printStackTrace();
                     }
                     ReadScoreHandler.sendEmptyMessage(1);
                 } catch (Exception e) {
+                    ReLoginHandler.sendEmptyMessage(-1);
                     e.printStackTrace();
                 }
             }
@@ -1180,10 +1220,12 @@ public class MainActivity extends ActionBarActivity {
                             }
                         }
                     } catch (Exception e) {
+                        ReLoginHandler.sendEmptyMessage(-1);
                         e.printStackTrace();
                     }
                     ReadLeaveHandler.sendEmptyMessage(1);
                 } catch (Exception e) {
+                    ReLoginHandler.sendEmptyMessage(-1);
                     e.printStackTrace();
                 }
             }
@@ -1231,8 +1273,10 @@ public class MainActivity extends ActionBarActivity {
         final CaldroidFragment startDialogCaldroidFragment = CaldroidFragment.newInstance("選擇起始時間", (Calendar.getInstance().get(Calendar.MONTH)+1), Calendar.getInstance().get(Calendar.YEAR));
         final CaldroidFragment endDialogCaldroidFragment = CaldroidFragment.newInstance("選擇結束時間", (Calendar.getInstance().get(Calendar.MONTH)+1), Calendar.getInstance().get(Calendar.YEAR));
         final SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
-        startDialogCaldroidFragment.setMinDate(Calendar.getInstance().getTime());
-        endDialogCaldroidFragment.setMinDate(Calendar.getInstance().getTime());
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DATE, -6);
+        startDialogCaldroidFragment.setMinDate(calendar.getTime());
+        endDialogCaldroidFragment.setMinDate(calendar.getTime());
 
         final TextView startTimeTextView = (TextView) findViewById(R.id.startTimeTextView);
         final CaldroidListener startListener = new CaldroidListener() {
@@ -1413,10 +1457,12 @@ public class MainActivity extends ActionBarActivity {
                         JSONArray jsonObj = new JSONArray(post_url_contents(api_server + "leave/submit", params, cookieStore));
                         msg.obj = jsonObj.get(1).toString();
                     } catch (Exception e) {
+                        ReLoginHandler.sendEmptyMessage(-1);
                         e.printStackTrace();
                     }
                     LeaveSubmitHandler.sendMessage(msg);
                 } catch (Exception e) {
+                    ReLoginHandler.sendEmptyMessage(-1);
                     e.printStackTrace();
                 }
             }
@@ -1517,10 +1563,14 @@ public class MainActivity extends ActionBarActivity {
     public void initEvent1(final boolean _isLogin, boolean ReLoad){
         setContentView(R.layout.event1);
 
+        final ListView NotificationListView = (ListView) findViewById(R.id.notification_listView);
+
         RelativeLayout Page2 = (RelativeLayout) findViewById(R.id.RelativeLayout2);
         Page2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                NotificationListViewIndex = NotificationListView.getFirstVisiblePosition();
+                NotificationListViewTop = (NotificationListView.getChildAt(0) == null) ? 0 : (NotificationListView.getChildAt(0).getTop() - NotificationListView.getPaddingTop());
                 initEvent2(_isLogin);
             }
         });
@@ -1529,6 +1579,8 @@ public class MainActivity extends ActionBarActivity {
         Page3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                NotificationListViewIndex = NotificationListView.getFirstVisiblePosition();
+                NotificationListViewTop = (NotificationListView.getChildAt(0) == null) ? 0 : (NotificationListView.getChildAt(0).getTop() - NotificationListView.getPaddingTop());
                 initEvent3(_isLogin);
             }
         });
@@ -1605,11 +1657,19 @@ public class MainActivity extends ActionBarActivity {
             NotificationPage = 1;
             LoadingDialogHandler.sendEmptyMessage(-1);
             new Thread(ReadNotificationRunnable).start();
+
+            NotificationListViewIndex = 0;
+            NotificationListViewTop = 0;
+            PhoneListViewIndex = 0;
+            PhoneListViewTop = 0;
+            Event3TableLayoutX = 0;
+            Event3TableLayoutY = 0;
         }
         else
         {
             NowPage.setText("第" + NotificationPage + "頁");
             addNotification();
+            NotificationListView.setSelectionFromTop(NotificationListViewIndex, NotificationListViewTop);
         }
 
         if (NotificationPage == 1)
@@ -1621,10 +1681,14 @@ public class MainActivity extends ActionBarActivity {
     public void initEvent2(final boolean _isLogin){
         setContentView(R.layout.event2);
 
+        final ListView PhoneListView = (ListView) findViewById(R.id.phone_listView);
+
         RelativeLayout Page1 = (RelativeLayout) findViewById(R.id.RelativeLayout);
         Page1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                PhoneListViewIndex = PhoneListView.getFirstVisiblePosition();
+                PhoneListViewTop = (PhoneListView.getChildAt(0) == null) ? 0 : (PhoneListView.getChildAt(0).getTop() - PhoneListView.getPaddingTop());
                 initEvent1(_isLogin, false);
             }
         });
@@ -1633,6 +1697,8 @@ public class MainActivity extends ActionBarActivity {
         Page3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                PhoneListViewIndex = PhoneListView.getFirstVisiblePosition();
+                PhoneListViewTop = (PhoneListView.getChildAt(0) == null) ? 0 : (PhoneListView.getChildAt(0).getTop() - PhoneListView.getPaddingTop());
                 initEvent3(_isLogin);
             }
         });
@@ -1644,10 +1710,33 @@ public class MainActivity extends ActionBarActivity {
 
         _fncid = "";
         addPhone();
+        PhoneListView.setSelectionFromTop(PhoneListViewIndex, PhoneListViewTop);
     }
 
     public void initEvent3(final boolean _isLogin){
         setContentView(R.layout.event3);
+
+        final ScrollView scrollView = (ScrollView) findViewById(R.id.scrollView);
+
+        RelativeLayout Page1 = (RelativeLayout) findViewById(R.id.RelativeLayout);
+        Page1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Event3TableLayoutX = scrollView.getScrollX();
+                Event3TableLayoutY = scrollView.getScrollY();
+                initEvent1(_isLogin, false);
+            }
+        });
+
+        RelativeLayout Page2 = (RelativeLayout) findViewById(R.id.RelativeLayout2);
+        Page2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Event3TableLayoutX = scrollView.getScrollX();
+                Event3TableLayoutY = scrollView.getScrollY();
+                initEvent2(_isLogin);
+            }
+        });
 
         if (_isLogin)
             initDrawer(new String[]{ "學期課表", "學期成績", "缺曠系統", "校車系統" }, new String[]{ "關於我們" }, _isLogin, true);
@@ -1656,6 +1745,12 @@ public class MainActivity extends ActionBarActivity {
 
         _fncid = "";
         addSchedule();
+        scrollView.post(new Runnable() {
+            @Override
+            public void run() {
+                scrollView.scrollTo(Event3TableLayoutX, Event3TableLayoutY);
+            }
+        });
     }
 
     private void initBus1(boolean ShowCal)
@@ -1764,9 +1859,11 @@ public class MainActivity extends ActionBarActivity {
                         msg.obj = jsonObj.get(0).toString();
                         ReadBusHandler.sendMessage(msg);
                     } catch (Exception e) {
+                        ReLoginHandler.sendEmptyMessage(-1);
                         e.printStackTrace();
                     }
                 } catch (Exception e) {
+                    ReLoginHandler.sendEmptyMessage(-1);
                     e.printStackTrace();
                 }
             }
@@ -1801,11 +1898,13 @@ public class MainActivity extends ActionBarActivity {
                                     item.getString("runDateTime"),
                                     item.getInt("isReserve")));
                         }
+                        ReadBusHandler.sendEmptyMessage(1);
                     } catch (Exception e) {
+                        ReLoginHandler.sendEmptyMessage(-1);
                         e.printStackTrace();
                     }
-                    ReadBusHandler.sendEmptyMessage(1);
                 } catch (Exception e) {
+                    ReLoginHandler.sendEmptyMessage(-1);
                     e.printStackTrace();
                 }
             }
@@ -1866,9 +1965,11 @@ public class MainActivity extends ActionBarActivity {
                         msg.obj = jsonObj.get(0).toString();
                         ReadBusHandler.sendMessage(msg);
                     } catch (Exception e) {
+                        ReLoginHandler.sendEmptyMessage(-1);
                         e.printStackTrace();
                     }
                 } catch (Exception e) {
+                    ReLoginHandler.sendEmptyMessage(-1);
                     e.printStackTrace();
                 }
             }
@@ -1901,10 +2002,12 @@ public class MainActivity extends ActionBarActivity {
                                 1));
                     }
                 } catch (Exception e) {
+                    ReLoginHandler.sendEmptyMessage(-1);
                     e.printStackTrace();
                 }
                 ReadBusHandler.sendEmptyMessage(2);
             } catch (Exception e) {
+                ReLoginHandler.sendEmptyMessage(-1);
                 e.printStackTrace();
             }
             }
@@ -2218,6 +2321,25 @@ public class MainActivity extends ActionBarActivity {
                 {
                     TableRow rowx = (TableRow)LayoutInflater.from(MainActivity.this).inflate(R.layout.schedule_item, null);
                     ((TextView)rowx.findViewById(R.id.title)).setText(item.getJSONArray("events").get(j).toString());
+                    final String msg = item.getJSONArray("events").get(j).toString();
+                    rowx.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            try {
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                                    AlertDialogPro.Builder builder = CustomDialog("行事曆", "確定要將「" + msg.split("\\) ")[1] + "」新增至行事曆？", false);
+                                    builder.setPositiveButton("確定", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            AddCalendarEvent(msg);
+                                        }
+                                    }).setNegativeButton("返回", null).setCancelable(false).show();
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
                     table.addView(rowx);
                 }
             }
@@ -3063,6 +3185,36 @@ public class MainActivity extends ActionBarActivity {
             setting.edit().putString("Pwd", "").apply();
         setting.edit().putBoolean("Remember", RememberPass.isChecked()).apply();
 
+    }
+
+    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+    public void AddCalendarEvent(String Msg)
+    {
+        String _time = Msg.split("\\) ")[0].replace("(", "");
+        String _msg = Msg.split("\\) ")[1];
+        String _startTime;
+        String _endTime;
+        if (_time.contains("-"))
+        {
+            _startTime = _time.split("-")[0].replace(" ", "");
+            _endTime = _time.split("-")[1].replace(" ", "");
+        }
+        else
+        {
+            _startTime = _time;
+            _endTime = _time;
+        }
+        Intent calendarIntent = new Intent(Intent.ACTION_INSERT, CalendarContract.Events.CONTENT_URI);
+        Calendar beginTime = Calendar.getInstance();
+        Calendar endTime = Calendar.getInstance();
+        beginTime.set(Calendar.getInstance().get(Calendar.YEAR), Integer.parseInt(_startTime.split("/")[0])-1 , Integer.parseInt(_startTime.split("/")[1]), 0, 0 , 0);
+        endTime.set(Calendar.getInstance().get(Calendar.YEAR), Integer.parseInt(_endTime.split("/")[0])-1 , Integer.parseInt(_endTime.split("/")[1]), 23, 59, 59);
+        calendarIntent.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, beginTime.getTimeInMillis());
+        calendarIntent.putExtra(CalendarContract.EXTRA_EVENT_END_TIME, endTime.getTimeInMillis());
+        calendarIntent.putExtra(CalendarContract.EXTRA_EVENT_ALL_DAY, true);
+        calendarIntent.putExtra(CalendarContract.Events.TITLE, _msg);
+        calendarIntent.putExtra(CalendarContract.Events.EVENT_LOCATION, "國立高雄應用科技大學");
+        startActivity(calendarIntent);
     }
 
     public AlertDialogPro.Builder CustomDialog(String Title, String Message, boolean _HighLight)
