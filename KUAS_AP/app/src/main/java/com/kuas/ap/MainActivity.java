@@ -857,27 +857,31 @@ public class MainActivity extends ActionBarActivity {
                     try {
                         OfflineCourseData = post_url_contents(api_server + "ap/query", params, cookieStore);
                         JSONArray jsonObj = new JSONArray(OfflineCourseData);
-                        for (int i = 0; i < jsonObj.getJSONObject(0).length(); i++) {
-                            JSONObject item = jsonObj.getJSONObject(0).getJSONObject(Integer.toString(i));
-                            ArrayList<CourseList> CourseList2 = new ArrayList<>();
-                            for (int j = 1; j < 8; j ++)
-                            {
-                                JSONObject itemdata = item.getJSONObject(Integer.toString(j));
-                                if (j >= 6 && !itemdata.getString("course_name").equals(""))
+                        try {
+                            for (int i = 0; i < jsonObj.getJSONObject(0).length(); i++) {
+                                JSONObject item = jsonObj.getJSONObject(0).getJSONObject(Integer.toString(i));
+                                ArrayList<CourseList> CourseList2 = new ArrayList<>();
+                                for (int j = 1; j < 8; j ++)
                                 {
-                                    isHolidayClass = true;
-                                    if (i >= 10)
-                                        isHolidayNightClass = true;
-                                }
-                                else if (!itemdata.getString("course_name").equals("") && i >= 10)
-                                    isNightClass = true;
+                                    JSONObject itemdata = item.getJSONObject(Integer.toString(j));
+                                    if (j >= 6 && !itemdata.getString("course_name").equals(""))
+                                    {
+                                        isHolidayClass = true;
+                                        if (i >= 10)
+                                            isHolidayNightClass = true;
+                                    }
+                                    else if (!itemdata.getString("course_name").equals("") && i >= 10)
+                                        isNightClass = true;
 
-                                CourseList2.add(new CourseList(itemdata.getString("course_name"),
-                                        itemdata.getString("course_teacher"),
-                                        itemdata.getString("course_classroom"),
-                                        item.getString("time")));
+                                    CourseList2.add(new CourseList(itemdata.getString("course_name"),
+                                            itemdata.getString("course_teacher"),
+                                            itemdata.getString("course_classroom"),
+                                            item.getString("time")));
+                                }
+                                CourseList.add(CourseList2);
                             }
-                            CourseList.add(CourseList2);
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
                     } catch (Exception e) {
                         ReLoginHandler.sendEmptyMessage(-1);
@@ -2026,6 +2030,31 @@ public class MainActivity extends ActionBarActivity {
         else
             initDrawer(new String[]{ "離線課表", "校園資訊" }, new String[]{}, _isLogin, true);
 
+        ImageView facebook = (ImageView) findViewById(R.id.facebook);
+        facebook.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.facebook.com/pages/%E9%AB%98%E6%87%89%E6%A0%A1%E5%8B%99%E9%80%9A/954175941266264?fref=ts"));
+                startActivity(browserIntent);
+            }
+        });
+        ImageView github = (ImageView) findViewById(R.id.github);
+        github.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/kuastw"));
+                startActivity(browserIntent);
+            }
+        });
+        ImageView mail = (ImageView) findViewById(R.id.mail);
+        mail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("mailto:1102108133@kuas.edu.tw"));
+                startActivity(browserIntent);
+            }
+        });
+
         _fncid = "";
     }
 
@@ -2515,6 +2544,7 @@ public class MainActivity extends ActionBarActivity {
             final TextView testview = new TextView(MainActivity.this);
             testview.setTextSize(14);
             testview.setGravity(Gravity.CENTER);
+            testview.setTextColor(getResources().getColor(R.color.blue));
             testview.setText("本學期無缺曠課紀錄");
             testview.setBackgroundResource(R.drawable.tablelayout_oneitem);
             tablerow.addView(testview,new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.MATCH_PARENT));
@@ -2562,7 +2592,7 @@ public class MainActivity extends ActionBarActivity {
             for (int j = 0; j < titles.length; j++) {
                 final TextView testview = new TextView(MainActivity.this);
                 testview.setTextSize(14);
-
+                testview.setGravity(Gravity.CENTER);
                 testview.setTextColor(getResources().getColor(R.color.grey));
                 switch (j)
                 {
@@ -2616,7 +2646,6 @@ public class MainActivity extends ActionBarActivity {
                         break;
                 }
 
-                testview.setGravity(Gravity.CENTER);
                 if (j == 0)
                 {
                     if (i == LeaveList.size()-1)
@@ -2953,6 +2982,7 @@ public class MainActivity extends ActionBarActivity {
             final TextView testview = new TextView(MainActivity.this);
             testview.setTextSize(14);
             testview.setGravity(Gravity.CENTER);
+            testview.setTextColor(getResources().getColor(R.color.blue));
             testview.setText("目前無學生個人成績資料");
             testview.setBackgroundResource(R.drawable.tablelayout_oneitem);
             tablerow.addView(testview,new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.MATCH_PARENT));
@@ -2991,7 +3021,7 @@ public class MainActivity extends ActionBarActivity {
             for (int j = 0; j < 3; j++) {
                 final TextView testview = new TextView(MainActivity.this);
                 testview.setTextSize(14);
-
+                testview.setTextColor(getResources().getColor(R.color.grey));
                 if (j == 0)
                     testview.setText(ScoreList.get(i).ID);
                 else if (j == 1)
@@ -3038,6 +3068,7 @@ public class MainActivity extends ActionBarActivity {
             TableRow tablerow = new TableRow(MainActivity.this);
             final TextView testview = new TextView(MainActivity.this);
             testview.setTextSize(14);
+            testview.setTextColor(getResources().getColor(R.color.grey));
             testview.setGravity(Gravity.CENTER);
             testview.setText(Score2List.get(i));
             if (i == 0)
