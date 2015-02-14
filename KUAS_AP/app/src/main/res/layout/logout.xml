@@ -90,28 +90,18 @@
                         android:layout_centerHorizontal="true"
                         android:textColor="#ff000000" />
 
-                    <com.andexert.library.RippleView
-                        android:id="@+id/more"
+                    <Button
                         android:layout_width="100dp"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentTop="false"
-                        ripple:rv_rippleDuration="300"
-                        android:gravity="center"
+                        android:id="@+id/Logout"
                         android:layout_below="@+id/textView2"
                         android:layout_marginTop="10dp"
-                        android:layout_centerHorizontal="true">
-                        <Button
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/Logout"
-                            android:textSize="15sp"
-                            android:text="登出"
-                            android:enabled="true"
-                            android:width="200dp"
-                            android:textColor="@color/white"
-                            android:background="@color/actionbar_color"
-                            android:layout_centerHorizontal="true" />
-                    </com.andexert.library.RippleView>
+                        android:textSize="15sp"
+                        android:text="登出"
+                        android:width="200dp"
+                        android:textColor="@color/white"
+                        android:background="@color/actionbar_color"
+                        android:layout_centerHorizontal="true" />
                 </RelativeLayout>
             </ScrollView>
 

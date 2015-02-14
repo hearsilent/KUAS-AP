@@ -652,7 +652,7 @@ public class MainActivity extends ActionBarActivity {
     {
         if (_isLogout)
         {
-            ImageView Logout = (ImageView) findViewById(R.id.Logout);
+            RelativeLayout Logout = (RelativeLayout) findViewById(R.id.Logout);
             Logout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -1915,12 +1915,22 @@ public class MainActivity extends ActionBarActivity {
         };
 
         if (ShowCal)
+        {
+            BusDate = "";
             dialogCaldroidFragment.show(getSupportFragmentManager(), "Caldroid");
+        }
         else
         {
-            timeTextView.setText("乘車時間 " + BusDate);
-            LoadingDialogHandler.sendEmptyMessage(-1);
-            new Thread(ReadBusRunnable).start();
+            if (BusDate.equals(""))
+            {
+                dialogCaldroidFragment.show(getSupportFragmentManager(), "Caldroid");
+            }
+            else
+            {
+                timeTextView.setText("乘車時間 " + BusDate);
+                LoadingDialogHandler.sendEmptyMessage(-1);
+                new Thread(ReadBusRunnable).start();
+            }
         }
     }
 
