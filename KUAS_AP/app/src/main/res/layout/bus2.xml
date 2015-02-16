@@ -101,7 +101,7 @@
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         android:id="@+id/noReserveImageView"
-                        android:background="@drawable/bus"
+                        android:background="@drawable/bus_"
                         android:layout_below="@+id/noReserveTextView" />
                 </RelativeLayout>
             </ScrollView>
