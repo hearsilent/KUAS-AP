@@ -1,7 +1,6 @@
 package com.kuas.ap;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -9,7 +8,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -27,6 +25,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebView;
 import android.widget.AdapterView;
@@ -45,6 +44,7 @@ import android.widget.Toast;
 
 import com.alertdialogpro.AlertDialogPro;
 import com.alertdialogpro.ProgressDialogPro;
+import com.eftimoff.androipathview.PathView;
 import com.roomorama.caldroid.CaldroidFragment;
 import com.roomorama.caldroid.CaldroidListener;
 
@@ -172,7 +172,7 @@ public class MainActivity extends ActionBarActivity {
     Runnable LeaveSubmitRunnable;
 
     // Bus
-    Runnable BusLoginRunnable;
+    //Runnable BusLoginRunnable;
     Runnable ReadBusRunnable;
     Runnable BusReserveRunnable;
     Runnable BusBookingRunnable;
@@ -196,8 +196,16 @@ public class MainActivity extends ActionBarActivity {
     Integer Event3TableLayoutX = 0;
     Integer Event3TableLayoutY = 0;
 
+    // About
+    int AboutEasterEgg = 0;
+    boolean PathViewCheck = false;
+
     // News
     Integer news_id = -1;
+    Runnable newsRunnable;
+
+    // Version
+    Runnable checkVersionRunnable;
 
     // Select
     boolean isSelecting = false;
@@ -313,6 +321,21 @@ public class MainActivity extends ActionBarActivity {
             }
         };
 
+        checkVersionRunnable = new Runnable() {
+            @Override
+            public void run() {
+                if (CheckVersion())
+                    checkVersionHandler.sendEmptyMessage(1);
+            }
+        };
+
+        newsRunnable = new Runnable() {
+            @Override
+            public void run() {
+                showNews();
+            }
+        };
+
         if (!OnCreateCheck)
         {
             initLogin();
@@ -320,40 +343,14 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    private String getCalendarUriBase(Activity act) {
-
-        String calendarUriBase = null;
-        Uri calendars = Uri.parse("content://calendar/calendars");
-        Cursor managedCursor = null;
-        try {
-            managedCursor = act.managedQuery(calendars, null, null, null, null);
-        } catch (Exception e) {
-        }
-        if (managedCursor != null) {
-            calendarUriBase = "content://calendar/";
-        } else {
-            calendars = Uri.parse("content://com.android.calendar/calendars");
-            try {
-                managedCursor = act.managedQuery(calendars, null, null, null, null);
-            } catch (Exception e) {
-            }
-            if (managedCursor != null) {
-                calendarUriBase = "content://com.android.calendar/";
-            }
-        }
-        return calendarUriBase;
-    }
-
     public boolean CheckVersion()
     {
-        String ServerVersion = get_url_contents(api_server + "android_version", null, cookieStore);
-        String ClientVersion = "";
-
         try{
+            String ServerVersion = get_url_contents(api_server + "android_version", null, cookieStore);
+            String ClientVersion = "";
+
             PackageInfo pkgInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
             ClientVersion = pkgInfo.versionName;
-            TextView version = (TextView) findViewById(R.id.version);
-            version.setText("v" + ClientVersion);
             //ClientVersion += "." + pkgInfo.versionCode;
 
             if (Integer.parseInt(ServerVersion.split("\\.")[0]) > Integer.parseInt(ClientVersion.split("\\.")[0]))
@@ -386,7 +383,6 @@ public class MainActivity extends ActionBarActivity {
                     return false;
                 }
             }
-
         } catch (Exception e) {
             return false;
         }
@@ -483,28 +479,6 @@ public class MainActivity extends ActionBarActivity {
 
         restorePrefs();
 
-        if (CheckVersion())
-        {
-            AlertDialogPro.Builder builder = CustomDialog("發現新版本", "要到「Google Play」安裝新版嗎？", false);
-            builder.setPositiveButton("安裝新版本", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.kuas.ap"));
-                            startActivity(browserIntent);
-                            finish();
-                            onDestroy();
-                        }
-                    }).
-                    setNegativeButton("離開程式", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            finish();
-                            onDestroy();
-                        }
-                    }).setCancelable(false).show();
-            return;
-        }
-
         LoginRunnable = new Runnable() {
             @Override
             public void run() {
@@ -541,8 +515,18 @@ public class MainActivity extends ActionBarActivity {
             }
         };
 
+        try{
+            PackageInfo pkgInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            String ClientVersion = pkgInfo.versionName;
+            TextView version = (TextView) findViewById(R.id.version);
+            version.setText("v" + ClientVersion);
+        } catch (Exception e) {
+
+        }
+
+        new Thread(checkVersionRunnable).start();
         new Thread(CheckServerStatusRunnable).start();
-        showNews();
+        new Thread(newsRunnable).start();
     }
 
     public void initLogout(){
@@ -939,6 +923,7 @@ public class MainActivity extends ActionBarActivity {
                                 public void onClick(DialogInterface dialog, int which) {
                                     SharedPreferences setting = getSharedPreferences("KUAS AP", 0);
                                     setting.edit().putString("OfflineCourse", OfflineCourseData).apply();
+                                    Toast.makeText(getApplicationContext(), "已將「" + ymsTextView.getText().toString() + "」設為離線課表", Toast.LENGTH_SHORT).show();
                                 }
                             }).
                             setNegativeButton("取消", null).setCancelable(false).show();
@@ -952,6 +937,7 @@ public class MainActivity extends ActionBarActivity {
                                     SharedPreferences setting = getSharedPreferences("KUAS AP", 0);
                                     setting.edit().putString("OfflineCourse", "").apply();
                                     addOfflineCourse();
+                                    Toast.makeText(getApplicationContext(), "已將離線課表清除", Toast.LENGTH_SHORT).show();
                                 }
                             }).
                             setNegativeButton("取消", null).setCancelable(false).show();
@@ -1916,6 +1902,7 @@ public class MainActivity extends ActionBarActivity {
 
         if (ShowCal)
         {
+            BusEndStation = "燕巢";
             BusDate = "";
             dialogCaldroidFragment.show(getSupportFragmentManager(), "Caldroid");
         }
@@ -1927,6 +1914,16 @@ public class MainActivity extends ActionBarActivity {
             }
             else
             {
+                if (BusEndStation.equals("建工"))
+                {
+                    location1.setBackgroundColor(getResources().getColor(R.color.bar_grey));
+                    location2.setBackgroundColor(getResources().getColor(R.color.green));
+                }
+                else if (BusEndStation.equals("燕巢"))
+                {
+                    location1.setBackgroundColor(getResources().getColor(R.color.blue_2));
+                    location2.setBackgroundColor(getResources().getColor(R.color.bar_grey));
+                }
                 timeTextView.setText("乘車時間 " + BusDate);
                 LoadingDialogHandler.sendEmptyMessage(-1);
                 new Thread(ReadBusRunnable).start();
@@ -2065,8 +2062,91 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
-        _fncid = "";
+        _fncid = "about";
+
+        initAboutPathView();
     }
+
+    private void initAboutEasterEgg()
+    {
+        findViewById(R.id.kuasap).setVisibility(View.GONE);
+        findViewById(R.id.EasterEgg).setVisibility(View.VISIBLE);
+    }
+
+    private void initAboutPathView()
+    {
+        AboutEasterEgg = 0;
+
+        findViewById(R.id.kuasap).setVisibility(View.VISIBLE);
+        findViewById(R.id.EasterEgg).setVisibility(View.GONE);
+
+        final PathView pathView = (PathView) findViewById(R.id.pathView);
+        final ImageView imageView = (ImageView) findViewById(R.id.imageView);
+
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AboutEasterEgg ++;
+                if (AboutEasterEgg >= 5)
+                    initAboutEasterEgg();
+            }
+        });
+
+        PathViewCheck = false;
+
+        if (Build.VERSION.SDK_INT < 11) // PathView min SDK 11
+        {
+            imageView.setImageResource(R.drawable.kuasap);
+        }
+        else
+        {
+            if (!PathViewCheck)
+            {
+                pathView.useNaturalColors();
+                pathView.getPathAnimator().end();
+                pathView.getPathAnimator().
+                        listenerEnd(new PathView.AnimatorBuilder.ListenerEnd() {
+                            @Override
+                            public void onAnimationEnd() {
+                                pathView.setVisibility(View.GONE);
+                                imageView.setImageResource(R.drawable.kuasap);
+                                PathViewCheck = true;
+                            }
+                        }).
+                        duration(2500).
+                        interpolator(new AccelerateDecelerateInterpolator()).
+                        start();
+            }
+        }
+    }
+
+    private Handler checkVersionHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what)
+            {
+                case 1:
+                    AlertDialogPro.Builder builder = CustomDialog("發現新版本", "要到「Google Play」安裝新版嗎？", false);
+                    builder.setPositiveButton("安裝新版本", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.kuas.ap"));
+                            startActivity(browserIntent);
+                            finish();
+                            onDestroy();
+                        }
+                    }).
+                    setNegativeButton("離開程式", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            finish();
+                            onDestroy();
+                        }
+                    }).setCancelable(false).show();
+                    break;
+            }
+        };
+    };
 
     private Handler LoadingDialogHandler = new Handler() {
         @Override
@@ -2253,6 +2333,49 @@ public class MainActivity extends ActionBarActivity {
         };
     };
 
+    private Handler showNewsHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            try {
+                JSONArray jsonObj = new JSONArray((String) msg.obj);
+                if ((jsonObj.getInt(0) == 1 && jsonObj.getInt(1) > news_id) || NewsDebug)
+                {
+                    news_id = jsonObj.getInt(1);
+                    SharedPreferences setting = getSharedPreferences("KUAS AP", 0);
+                    setting.edit().putInt("news_id", news_id).apply();
+                    jsonObj = new JSONArray(get_url_contents(api_server + "news", null, cookieStore));
+                    WebView image = new WebView(MainActivity.this);
+                    image.setBackgroundColor(0);
+                    image.loadDataWithBaseURL("", jsonObj.getString(3),"text/html", "UTF-8", "");
+                    AlertDialogPro.Builder builder;
+                    final String Url = jsonObj.getString(4);
+                    if (!Url.equals(""))
+                    {
+                        builder = CustomDialog(jsonObj.getString(2), "", true);
+                        builder.setView(image).
+                                setPositiveButton("立即前往", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(Url));
+                                        startActivity(browserIntent);
+                                    }
+                                }).
+                                setNegativeButton("朕知道了", null).setCancelable(false).show();
+                    }
+                    else
+                    {
+                        builder = CustomDialog(jsonObj.getString(2), "", true);
+                        builder.setView(image).
+                                setPositiveButton("朕知道了", null)
+                                .setCancelable(false).show();
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        };
+    };
+
     public Bitmap getBitmapFromURL(String src) {
         try {
             java.net.URL url = new java.net.URL(src);
@@ -2271,39 +2394,10 @@ public class MainActivity extends ActionBarActivity {
 
     public void showNews(){
         try {
-            JSONArray jsonObj = new JSONArray(get_url_contents(api_server + "news/status", null, cookieStore));
-            if ((jsonObj.getInt(0) == 1 && jsonObj.getInt(1) > news_id) || NewsDebug)
-            {
-                news_id = jsonObj.getInt(1);
-                SharedPreferences setting = getSharedPreferences("KUAS AP", 0);
-                setting.edit().putInt("news_id", news_id).apply();
-                jsonObj = new JSONArray(get_url_contents(api_server + "news", null, cookieStore));
-                WebView image = new WebView(MainActivity.this);
-                image.setBackgroundColor(0);
-                image.loadDataWithBaseURL("", jsonObj.getString(3),"text/html", "UTF-8", "");
-                AlertDialogPro.Builder builder;
-                final String Url = jsonObj.getString(4);
-                if (!Url.equals(""))
-                {
-                    builder = CustomDialog(jsonObj.getString(2), "", true);
-                    builder.setView(image).
-                            setPositiveButton("立即前往", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(Url));
-                                    startActivity(browserIntent);
-                                }
-                            }).
-                            setNegativeButton("朕知道了", null).setCancelable(false).show();
-                }
-                else
-                {
-                    builder = CustomDialog(jsonObj.getString(2), "", true);
-                    builder.setView(image).
-                            setPositiveButton("朕知道了", null)
-                            .setCancelable(false).show();
-                }
-            }
+            Message msg = new Message();
+            msg.what = 1;
+            msg.obj = get_url_contents(api_server + "news/status", null, cookieStore);
+            showNewsHandler.sendMessage(msg);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -2450,6 +2544,7 @@ public class MainActivity extends ActionBarActivity {
                                     public void onClick(DialogInterface dialog, int which) {
                                         _busId = busId;
                                         _busAction = "";
+                                        LoadingDialogHandler.sendEmptyMessage(-1);
                                         new Thread(BusBookingRunnable).start();
                                     }
                                 }).
@@ -2528,6 +2623,7 @@ public class MainActivity extends ActionBarActivity {
                                 public void onClick(DialogInterface dialog, int which) {
                                     _busId = runDate;
                                     _busAction = "un";
+                                    LoadingDialogHandler.sendEmptyMessage(-1);
                                     new Thread(BusBookingRunnable).start();
                                 }
                             }).
@@ -3098,6 +3194,7 @@ public class MainActivity extends ActionBarActivity {
             HttpClient client = new DefaultHttpClient();
             client.getParams().setParameter(CoreProtocolPNames.USER_AGENT, USER_AGENT);
             HttpResponse response = null;
+
             if( cookieStore == null )
                 response = client.execute( new HttpGet( params == null || params.size() == 0 ? url : url + "?" + URLEncodedUtils.format(params, "utf-8") ) );
             else {
@@ -3312,6 +3409,11 @@ public class MainActivity extends ActionBarActivity {
         }
         else if (_fncid.equals("AK002") && !LoadingDialog.isShowing() && !isSelecting)
             addLeave();
+        else if (_fncid.equals("about"))
+        {
+            if (AboutEasterEgg < 5)
+                initAboutPathView();
+        }
     }
 
     @Override
