@@ -20,7 +20,6 @@ public class NotificationListAdapter extends BaseAdapter {
         public TextView time;
     }
 
-
     public NotificationListAdapter(Context context) {
         mInflater = LayoutInflater.from(context);
     }

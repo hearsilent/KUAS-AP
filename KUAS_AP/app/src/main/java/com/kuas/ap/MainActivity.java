@@ -1875,7 +1875,6 @@ public class MainActivity extends ActionBarActivity {
                     // Server
                     List<NameValuePair> params = new LinkedList<>();
                     params.add(new BasicNameValuePair("date", BusDate));
-                    System.out.println(get_url_contents(api_server + "bus/reserve", null, cookieStore));
                     BusList.clear();
                     try {
                         JSONArray jsonObj = new JSONArray(post_url_contents(api_server + "bus/query", params, cookieStore));
@@ -3134,13 +3133,6 @@ public class MainActivity extends ActionBarActivity {
                     testview.setText(ScoreList.get(i).Midterm);
                 else if (j == 2)
                     testview.setText(ScoreList.get(i).Final);
-
-                testview.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        System.out.println(testview.getText().toString());
-                    }
-                });
 
                 testview.setGravity(Gravity.CENTER);
                 switch (j)
