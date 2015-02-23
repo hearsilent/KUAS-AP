@@ -196,6 +196,9 @@ public class MainActivity extends ActionBarActivity {
     Integer Event3TableLayoutX = 0;
     Integer Event3TableLayoutY = 0;
 
+    // SimCourse
+    Runnable SimCourseSearchRunnable;
+
     // About
     int AboutEasterEgg = 0;
     boolean PathViewCheck = false;
@@ -339,6 +342,7 @@ public class MainActivity extends ActionBarActivity {
         if (!OnCreateCheck)
         {
             initLogin();
+            //initSimCourseSearch1();
             OnCreateCheck = true;
         }
     }
@@ -2119,6 +2123,146 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
+    int SimCourseSearchPlace = 0;
+    ArrayList<String> SimCourseSearchDate = new ArrayList<>();
+    ArrayList<SimCourseList> SimCourseSearchResult = new ArrayList<>();
+    private void initSimCourseSearch1()
+    {
+        setContentView(R.layout.simcourse_search);
+
+        SimCourseSearchDate = new ArrayList<>(Arrays.asList("1", "2", "3", "4", "5", "6", "7"));
+        SimCourseChangePlaceColor();
+        SimCourseChangeDateColor();
+
+        for (int i = 0; i < 3; i ++)
+        {
+            int id = getResources().getIdentifier("place" +  i, "id", getPackageName());
+            final int _i = i;
+            findViewById(id).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    SimCourseSearchPlace = _i;
+                    SimCourseChangePlaceColor();
+                }
+            });
+        }
+
+        for (int i = 1; i < 8; i ++)
+        {
+            int id = getResources().getIdentifier("date" +  i, "id", getPackageName());
+            final int _i = i;
+            findViewById(id).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (SimCourseSearchDate.contains(Integer.toString(_i)))
+                        SimCourseSearchDate.remove(Integer.toString(_i));
+                    else
+                        SimCourseSearchDate.add(Integer.toString(_i));
+                    SimCourseChangeDateColor();
+                }
+            });
+        }
+
+        SimCourseSearchRunnable = new Runnable() {
+            @Override
+            public void run() {
+                List<NameValuePair> params = new LinkedList<>();
+                params.add(new BasicNameValuePair("key", ((EditText) findViewById(R.id.SearchEditText)).getText().toString()));
+                params.add(new BasicNameValuePair("unit", "%"));
+                params.add(new BasicNameValuePair("unit", "%"));
+                params.add(new BasicNameValuePair("type", Integer.toString(SimCourseSearchPlace)));
+                for (int i = 0; i < SimCourseSearchDate.size(); i ++)
+                    params.add(new BasicNameValuePair("weekday[]", SimCourseSearchDate.get(i)));
+
+                SimCourseSearchResult = new ArrayList<>();
+                try {
+                    JSONObject jsonObj = new JSONObject(post_url_contents("http://course.kuas.cc/SearchResult", params, null));
+                    if (jsonObj.getBoolean("success"))
+                        for (int i = 0; i < jsonObj.getJSONArray("data").length(); i ++)
+                            SimCourseSearchResult.add(new SimCourseList(jsonObj.getJSONArray("data").getJSONObject(i).getString("courseName"),
+                                    jsonObj.getJSONArray("data").getJSONObject(i).getString("courseTime"),
+                                    jsonObj.getJSONArray("data").getJSONObject(i).getString("courseTeacher"),
+                                    jsonObj.getJSONArray("data").getJSONObject(i).getString("courseRoom"),
+                                    jsonObj.getJSONArray("data").getJSONObject(i).getInt("courseCredit")));
+                    SimCourseSearchHandler.sendEmptyMessage(-1);
+                } catch (Exception e) {
+                    SimCourseSearchHandler.sendEmptyMessage(1);
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        findViewById(R.id.Search).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                InputMethodManager imm = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(findViewById(R.id.SearchEditText).getWindowToken(), 0);
+                if (((TextView) findViewById(R.id.SearchEditText)).getText().toString().equals(""))
+                {
+                    AlertDialogPro.Builder builder = CustomDialog("", "請輸入課程名稱", false);
+                    builder.setPositiveButton("確定", null).show();
+                }
+                else
+                {
+                    LoadingDialogHandler.sendEmptyMessage(-1);
+                    new Thread(SimCourseSearchRunnable).start();
+                }
+            }
+        });
+    }
+
+    private void SimCourseChangePlaceColor()
+    {
+        switch (SimCourseSearchPlace)
+        {
+            case 0:
+                findViewById(R.id.place0).setBackgroundResource(R.drawable.tablelayout_oneitem_left_green);
+                findViewById(R.id.place1).setBackgroundResource(R.drawable.tablelayout_oneitem_center_blue);
+                findViewById(R.id.place2).setBackgroundResource(R.drawable.tablelayout_oneitem_right_blue);
+                break;
+            case 1:
+                findViewById(R.id.place0).setBackgroundResource(R.drawable.tablelayout_oneitem_left_blue);
+                findViewById(R.id.place1).setBackgroundResource(R.drawable.tablelayout_oneitem_center_green);
+                findViewById(R.id.place2).setBackgroundResource(R.drawable.tablelayout_oneitem_right_blue);
+                break;
+            case 2:
+                findViewById(R.id.place0).setBackgroundResource(R.drawable.tablelayout_oneitem_left_blue);
+                findViewById(R.id.place1).setBackgroundResource(R.drawable.tablelayout_oneitem_center_blue);
+                findViewById(R.id.place2).setBackgroundResource(R.drawable.tablelayout_oneitem_right_green);
+                break;
+        }
+        findViewById(R.id.place0).setPadding(15, 15, 15, 15);
+        findViewById(R.id.place1).setPadding(15, 15, 15, 15);
+        findViewById(R.id.place2).setPadding(15, 15, 15, 15);
+    }
+
+    private void SimCourseChangeDateColor()
+    {
+        for (int i = 1; i < 8; i++)
+        {
+            int id = getResources().getIdentifier("date" +  i, "id", getPackageName());
+            if (SimCourseSearchDate.contains(Integer.toString(i)))
+            {
+                if (i == 1)
+                    findViewById(id).setBackgroundResource(R.drawable.tablelayout_oneitem_left_green);
+                else if (i == 7)
+                    findViewById(id).setBackgroundResource(R.drawable.tablelayout_oneitem_right_green);
+                else
+                    findViewById(id).setBackgroundResource(R.drawable.tablelayout_oneitem_center_green);
+            }
+            else
+            {
+                if (i == 1)
+                    findViewById(id).setBackgroundResource(R.drawable.tablelayout_oneitem_left_blue);
+                else if (i == 7)
+                    findViewById(id).setBackgroundResource(R.drawable.tablelayout_oneitem_right_blue);
+                else
+                    findViewById(id).setBackgroundResource(R.drawable.tablelayout_oneitem_center_blue);
+            }
+            findViewById(id).setPadding(15, 15, 15, 15);
+        }
+    }
+
     private Handler checkVersionHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -2372,6 +2516,51 @@ public class MainActivity extends ActionBarActivity {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        };
+    };
+
+    private Handler SimCourseSearchHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            TableLayout table = (TableLayout) findViewById(R.id.SearchResult);
+            table.setStretchAllColumns(true);
+            table.setShrinkAllColumns(true);
+            table.removeAllViews();
+            switch (msg.what)
+            {
+                case -1:
+                    if (SimCourseSearchResult.size() > 0)
+                    {
+                        table.setVisibility(View.VISIBLE);
+                        findViewById(R.id.noResult).setVisibility(View.GONE);
+                        for (int i = 0; i < SimCourseSearchResult.size(); i++) {
+                            TableRow row = (TableRow) LayoutInflater.from(MainActivity.this).inflate(R.layout.simcourse_search_item, null);
+                            ((TextView) row.findViewById(R.id.title)).setText(SimCourseSearchResult.get(i).courseName);
+                            ((TextView) row.findViewById(R.id.time)).setText(SimCourseSearchResult.get(i).courseTime);
+                            ((TextView) row.findViewById(R.id.teacher)).setText(SimCourseSearchResult.get(i).courseTeacher);
+                            ((TextView) row.findViewById(R.id.room)).setText(SimCourseSearchResult.get(i).courseRoom);
+                            ((TextView) row.findViewById(R.id.credit)).setText(SimCourseSearchResult.get(i).courseCredit.toString());
+                            table.addView(row);
+                        }
+                    }
+                    else
+                    {
+                        table.setVisibility(View.GONE);
+                        findViewById(R.id.noResult).setVisibility(View.VISIBLE);
+                    }
+                    break;
+                case 1:
+                    table.setVisibility(View.GONE);
+                    findViewById(R.id.noResult).setVisibility(View.VISIBLE);
+                    break;
+            }
+            findViewById(R.id.scrollView).post(new Runnable() {
+                @Override
+                public void run() {
+                    findViewById(R.id.scrollView).scrollTo(0, 0);
+                }
+            });
+            LoadingDialogHandler.sendEmptyMessage(1);
         };
     };
 
@@ -3234,7 +3423,7 @@ public class MainActivity extends ActionBarActivity {
         return "";
     }
     String getStringFromInputStream(InputStream in) {
-        byte []data = new byte[102400];
+        byte[] data = new byte[409600];
         int length;
         if( in == null )
             return null;

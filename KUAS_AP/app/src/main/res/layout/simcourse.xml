@@ -122,7 +122,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="新增課程"
+                        android:text="更改課程"
                         android:id="@+id/textView1"
                         android:layout_below="@id/imageView1"
                         android:layout_centerHorizontal="true"

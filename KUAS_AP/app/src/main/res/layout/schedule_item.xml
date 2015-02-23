@@ -24,6 +24,6 @@
         <View android:layout_height="1sp" android:background="@color/bar_grey2"
             android:layout_width="fill_parent"
             android:layout_alignBottom="@+id/title"
-            android:layout_marginTop="1sp"></View>
+            android:layout_marginTop="1sp"/>
     </RelativeLayout>
 </TableRow>
