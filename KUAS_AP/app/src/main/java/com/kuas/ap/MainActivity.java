@@ -67,7 +67,9 @@ import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
+import org.jsoup.helper.HttpConnection;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.mozilla.javascript.Context;
@@ -77,14 +79,16 @@ import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 
-import java.io.ByteArrayOutputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -342,7 +346,7 @@ public class MainActivity extends ActionBarActivity {
         if (!OnCreateCheck)
         {
             initLogin();
-            //initSimCourseSearch1();
+            //initSimCourseSearch1(true);
             OnCreateCheck = true;
         }
     }
@@ -2124,13 +2128,25 @@ public class MainActivity extends ActionBarActivity {
     }
 
     int SimCourseSearchPlace = 0;
+    String SimCourseUnit = "%";
+    String SimCourseKey = "";
+    String SimCourseUnitName = "不分科系";
     ArrayList<String> SimCourseSearchDate = new ArrayList<>();
     ArrayList<SimCourseList> SimCourseSearchResult = new ArrayList<>();
-    private void initSimCourseSearch1()
+    private void initSimCourseSearch1(boolean Reload)
     {
-        setContentView(R.layout.simcourse_search);
+        setContentView(R.layout.simcourse_search1);
 
-        SimCourseSearchDate = new ArrayList<>(Arrays.asList("1", "2", "3", "4", "5", "6", "7"));
+        if (Reload)
+        {
+            SimCourseSearchPlace = 0;
+            SimCourseUnit = "%";
+            SimCourseUnitName = "不分科系";
+            SimCourseKey = "";
+            SimCourseSearchDate = new ArrayList<>(Arrays.asList("1", "2", "3", "4", "5", "6", "7"));
+        }
+
+        ((EditText) findViewById(R.id.SearchEditText)).setText(SimCourseKey);
         SimCourseChangePlaceColor();
         SimCourseChangeDateColor();
 
@@ -2166,17 +2182,18 @@ public class MainActivity extends ActionBarActivity {
         SimCourseSearchRunnable = new Runnable() {
             @Override
             public void run() {
-                List<NameValuePair> params = new LinkedList<>();
-                params.add(new BasicNameValuePair("key", ((EditText) findViewById(R.id.SearchEditText)).getText().toString()));
-                params.add(new BasicNameValuePair("unit", "%"));
-                params.add(new BasicNameValuePair("unit", "%"));
-                params.add(new BasicNameValuePair("type", Integer.toString(SimCourseSearchPlace)));
+                Collection<Connection.KeyVal> values = new ArrayList<>();
+                values.add(HttpConnection.KeyVal.create("key", SimCourseKey));
+                values.add(HttpConnection.KeyVal.create("unit", SimCourseUnit));
+                values.add(HttpConnection.KeyVal.create("type", Integer.toString(SimCourseSearchPlace)));
+
                 for (int i = 0; i < SimCourseSearchDate.size(); i ++)
-                    params.add(new BasicNameValuePair("weekday[]", SimCourseSearchDate.get(i)));
+                    values.add(HttpConnection.KeyVal.create("weekday[]", SimCourseSearchDate.get(i)));
 
                 SimCourseSearchResult = new ArrayList<>();
                 try {
-                    JSONObject jsonObj = new JSONObject(post_url_contents("http://course.kuas.cc/SearchResult", params, null));
+                    Document res = Jsoup.connect("http://course.kuas.cc/SearchResult").userAgent(USER_AGENT).data(values).method(Connection.Method.POST).post();
+                    JSONObject jsonObj = new JSONObject(res.body().text());
                     if (jsonObj.getBoolean("success"))
                         for (int i = 0; i < jsonObj.getJSONArray("data").length(); i ++)
                             SimCourseSearchResult.add(new SimCourseList(jsonObj.getJSONArray("data").getJSONObject(i).getString("courseName"),
@@ -2197,7 +2214,8 @@ public class MainActivity extends ActionBarActivity {
             public void onClick(View v) {
                 InputMethodManager imm = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(findViewById(R.id.SearchEditText).getWindowToken(), 0);
-                if (((TextView) findViewById(R.id.SearchEditText)).getText().toString().equals(""))
+                SimCourseKey = ((EditText) findViewById(R.id.SearchEditText)).getText().toString();
+                if (SimCourseKey.equals(""))
                 {
                     AlertDialogPro.Builder builder = CustomDialog("", "請輸入課程名稱", false);
                     builder.setPositiveButton("確定", null).show();
@@ -2207,6 +2225,345 @@ public class MainActivity extends ActionBarActivity {
                     LoadingDialogHandler.sendEmptyMessage(-1);
                     new Thread(SimCourseSearchRunnable).start();
                 }
+            }
+        });
+
+        ((TextView) findViewById(R.id.departmentTextView)).setText(SimCourseUnitName);
+
+        findViewById(R.id.Department).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SimCourseKey = ((EditText) findViewById(R.id.SearchEditText)).getText().toString();
+                initSimCourseSelectDepartment1();
+            }
+        });
+
+        findViewById(R.id.RelativeLayout2).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                initSimCourseSearch2();
+            }
+        });
+    }
+
+    private void initSimCourseSearch2()
+    {
+        setContentView(R.layout.simcourse_search2);
+
+        findViewById(R.id.relativeLayout).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                initSimCourseSearch1(false);
+            }
+        });
+    }
+
+    private void initSimCourseSelectDepartment1()
+    {
+        setContentView(R.layout.simcourse_select);
+
+        findViewById(R.id.up).setVisibility(View.GONE);
+
+        findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                initSimCourseSearch1(false);
+            }
+        });
+
+        String[] values = new String[]{ "所有科系", "管理學院", "工學院" , "電資學院", "人文社會學院", "通識教育中心", "體育室", "語言中心", "跨校生", "進修推廣處", "軍訓室" };
+        ArrayAdapter<String> adapter=new ArrayAdapter<String>(
+                this,android.R.layout.simple_list_item_1, values){
+            @Override
+            public View getView(int position, View convertView,
+                                ViewGroup parent) {
+                View view =super.getView(position, convertView, parent);
+
+                TextView textView=(TextView) view.findViewById(android.R.id.text1);
+
+                textView.setTextColor(getResources().getColor(R.color.grey));
+                textView.setTextSize(16);
+
+                return view;
+            }
+        };
+        ((ListView) findViewById(R.id.listView)).setAdapter(adapter);
+        ((ListView) findViewById(R.id.listView)).setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                initSimCourseSelectDepartment2(position);
+            }
+        });
+    }
+
+    private void initSimCourseSelectDepartment2(int Unit)
+    {
+        findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                initSimCourseSearch1(false);
+            }
+        });
+
+        findViewById(R.id.up).setVisibility(View.VISIBLE);
+        findViewById(R.id.up).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                initSimCourseSelectDepartment1();
+            }
+        });
+
+        final String[] values;
+        final  String[] unitValues;
+
+        switch (Unit)
+        {
+            default:     //所有科系
+                SimCourseUnit = "%";
+                SimCourseUnitName = "所有科系";
+                values =  new String[]{ "" };;
+                unitValues = new String[]{ "" };;
+                break;
+            case 1:     //管理學院
+                values = new String[]{ "財政稅務系"
+                        ,"金融系"
+                        ,"觀光管理系觀光與餐旅管理"
+                        ,"觀光管理系"
+                        ,"資訊管理系"
+                        ,"財經與商務決策研究所"
+                        ,"企業管理系"
+                        ,"國際企業系碩士班"
+                        ,"金融系金融資訊"
+                        ,"高階經營管理研究所"
+                        ,"管理學院增開班"
+                        ,"國際企業系"
+                        ,"商務經營研究所"
+                        ,"資訊管理研究所"
+                        ,"財富與稅務管理系"
+                        ,"資訊管理系碩士班"
+                        ,"會計系"
+                        ,"觀光與餐旅管理研究所"
+                        ,"金融資訊研究所"
+                        ,"企業管理系高階經營管理" };
+                unitValues = new String[]{ "UC07"
+                        ,"UC06"
+                        ,"UM44"
+                        ,"UM76"
+                        ,"UM78"
+                        ,"UM01"
+                        ,"UM74"
+                        ,"UM83"
+                        ,"UC44"
+                        ,"UM84"
+                        ,"UC99"
+                        ,"UC11"
+                        ,"UC01"
+                        ,"UM72"
+                        ,"UM65"
+                        ,"UM73"
+                        ,"UC02"
+                        ,"UM43"
+                        ,"UC42"
+                        ,"UM85" };
+                break;
+            case 2:     //工學院
+                values = new String[]{ "模具工程系應用工程科學"
+                        ,"製造與管理外國學生碩士專班"
+                        ,"高值扣件產業碩士專班"
+                        ,"軟性電子材料產業研發碩士專班"
+                        ,"土木工程與防災科技研究所"
+                        ,"化學工程與材料工程系"
+                        ,"工業工程與創新管理產業碩士專班"
+                        ,"先進材料精密成型產業研發碩士班"
+                        ,"機械工程系"
+                        ,"模具與生產自動化產業碩士專班"
+                        ,"化學工程與材料工程系碩士班"
+                        ,"資通產品研發與生產碩士外國專班"
+                        ,"模具與精密機械產業研碩士專班"
+                        ,"機械與精密工程產業研發碩士專班"
+                        ,"模具工程系碩士班"
+                        ,"國際企業管理與製造產研碩外專班"
+                        ,"應用工程科學研究所"
+                        ,"機械與精密工程研究所"
+                        ,"工業工程與管理系碩士班"
+                        ,"土木工程系"
+                        ,"土木防災產業研發碩士專班"
+                        ,"土木工程系土木工程科技"
+                        ,"模具與自動化技術產業碩士專班"
+                        ,"精密機械產業研發碩士專班"
+                        ,"精密模具與機械產研碩士外國專班"
+                        ,"土木工程系土木工程與防災科技"
+                        ,"工業工程與管理系"
+                        ,"精緻化學與綠色科技材料產研碩專"
+                        ,"工學院增開班"
+                        ,"中心計劃短期班"
+                        ,"創新科技管理產業碩士專班"
+                        ,"高值扣件產業研發碩士專班"
+                        ,"模具工程系"};
+                unitValues = new String[]{ "UE78"
+                        ,"UE67"
+                        ,"UE66"
+                        ,"UE46"
+                        ,"UE37"
+                        ,"UE16"
+                        ,"UE77"
+                        ,"UE50"
+                        ,"UE25"
+                        ,"UE97"
+                        ,"UE17"
+                        ,"UE65"
+                        ,"UE40"
+                        ,"UE49"
+                        ,"UE33"
+                        ,"UE59"
+                        ,"UE05"
+                        ,"UE36"
+                        ,"UE71"
+                        ,"UE23"
+                        ,"UE51"
+                        ,"UE68"
+                        ,"UE63"
+                        ,"UE41"
+                        ,"UE44"
+                        ,"UE69"
+                        ,"UE72"
+                        ,"UE56"
+                        ,"UE99"
+                        ,"XS01"
+                        ,"UE64"
+                        ,"UE62"
+                        ,"UE31" };
+                break;
+            case 3:     //電資學院
+                values = new String[]{ "電子資訊技術研發設計產研碩專班"
+                        ,"電子通訊產業研發碩士專班"
+                        ,"資訊工程系"
+                        ,"電子資訊產業研發碩士專班"
+                        ,"電力電子產業研發碩士專班"
+                        ,"電機控制產業碩士專班"
+                        ,"電子工程系碩士班"
+                        ,"電機工程系"
+                        ,"面板製程系統整合產研碩士專班"
+                        ,"電機工程系碩士班"
+                        ,"能源系統控制產業研發碩士專班"
+                        ,"電子構裝整合技術產業研發碩士班"
+                        ,"資電與管理外國學生專班"
+                        ,"網通資訊產業研發碩士專班"
+                        ,"電機自動化產業研發碩士專班"
+                        ,"光電與通訊工程研究所"
+                        ,"電能與控制工程研究所"
+                        ,"網通軟體產業研發碩士專班"
+                        ,"光電半導體技術產業碩士專班"
+                        ,"半導體製程自動化產業研發碩士班"
+                        ,"電子工程系"
+                        ,"電機工程系博士班" };
+                unitValues = new String[]{ "UE57"
+                        ,"UE42"
+                        ,"UE15"
+                        ,"UE55"
+                        ,"UE43"
+                        ,"UI04"
+                        ,"UE20"
+                        ,"UE27"
+                        ,"UE47"
+                        ,"UE18"
+                        ,"UE60"
+                        ,"UE53"
+                        ,"UI07"
+                        ,"UE54"
+                        ,"UI02"
+                        ,"UE39"
+                        ,"UE38"
+                        ,"UI03"
+                        ,"UI06"
+                        ,"UE52"
+                        ,"UE29"
+                        ,"UE19" };
+                break;
+            case 4:     //人文社會學院
+                values = new String[]{ "文化創意產業系"
+                        ,"應外系英語專業溝通與教學科技"
+                        ,"應用外語系"
+                        ,"人力資源發展系"
+                        ,"人文社會學院"
+                        ,"人力資源發展系碩士班"
+                        ,"文化事業發展系" };
+                unitValues = new String[]{ "UH58"
+                        ,"UH57"
+                        ,"UH51"
+                        ,"UH53"
+                        ,"UH00"
+                        ,"UH54"
+                        ,"UH52" };
+                break;
+            case 5:     //通識教育中心
+                values =  new String[]{ "" };;
+                unitValues = new String[]{ "" };;
+                SimCourseUnitName = "通識教育中心";
+                SimCourseUnit = "XC00";
+                break;
+            case 6:     //體育室
+                values =  new String[]{ "" };;
+                unitValues = new String[]{ "" };;
+                SimCourseUnitName = "體育室";
+                SimCourseUnit = "XP00";
+                break;
+            case 7:     //語言中心
+                values =  new String[]{ "" };;
+                unitValues = new String[]{ "" };;
+                SimCourseUnitName = "語言中心";
+                SimCourseUnit = "UH01";
+                break;
+            case 8:     //跨校生
+                values = new String[]{ "外國交換生"
+                        ,"跨外校修課生"
+                        ,"他校跨本校生" };
+                unitValues = new String[]{ "XK02"
+                        ,"XK00"
+                        ,"XK01" };
+                break;
+            case 9:     //進修推廣處
+                values =  new String[]{ "" };;
+                unitValues = new String[]{ "" };;
+                SimCourseUnitName = "進修推廣處";
+                SimCourseUnit = "AE00";
+                break;
+            case 10:    //軍訓室
+                values =  new String[]{ "" };;
+                unitValues = new String[]{ "" };;
+                SimCourseUnitName = "軍訓室";
+                SimCourseUnit = "XM00";
+                break;
+        }
+
+        if (values[0].equals(""))
+        {
+            initSimCourseSearch1(false);
+            return;
+        }
+
+        ArrayAdapter<String> adapter=new ArrayAdapter<String>(
+                this,android.R.layout.simple_list_item_1, values){
+            @Override
+            public View getView(int position, View convertView,
+                                ViewGroup parent) {
+                View view =super.getView(position, convertView, parent);
+
+                TextView textView=(TextView) view.findViewById(android.R.id.text1);
+
+                textView.setTextColor(getResources().getColor(R.color.grey));
+                textView.setTextSize(16);
+
+                return view;
+            }
+        };
+        ((ListView) findViewById(R.id.listView)).setAdapter(adapter);
+        ((ListView) findViewById(R.id.listView)).setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                SimCourseUnit = unitValues[position];
+                SimCourseUnitName = values[position];
+                initSimCourseSearch1(false);
             }
         });
     }
@@ -2531,7 +2888,7 @@ public class MainActivity extends ActionBarActivity {
                 case -1:
                     if (SimCourseSearchResult.size() > 0)
                     {
-                        table.setVisibility(View.VISIBLE);
+                        findViewById(R.id.scrollView).setVisibility(View.VISIBLE);
                         findViewById(R.id.noResult).setVisibility(View.GONE);
                         for (int i = 0; i < SimCourseSearchResult.size(); i++) {
                             TableRow row = (TableRow) LayoutInflater.from(MainActivity.this).inflate(R.layout.simcourse_search_item, null);
@@ -2545,12 +2902,12 @@ public class MainActivity extends ActionBarActivity {
                     }
                     else
                     {
-                        table.setVisibility(View.GONE);
+                        findViewById(R.id.scrollView).setVisibility(View.GONE);
                         findViewById(R.id.noResult).setVisibility(View.VISIBLE);
                     }
                     break;
                 case 1:
-                    table.setVisibility(View.GONE);
+                    findViewById(R.id.scrollView).setVisibility(View.GONE);
                     findViewById(R.id.noResult).setVisibility(View.VISIBLE);
                     break;
             }
@@ -3423,7 +3780,8 @@ public class MainActivity extends ActionBarActivity {
         return "";
     }
     String getStringFromInputStream(InputStream in) {
-        byte[] data = new byte[409600];
+        /*
+        byte[] data = new byte[102400];
         int length;
         if( in == null )
             return null;
@@ -3435,6 +3793,24 @@ public class MainActivity extends ActionBarActivity {
             e.printStackTrace();
         }
         return new String(mByteArrayOutputStream.toByteArray());
+        */
+        StringBuffer buffer = new StringBuffer();
+        try {
+            InputStreamReader inputStreamReader = new InputStreamReader(in, "utf-8");
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+
+            String str = null;
+            while ((str = bufferedReader.readLine()) != null) {
+                buffer.append(str);
+            }
+            bufferedReader.close();
+            inputStreamReader.close();
+            in.close();
+            in = null;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return buffer.toString();
     }
 
     /*
