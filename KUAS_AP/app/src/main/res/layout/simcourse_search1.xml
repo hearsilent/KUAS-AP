@@ -1,0 +1,392 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#ffffffff">
+    <FrameLayout
+        android:id="@+id/action_bar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/actionbar_dimen"
+        android:background="@color/actionbar_color">
+
+        <TextView
+            android:id="@+id/indicator_style"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/actionbar_dimen"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:text="更改課程"
+            android:gravity="center"
+            android:background="@drawable/drawer_selector"
+            android:layout_gravity="center"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:layout_marginLeft="5dp"/>
+
+        <TextView
+            android:id="@+id/cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/actionbar_dimen"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:text="返回"
+            android:gravity="center"
+            android:background="@drawable/drawer_selector"
+            android:layout_gravity="right|center_vertical"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:layout_marginLeft="5dp" />
+
+    </FrameLayout>
+
+    <android.support.v4.widget.DrawerLayout
+        android:id="@+id/drawer_layout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/Page"
+                android:layout_alignParentTop="true">
+                <RelativeLayout
+                    android:layout_width="fill_parent"
+                    android:layout_marginTop="15sp"
+                    android:layout_marginRight="10sp"
+                    android:layout_marginLeft="10sp"
+                    android:gravity="center"
+                    android:id="@+id/SearchText"
+                    android:background="@drawable/tablelayout_oneitem"
+                    android:layout_height="wrap_content">
+
+                    <EditText
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/SearchEditText"
+                        android:layout_alignParentTop="true"
+                        android:layout_centerHorizontal="true"
+                        android:padding="10sp"
+                        android:textColor="@color/grey"
+                        android:hint="搜尋課程名稱"
+                        android:textSize="15sp"
+                        android:maxLines="1"
+                        android:background="@color/white" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_below="@id/SearchText"
+                    android:layout_width="fill_parent"
+                    android:layout_marginTop="5sp"
+                    android:layout_marginRight="10sp"
+                    android:layout_marginLeft="10sp"
+                    android:id="@+id/Department"
+                    android:gravity="center"
+                    android:background="@drawable/tablelayout_oneitem"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="10sp"
+                        android:textSize="15sp"
+                        android:id="@+id/departmentTextView"
+                        android:text="不分科系"
+                        android:textColor="@color/grey"
+                        android:layout_toLeftOf="@+id/departmentImageView"
+                        android:layout_alignParentLeft="true"
+                        android:maxLines="1" />
+
+                    <ImageView
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        android:id="@+id/departmentImageView"
+                        android:background="@drawable/ic_keyboard_arrow_down_black_48dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true" />
+                </RelativeLayout>
+
+                <TableLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/Department"
+                    android:id="@+id/Place"
+                    android:layout_marginTop="5sp"
+                    android:layout_marginRight="10sp"
+                    android:layout_marginLeft="10sp"
+                    android:stretchColumns="*">
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1" >
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:id="@+id/place0"
+                            android:textColor="@color/white"
+                            android:background="@drawable/tablelayout_oneitem_left_green"
+                            android:textSize="15sp"
+                            android:padding="10sp"
+                            android:text="不分校區" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:id="@+id/place1"
+                            android:textColor="@color/white"
+                            android:background="@drawable/tablelayout_oneitem_center_blue"
+                            android:textSize="15sp"
+                            android:padding="10sp"
+                            android:text="建工校區" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:id="@+id/place2"
+                            android:textColor="@color/white"
+                            android:background="@drawable/tablelayout_oneitem_right_blue"
+                            android:textSize="15sp"
+                            android:padding="10sp"
+                            android:text="燕巢校區" />
+                    </TableRow>
+                </TableLayout>
+
+                <TableLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/Place"
+                    android:id="@+id/Date"
+                    android:layout_marginTop="5sp"
+                    android:layout_marginRight="10sp"
+                    android:layout_marginLeft="10sp"
+                    android:stretchColumns="*">
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1" >
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:textColor="@color/white"
+                            android:id="@+id/date1"
+                            android:background="@drawable/tablelayout_oneitem_left_green"
+                            android:textSize="15sp"
+                            android:padding="10sp"
+                            android:text="一" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:id="@+id/date2"
+                            android:textColor="@color/white"
+                            android:background="@drawable/tablelayout_oneitem_center_green"
+                            android:textSize="15sp"
+                            android:padding="10sp"
+                            android:text="二" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:textColor="@color/white"
+                            android:id="@+id/date3"
+                            android:background="@drawable/tablelayout_oneitem_center_green"
+                            android:textSize="15sp"
+                            android:padding="10sp"
+                            android:text="三" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:textColor="@color/white"
+                            android:id="@+id/date4"
+                            android:background="@drawable/tablelayout_oneitem_center_green"
+                            android:textSize="15sp"
+                            android:padding="10sp"
+                            android:text="四" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:id="@+id/date5"
+                            android:textColor="@color/white"
+                            android:background="@drawable/tablelayout_oneitem_center_green"
+                            android:textSize="15sp"
+                            android:padding="10sp"
+                            android:text="五" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:textColor="@color/white"
+                            android:background="@drawable/tablelayout_oneitem_center_green"
+                            android:textSize="15sp"
+                            android:id="@+id/date6"
+                            android:padding="10sp"
+                            android:text="六" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:id="@+id/date7"
+                            android:textColor="@color/white"
+                            android:background="@drawable/tablelayout_oneitem_right_green"
+                            android:textSize="15sp"
+                            android:padding="10sp"
+                            android:text="日" />
+                    </TableRow>
+                </TableLayout>
+
+                <TableLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/Date"
+                    android:id="@+id/Search"
+                    android:layout_marginTop="5sp"
+                    android:layout_marginRight="10sp"
+                    android:layout_marginLeft="10sp"
+                    android:stretchColumns="*">
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1" >
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:textColor="@color/white"
+                            android:background="@drawable/tablelayout_oneitem_blue"
+                            android:textSize="15sp"
+                            android:padding="10sp"
+                            android:text="搜尋" />
+                    </TableRow>
+                </TableLayout>
+
+                <ScrollView
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_marginTop="5sp"
+                    android:layout_marginRight="10sp"
+                    android:id="@+id/scrollView"
+                    android:layout_marginLeft="10sp"
+                    android:layout_below="@+id/Search">
+                    <TableLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/SearchResult"
+                        android:stretchColumns="*">
+                    </TableLayout>
+                </ScrollView>
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5sp"
+                    android:layout_marginRight="10sp"
+                    android:layout_marginLeft="10sp"
+                    android:layout_below="@id/Search"
+                    android:gravity="center"
+                    android:layout_centerHorizontal="true"
+                    android:background="@drawable/tablelayout_oneitem"
+                    android:textSize="15sp"
+                    android:id="@+id/noResult"
+                    android:text="找不到相關課程"
+                    android:textColor="@color/blue"
+                    android:visibility="gone" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:gravity="center"
+                android:id="@+id/Page"
+                android:layout_marginTop="5dp"
+                android:paddingBottom="5sp">
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/relativeLayout"
+                    android:layout_marginRight="50sp">
+
+                    <ImageView
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:id="@+id/imageView1"
+                        android:layout_centerHorizontal="true"
+                        android:background="@drawable/ic_add_circle_black_48dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="新增課程"
+                        android:id="@+id/textView1"
+                        android:layout_below="@id/imageView1"
+                        android:layout_centerHorizontal="true"
+                        android:textSize="12sp"
+                        android:textColor="#ff000000" />
+                </RelativeLayout>
+
+                <View android:layout_height="25sp" android:background="@color/bar_grey"
+                    android:layout_toRightOf="@+id/relativeLayout"
+                    android:layout_centerVertical="true"
+                    android:layout_width="1sp"/>
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:id="@+id/RelativeLayout2"
+                    android:layout_toRightOf="@+id/relativeLayout"
+                    android:layout_toEndOf="@+id/relativeLayout"
+                    android:layout_marginLeft="50sp">
+
+                    <ImageView
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:id="@+id/imageView2"
+                        android:layout_centerHorizontal="true"
+                        android:background="@drawable/ic_cancel_grey600_48dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="刪除課程"
+                        android:id="@+id/textView2"
+                        android:layout_below="@id/imageView2"
+                        android:layout_centerHorizontal="true"
+                        android:textSize="12sp"
+                        android:textColor="@color/grey" />
+                </RelativeLayout>
+            </RelativeLayout>
+        </RelativeLayout>
+
+    </android.support.v4.widget.DrawerLayout>
+</LinearLayout>
