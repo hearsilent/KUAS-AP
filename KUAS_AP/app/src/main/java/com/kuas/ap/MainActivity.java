@@ -820,6 +820,7 @@ public class MainActivity extends ActionBarActivity {
                     {
                         if (!ReLogin())
                         {
+                            System.out.println();
                             ReLoginHandler.sendEmptyMessage(-1);
                             return;
                         }
@@ -1558,7 +1559,7 @@ public class MainActivity extends ActionBarActivity {
         });
     }
 
-    public void initEvent1(final boolean _isLogin, boolean ReLoad){
+    public void initEvent1(final boolean _isLogin, final boolean ReLoad){
         setContentView(R.layout.event1);
 
         final ListView NotificationListView = (ListView) findViewById(R.id.notification_listView);
@@ -1593,20 +1594,27 @@ public class MainActivity extends ActionBarActivity {
         ReadNotificationRunnable = new Runnable() {
             @Override
             public void run() {
+                int event1reload = 0;
                 try {
-                    NotificationList.clear();
-                    // Server
-                    try {
-                        JSONArray jsonObj = new JSONArray(get_url_contents(api_server + "notification/" + NotificationPage, null, cookieStore));
-                        for (int i = 0; i < jsonObj.length(); i ++)
-                        {
-                            NotificationList.add(new NotificationList(jsonObj.getJSONObject(i).getJSONArray("info").get(1).toString(),
-                                    jsonObj.getJSONObject(i).getJSONArray("info").get(2).toString(),
-                                    jsonObj.getJSONObject(i).getJSONArray("info").get(0).toString(),
-                                    jsonObj.getJSONObject(i).getString("link")));
+                    String data = "[]";
+                    for (; data.equals("[]") && event1reload <= 3 ;)
+                    {
+                        NotificationList.clear();
+                        // Server
+                        try {
+                            event1reload += 1;
+                            data = get_url_contents(api_server + "notification/" + NotificationPage, null, cookieStore);
+                            JSONArray jsonObj = new JSONArray(data);
+                            for (int i = 0; i < jsonObj.length(); i ++)
+                            {
+                                NotificationList.add(new NotificationList(jsonObj.getJSONObject(i).getJSONArray("info").get(1).toString(),
+                                        jsonObj.getJSONObject(i).getJSONArray("info").get(2).toString(),
+                                        jsonObj.getJSONObject(i).getJSONArray("info").get(0).toString(),
+                                        jsonObj.getJSONObject(i).getString("link")));
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
-                    } catch (Exception e) {
-                        e.printStackTrace();
                     }
                     ReadNotificationHandler.sendEmptyMessage(1);
                 } catch (Exception e) {
@@ -2244,6 +2252,51 @@ public class MainActivity extends ActionBarActivity {
                 initSimCourseSearch2();
             }
         });
+
+        // SimCourse Data parse to JSON
+        /*
+        JSONArray jsonArray = new JSONArray();
+        JSONObject jsonObj = new JSONObject();
+
+        String[] timelist = new String[]{ "M", "第1節", "第2節", "第3節", "第4節", "A", "第5節", "第6節", "第7節", "第8節", "B", "第11節", "第12節", "第12節", "第14節" };
+
+        for (int j = 0; j <= 14; j ++)
+        {
+            try {
+                JSONObject studentsObj = new JSONObject();
+                for (int i = 1; i <= 7; i++)
+                {
+                    JSONObject student1 = new JSONObject();
+                    try {
+                        student1.put("courseName", i);
+                        student1.put("courseTeacher", i);
+                        student1.put("courseRoom", i);
+                        student1.put("courseTime", i);
+                        studentsObj.put(Integer.toString(i), student1);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                try {
+                    studentsObj.put("time", timelist[j]);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                jsonObj.put(Integer.toString(j), studentsObj);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        jsonArray.put(jsonObj);
+
+        for(int i=0; i<jsonArray.toString().length(); i+=1024)
+        {
+            if(i+1024<jsonArray.toString().length())
+                Log.d("JSON OUTPUT", jsonArray.toString().substring(i, i + 1024));
+            else
+                Log.d("JSON OUTPUT", jsonArray.toString().substring(i, jsonArray.toString().length()));
+        }
+        */
     }
 
     private void initSimCourseSearch2()
