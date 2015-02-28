@@ -66,6 +66,7 @@ import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -201,7 +202,18 @@ public class MainActivity extends ActionBarActivity {
     Integer Event3TableLayoutY = 0;
 
     // SimCourse
+    Runnable ReLoadSimCourseSearchRunnable;
     Runnable SimCourseSearchRunnable;
+    Runnable SimCourseReadCourseRunnable;
+    int SimCourseSearchPlace = 0;
+    String SimCourseUnit = "%";
+    String SimCourseKey = "";
+    String SimCourseUnitName = "不分科系";
+    ArrayList<String> SimCourseSearchDate = new ArrayList<>();
+    ArrayList<SimCourseList> SimCourseSearchResult = new ArrayList<>();
+    private ArrayList<ArrayList<CourseList>> SimCourseList = new ArrayList<>();
+    String SimCourseSearchData = "";
+    Integer SimCourseReadCourseType = 1;
 
     // About
     int AboutEasterEgg = 0;
@@ -255,7 +267,7 @@ public class MainActivity extends ActionBarActivity {
                     }
                     else
                     {
-                        params.add(new BasicNameValuePair("sysyear", Integer.toString(Calendar.getInstance().get(Calendar.YEAR)  - 1911)));
+                        params.add(new BasicNameValuePair("sysyear", Integer.toString(Calendar.getInstance().get(Calendar.YEAR)  - 1912)));
                         params.add(new BasicNameValuePair("syssms", "2"));
                     }
                     params.add(new BasicNameValuePair("std_id", ""));
@@ -346,7 +358,6 @@ public class MainActivity extends ActionBarActivity {
         if (!OnCreateCheck)
         {
             initLogin();
-            //initSimCourseSearch1(true);
             OnCreateCheck = true;
         }
     }
@@ -541,7 +552,7 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.logout);
         _fncid = "";
 
-        initDrawer(new String[]{ "學期課表", "學期成績", "缺曠系統", "校車系統", "校園資訊" }, new String[]{ "關於我們" }, true, false);
+        initDrawer(new String[]{ "學期課表", "學期成績", "缺曠系統", "校車系統", "模擬選課", "校園資訊" }, new String[]{ "關於我們" }, true, false);
 
         Button Logout = (Button) findViewById(R.id.Logout);
         Logout.setOnClickListener(new View.OnClickListener() {
@@ -746,6 +757,10 @@ public class MainActivity extends ActionBarActivity {
                 {
                     initEvent1(_isLogin, true);
                 }
+                else if (DrawerListValue[position].equals("模擬選課"))
+                {
+                    initSimCourse(true, true);
+                }
             }
         });
         final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -807,7 +822,7 @@ public class MainActivity extends ActionBarActivity {
         }
 
         if (_isLogin)
-            initDrawer(new String[]{ "學期成績", "缺曠系統", "校車系統", "校園資訊" }, new String[]{ "關於我們" }, _isLogin, true);
+            initDrawer(new String[]{ "學期成績", "缺曠系統", "校車系統", "模擬選課", "校園資訊" }, new String[]{ "關於我們" }, _isLogin, true);
         else
             initDrawer(new String[]{ "校園資訊" }, new String[]{ "關於我們" }, _isLogin, true);
 
@@ -991,7 +1006,7 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
-        initDrawer(new String[]{ "學期課表", "缺曠系統", "校車系統", "校園資訊" }, new String[]{ "關於我們" }, true, true);
+        initDrawer(new String[]{ "學期課表", "缺曠系統", "校車系統", "模擬選課", "校園資訊" }, new String[]{ "關於我們" }, true, true);
 
         _fncid = "AG008";
         ReadScoreRunnable = new Runnable() {
@@ -1101,7 +1116,7 @@ public class MainActivity extends ActionBarActivity {
         TextView textView = (TextView) findViewById(R.id.textView);
         textView.setVisibility(View.GONE);
 
-        initDrawer(new String[]{ "學期課表", "學期成績", "校車系統", "校園資訊" }, new String[]{ "關於我們" }, true, true);
+        initDrawer(new String[]{ "學期課表", "學期成績", "校車系統", "模擬選課", "校園資訊" }, new String[]{ "關於我們" }, true, true);
 
         _fncid = "AK002";
         ReadLeaveRunnable = new Runnable() {
@@ -1258,7 +1273,7 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
-        initDrawer(new String[]{ "學期課表", "學期成績", "校車系統", "校園資訊" }, new String[]{ "關於我們" }, true, true);
+        initDrawer(new String[]{ "學期課表", "學期成績", "校車系統", "模擬選課", "校園資訊" }, new String[]{ "關於我們" }, true, true);
 
         _fncid = "";
 
@@ -1558,7 +1573,7 @@ public class MainActivity extends ActionBarActivity {
         });
     }
 
-    public void initEvent1(final boolean _isLogin, boolean ReLoad){
+    public void initEvent1(final boolean _isLogin, final boolean ReLoad){
         setContentView(R.layout.event1);
 
         final ListView NotificationListView = (ListView) findViewById(R.id.notification_listView);
@@ -1584,7 +1599,7 @@ public class MainActivity extends ActionBarActivity {
         });
 
         if (_isLogin)
-            initDrawer(new String[]{ "學期課表", "學期成績", "缺曠系統", "校車系統" }, new String[]{ "關於我們" }, _isLogin, true);
+            initDrawer(new String[]{ "學期課表", "學期成績", "缺曠系統", "校車系統", "模擬選課" }, new String[]{ "關於我們" }, _isLogin, true);
         else
             initDrawer(new String[]{ "離線課表" }, new String[]{ "關於我們" }, _isLogin, true);
 
@@ -1593,20 +1608,27 @@ public class MainActivity extends ActionBarActivity {
         ReadNotificationRunnable = new Runnable() {
             @Override
             public void run() {
+                int event1reload = 0;
                 try {
-                    NotificationList.clear();
-                    // Server
-                    try {
-                        JSONArray jsonObj = new JSONArray(get_url_contents(api_server + "notification/" + NotificationPage, null, cookieStore));
-                        for (int i = 0; i < jsonObj.length(); i ++)
-                        {
-                            NotificationList.add(new NotificationList(jsonObj.getJSONObject(i).getJSONArray("info").get(1).toString(),
-                                    jsonObj.getJSONObject(i).getJSONArray("info").get(2).toString(),
-                                    jsonObj.getJSONObject(i).getJSONArray("info").get(0).toString(),
-                                    jsonObj.getJSONObject(i).getString("link")));
+                    String data = "[]";
+                    for (; data.equals("[]") && event1reload <= 3 ;)
+                    {
+                        NotificationList.clear();
+                        // Server
+                        try {
+                            event1reload += 1;
+                            data = get_url_contents(api_server + "notification/" + NotificationPage, null, cookieStore);
+                            JSONArray jsonObj = new JSONArray(data);
+                            for (int i = 0; i < jsonObj.length(); i ++)
+                            {
+                                NotificationList.add(new NotificationList(jsonObj.getJSONObject(i).getJSONArray("info").get(1).toString(),
+                                        jsonObj.getJSONObject(i).getJSONArray("info").get(2).toString(),
+                                        jsonObj.getJSONObject(i).getJSONArray("info").get(0).toString(),
+                                        jsonObj.getJSONObject(i).getString("link")));
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
-                    } catch (Exception e) {
-                        e.printStackTrace();
                     }
                     ReadNotificationHandler.sendEmptyMessage(1);
                 } catch (Exception e) {
@@ -1702,7 +1724,7 @@ public class MainActivity extends ActionBarActivity {
         });
 
         if (_isLogin)
-            initDrawer(new String[]{ "學期課表", "學期成績", "缺曠系統", "校車系統" }, new String[]{ "關於我們" }, _isLogin, true);
+            initDrawer(new String[]{ "學期課表", "學期成績", "缺曠系統", "校車系統", "模擬選課" }, new String[]{ "關於我們" }, _isLogin, true);
         else
             initDrawer(new String[]{ "離線課表" }, new String[]{ "關於我們" }, _isLogin, true);
 
@@ -1737,7 +1759,7 @@ public class MainActivity extends ActionBarActivity {
         });
 
         if (_isLogin)
-            initDrawer(new String[]{ "學期課表", "學期成績", "缺曠系統", "校車系統" }, new String[]{ "關於我們" }, _isLogin, true);
+            initDrawer(new String[]{ "學期課表", "學期成績", "缺曠系統", "校車系統", "模擬選課" }, new String[]{ "關於我們" }, _isLogin, true);
         else
             initDrawer(new String[]{ "離線課表" }, new String[]{ "關於我們" }, _isLogin, true);
 
@@ -1793,7 +1815,7 @@ public class MainActivity extends ActionBarActivity {
         TextView noBusTextView = (TextView) findViewById(R.id.noBusTextView);
         noBusTextView.setVisibility(View.GONE);
 
-        initDrawer(new String[]{ "學期課表", "學期成績", "缺曠系統", "校園資訊" }, new String[]{ "關於我們" }, true, true);
+        initDrawer(new String[]{ "學期課表", "學期成績", "缺曠系統", "模擬選課", "校園資訊" }, new String[]{ "關於我們" }, true, true);
 
         _fncid = "";
 
@@ -1955,7 +1977,7 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
-        initDrawer(new String[]{ "學期課表", "學期成績", "缺曠系統", "校園資訊" }, new String[]{ "關於我們" }, true, true);
+        initDrawer(new String[]{ "學期課表", "學期成績", "缺曠系統", "模擬選課", "校園資訊" }, new String[]{ "關於我們" }, true, true);
 
         _fncid = "";
 
@@ -2040,7 +2062,7 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.about);
 
         if (_isLogin)
-            initDrawer(new String[]{ "學期課表", "學期成績", "缺曠系統", "校車系統", "校園資訊" }, new String[]{}, _isLogin, true);
+            initDrawer(new String[]{ "學期課表", "學期成績", "缺曠系統", "校車系統", "模擬選課", "校園資訊" }, new String[]{}, _isLogin, true);
         else
             initDrawer(new String[]{ "離線課表", "校園資訊" }, new String[]{}, _isLogin, true);
 
@@ -2127,12 +2149,413 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    int SimCourseSearchPlace = 0;
-    String SimCourseUnit = "%";
-    String SimCourseKey = "";
-    String SimCourseUnitName = "不分科系";
-    ArrayList<String> SimCourseSearchDate = new ArrayList<>();
-    ArrayList<SimCourseList> SimCourseSearchResult = new ArrayList<>();
+    private void initSimCourse(boolean Reload, final boolean _isLogin)
+    {
+        setContentView(R.layout.simcourse);
+
+        findViewById(R.id.RelativeLayout).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                initSimCourseSearch1(true);
+            }
+        });
+
+        findViewById(R.id.RelativeLayout2).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialogPro.Builder builder = CustomDialog("儲存課表", "是否要儲存課表？", false);
+                builder.setPositiveButton("確定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        SaveSimCourseData();
+                    }
+                }).setNegativeButton("取消", null)
+                        .show();
+            }
+        });
+
+
+        findViewById(R.id.RelativeLayout3).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialogPro.Builder builder = CustomDialog("重置課表", "是否要重置課表？", false);
+                builder.setPositiveButton("確定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        SharedPreferences setting = getSharedPreferences("KUAS AP", 0);
+                        setting.edit().putString("SimCourse", "").apply();
+                        SimCourseReadCourseType = 2;
+                        new Thread(SimCourseReadCourseRunnable).start();
+                    }
+                }).setNegativeButton("取消", null)
+                .show();
+            }
+        });
+
+        final String[] DrawerListValue = new String[]{ "學期課表", "學期成績", "缺曠系統", "校車系統", "校園資訊" };
+        final String[] AboutListValue = new String[]{ "關於我們" };
+
+        RelativeLayout Logout = (RelativeLayout) findViewById(R.id.Logout);
+        Logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (_isLogin)
+                    initLogout();
+                else
+                    initLogin();
+            }
+        });
+        mDrawerList = (ListView)findViewById(R.id.drawerlistView);
+        mAboutList = (ListView)findViewById(R.id.aboutlistView);
+        ArrayAdapter<String> adapter=new ArrayAdapter<String>(
+                this,R.layout.menulistview_item, DrawerListValue){
+            private LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
+
+            class ViewHolder {
+                public TextView textView;
+                public ImageView imageView;
+            }
+
+            @Override
+            public View getView(int position, View convertView,
+                                ViewGroup parent) {
+                ViewHolder holder;
+                if (convertView == null) {
+                    holder = new ViewHolder();
+                    convertView = mInflater.inflate(R.layout.menulistview_item, null);
+                    holder.textView = (TextView) convertView.findViewById(R.id.textView);
+                    holder.imageView = (ImageView) convertView.findViewById(R.id.imageView);
+                    convertView.setTag(holder);
+                } else {
+                    holder = (ViewHolder)convertView.getTag();
+                }
+                holder.textView.setText(DrawerListValue[position]);
+                return convertView;
+            }
+        };
+        ArrayAdapter<String> aboutadapter=new ArrayAdapter<String>(
+                this,R.layout.menulistview_item, AboutListValue){
+            private LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
+
+            class ViewHolder {
+                public TextView textView;
+                public ImageView imageView;
+            }
+
+            @Override
+            public View getView(int position, View convertView,
+                                ViewGroup parent) {
+                ViewHolder holder;
+                if (convertView == null) {
+                    holder = new ViewHolder();
+                    convertView = mInflater.inflate(R.layout.menulistview_item, null);
+                    holder.textView = (TextView) convertView.findViewById(R.id.textView);
+                    holder.imageView = (ImageView) convertView.findViewById(R.id.imageView);
+                    convertView.setTag(holder);
+                } else {
+                    holder = (ViewHolder)convertView.getTag();
+                }
+                holder.textView.setText(AboutListValue[position]);
+                holder.imageView.setBackgroundResource(R.drawable.ic_thumb_up_black_48dp);
+                return convertView;
+            }
+        };
+        if (AboutListValue.length != 0)
+            mAboutList.setAdapter(aboutadapter);
+        if (DrawerListValue.length != 0)
+            mDrawerList.setAdapter(adapter);
+        mAboutList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if (AboutListValue[position].equals("關於我們"))
+                {
+                    initAbout(_isLogin);
+                }
+            }
+        });
+        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+                AlertDialogPro.Builder builder = CustomDialog("模擬選課", "尚未儲存變更，是否儲存課表？", false);
+                builder.setPositiveButton("確定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        SaveSimCourseData();
+                        if (DrawerListValue[position].equals("學期課表") || DrawerListValue[position].equals("離線課表"))
+                        {
+                            initCourse(false, false, _isLogin);
+                        }
+                        else if (DrawerListValue[position].equals("學期成績"))
+                        {
+                            initScore(false, false);
+                        }
+                        else if (DrawerListValue[position].equals("缺曠系統"))
+                        {
+                            initLeave1(false, false);
+                        }
+                        else if (DrawerListValue[position].equals("校車系統"))
+                        {
+                            initBus1(true);
+                        }
+                        else if (DrawerListValue[position].equals("校園資訊"))
+                        {
+                            initEvent1(_isLogin, true);
+                        }
+                    }
+                }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (DrawerListValue[position].equals("學期課表") || DrawerListValue[position].equals("離線課表"))
+                        {
+                            initCourse(false, false, _isLogin);
+                        }
+                        else if (DrawerListValue[position].equals("學期成績"))
+                        {
+                            initScore(false, false);
+                        }
+                        else if (DrawerListValue[position].equals("缺曠系統"))
+                        {
+                            initLeave1(false, false);
+                        }
+                        else if (DrawerListValue[position].equals("校車系統"))
+                        {
+                            initBus1(true);
+                        }
+                        else if (DrawerListValue[position].equals("校園資訊"))
+                        {
+                            initEvent1(_isLogin, true);
+                        }
+                    }
+                }).show();
+            }
+        });
+        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        final ImageView imageView = (ImageView) findViewById(R.id.drawer_indicator);
+        final Resources resources = getResources();
+        drawerArrowDrawable = new DrawerArrowDrawable(resources, true);
+        drawerArrowDrawable.setStrokeColor(Color.WHITE);
+        imageView.setImageDrawable(drawerArrowDrawable);
+        drawer.setDrawerListener(new DrawerLayout.SimpleDrawerListener() {
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+                offset = slideOffset;
+                // Sometimes slideOffset ends up so close to but not quite 1 or 0.
+                if (slideOffset >= .995) {
+                    flipped = true;
+                    drawerArrowDrawable.setFlip(flipped);
+                } else if (slideOffset <= .005) {
+                    flipped = false;
+                    drawerArrowDrawable.setFlip(flipped);
+                }
+                drawerArrowDrawable.setParameter(offset);
+            }
+        });
+        if (!(DrawerListValue.length == 0 && AboutListValue.length == 0))
+        {
+            imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (drawer.isDrawerVisible(START)) {
+                        drawer.closeDrawer(START);
+                    } else {
+                        drawer.openDrawer(START);
+                    }
+                }
+            });
+        }
+
+        SimCourseReadCourseRunnable = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    LoadingDialogHandler.sendEmptyMessage(-1);
+
+                    if (!CheckLoginState())
+                    {
+                        if (!ReLogin())
+                        {
+                            SimCourseList = new ArrayList<>();
+                            SimCourseReadCourseHandler.sendEmptyMessage(SimCourseReadCourseType);
+                            return;
+                        }
+                    }
+
+                    List<NameValuePair> params = new LinkedList<>();
+
+                    SimCourseList = new ArrayList<>();
+
+                    // Server
+                    if (Calendar.getInstance().get(Calendar.MONTH) > 9 && Calendar.getInstance().get(Calendar.MONTH) < 2)
+                    {
+                        if (Calendar.getInstance().get(Calendar.MONTH) < 2)
+                            params.add(new BasicNameValuePair("arg01", Integer.toString(Calendar.getInstance().get(Calendar.YEAR)  - 1912)));
+                        else
+                            params.add(new BasicNameValuePair("arg01", Integer.toString(Calendar.getInstance().get(Calendar.YEAR)  - 1911)));
+                    }
+                    else
+                    {
+                        params.add(new BasicNameValuePair("arg01", Integer.toString(Calendar.getInstance().get(Calendar.YEAR)  - 1912)));
+                        params.add(new BasicNameValuePair("arg02", "2"));
+                    }
+
+                    params.add(new BasicNameValuePair("fncid", "ag222"));
+                    try {
+                        OfflineCourseData = post_url_contents(api_server + "ap/query", params, cookieStore);
+                        JSONArray jsonObj = new JSONArray(OfflineCourseData);
+                        try {
+                            for (int i = 0; i <= 14; i++) {
+                                ArrayList<CourseList> CourseList2 = new ArrayList<>();
+                                if (jsonObj.getJSONObject(0).length() <= i)
+                                {
+                                    for (int j = 1; j < 8; j ++)
+                                    {
+                                        CourseList2.add(new CourseList("", "", "", ""));
+                                    }
+                                }
+                                else
+                                {
+                                    for (int j = 1; j < 8; j ++)
+                                    {
+                                        JSONObject item = jsonObj.getJSONObject(0).getJSONObject(Integer.toString(i));
+                                        JSONObject itemdata = item.getJSONObject(Integer.toString(j));
+                                        CourseList2.add(new CourseList(itemdata.getString("course_name"),
+                                                itemdata.getString("course_teacher"),
+                                                itemdata.getString("course_classroom"),
+                                                item.getString("time")));
+                                    }
+                                }
+                                SimCourseList.add(CourseList2);
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    } catch (Exception e) {
+                        ReLoginHandler.sendEmptyMessage(-1);
+                        e.printStackTrace();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                SimCourseReadCourseHandler.sendEmptyMessage(SimCourseReadCourseType);
+            }
+        };
+
+        if (Reload)
+        {
+            SharedPreferences setting = getSharedPreferences("KUAS AP", 0);
+            String simCourseData = setting.getString("SimCourse", "");
+            if (simCourseData.equals(""))
+            {
+                SimCourseReadCourseType = 1;
+                new Thread(SimCourseReadCourseRunnable).start();
+            }
+            else
+            {
+                RestoreSimCourseData(simCourseData);
+                addSimCourse();
+            }
+        }
+        else
+        {
+            addSimCourse();
+        }
+    }
+
+    private void SaveSimCourseData()
+    {
+        JSONArray jsonArray = new JSONArray();
+        JSONObject jsonObj = new JSONObject();
+
+        String[] timelist = new String[]{ "M", "第1節", "第2節", "第3節", "第4節", "A", "第5節", "第6節", "第7節", "第8節", "B", "第11節", "第12節", "第12節", "第14節" };
+
+        for (int j = 0; j <= 14; j ++)
+        {
+            try {
+                JSONObject studentsObj = new JSONObject();
+                for (int i = 0; i < 7; i++)
+                {
+                    JSONObject student1 = new JSONObject();
+                    try {
+                        if (SimCourseList.get(j).get(i).ID.equals(""))
+                        {
+                            student1.put("courseName", "");
+                            student1.put("courseTeacher", "");
+                            student1.put("courseRoom", "");
+                        }
+                        else
+                        {
+                            student1.put("courseName", SimCourseList.get(j).get(i).ID);
+                            student1.put("courseTeacher", SimCourseList.get(j).get(i).Teacher);
+                            student1.put("courseRoom", SimCourseList.get(j).get(i).Place);
+                        }
+                        studentsObj.put(Integer.toString(i), student1);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                try {
+                    studentsObj.put("time", timelist[j]);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                jsonObj.put(Integer.toString(j), studentsObj);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        jsonArray.put(jsonObj);
+
+        SharedPreferences setting = getSharedPreferences("KUAS AP", 0);
+        setting.edit().putString("SimCourse", jsonArray.toString()).apply();
+
+        // Debug
+        /*
+        for(int i=0; i<jsonArray.toString().length(); i+=1024)
+        {
+            if(i+1024<jsonArray.toString().length())
+                Log.d("JSON OUTPUT", jsonArray.toString().substring(i, i + 1024));
+            else
+                Log.d("JSON OUTPUT", jsonArray.toString().substring(i, jsonArray.toString().length()));
+        }
+        */
+    }
+
+    private void RestoreSimCourseData(String data)
+    {
+        try {
+            JSONArray jsonObj = new JSONArray(data);
+            try {
+                for (int i = 0; i <= 14; i++) {
+                    ArrayList<CourseList> CourseList2 = new ArrayList<>();
+                    if (jsonObj.getJSONObject(0).length() <= i)
+                    {
+                        for (int j = 1; j < 8; j ++)
+                        {
+                            CourseList2.add(new CourseList("", "", "", ""));
+                        }
+                    }
+                    else
+                    {
+                        for (int j = 0; j < 7; j ++)
+                        {
+                            JSONObject item = jsonObj.getJSONObject(0).getJSONObject(Integer.toString(i));
+                            JSONObject itemdata = item.getJSONObject(Integer.toString(j));
+                            CourseList2.add(new CourseList(itemdata.getString("courseName"),
+                                    itemdata.getString("courseTeacher"),
+                                    itemdata.getString("courseRoom"),
+                                    item.getString("time")));
+                        }
+                    }
+                    SimCourseList.add(CourseList2);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private void initSimCourseSearch1(boolean Reload)
     {
         setContentView(R.layout.simcourse_search1);
@@ -2145,6 +2568,18 @@ public class MainActivity extends ActionBarActivity {
             SimCourseKey = "";
             SimCourseSearchDate = new ArrayList<>(Arrays.asList("1", "2", "3", "4", "5", "6", "7"));
         }
+        else
+        {
+            LoadingDialogHandler.sendEmptyMessage(-1);
+            new Thread(ReLoadSimCourseSearchRunnable).start();
+        }
+
+        findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                initSimCourse(false, true);
+            }
+        });
 
         ((EditText) findViewById(R.id.SearchEditText)).setText(SimCourseKey);
         SimCourseChangePlaceColor();
@@ -2178,36 +2613,6 @@ public class MainActivity extends ActionBarActivity {
                 }
             });
         }
-
-        SimCourseSearchRunnable = new Runnable() {
-            @Override
-            public void run() {
-                Collection<Connection.KeyVal> values = new ArrayList<>();
-                values.add(HttpConnection.KeyVal.create("key", SimCourseKey));
-                values.add(HttpConnection.KeyVal.create("unit", SimCourseUnit));
-                values.add(HttpConnection.KeyVal.create("type", Integer.toString(SimCourseSearchPlace)));
-
-                for (int i = 0; i < SimCourseSearchDate.size(); i ++)
-                    values.add(HttpConnection.KeyVal.create("weekday[]", SimCourseSearchDate.get(i)));
-
-                SimCourseSearchResult = new ArrayList<>();
-                try {
-                    Document res = Jsoup.connect("http://course.kuas.cc/SearchResult").userAgent(USER_AGENT).data(values).method(Connection.Method.POST).post();
-                    JSONObject jsonObj = new JSONObject(res.body().text());
-                    if (jsonObj.getBoolean("success"))
-                        for (int i = 0; i < jsonObj.getJSONArray("data").length(); i ++)
-                            SimCourseSearchResult.add(new SimCourseList(jsonObj.getJSONArray("data").getJSONObject(i).getString("courseName"),
-                                    jsonObj.getJSONArray("data").getJSONObject(i).getString("courseTime"),
-                                    jsonObj.getJSONArray("data").getJSONObject(i).getString("courseTeacher"),
-                                    jsonObj.getJSONArray("data").getJSONObject(i).getString("courseRoom"),
-                                    jsonObj.getJSONArray("data").getJSONObject(i).getInt("courseCredit")));
-                    SimCourseSearchHandler.sendEmptyMessage(-1);
-                } catch (Exception e) {
-                    SimCourseSearchHandler.sendEmptyMessage(1);
-                    e.printStackTrace();
-                }
-            }
-        };
 
         findViewById(R.id.Search).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -2244,16 +2649,298 @@ public class MainActivity extends ActionBarActivity {
                 initSimCourseSearch2();
             }
         });
+
+        _fncid = "SimCourse";
+
+        ReLoadSimCourseSearchRunnable = new Runnable() {
+            @Override
+            public void run() {
+                SimCourseSearchResult = new ArrayList<>();
+                try {
+                    JSONObject jsonObj = new JSONObject(SimCourseSearchData);
+                    if (jsonObj.getBoolean("success"))
+                    {
+                        ArrayList<String> dateList = new ArrayList<>(Arrays.asList("一", "二", "三", "四", "五", "六", "日"));
+                        ArrayList<String> timeList = new ArrayList<>(Arrays.asList("M", "1", "2", "3", "4", "A", "5", "6", "7", "8", "B", "11", "12", "13", "14"));
+                        for (int i = 0; i < jsonObj.getJSONArray("data").length(); i ++)
+                        {
+                            String time = jsonObj.getJSONArray("data").getJSONObject(i).getString("courseTime");
+                            boolean _isContain = false;
+                            for (int j = 1; j < time.split("\\(").length; j ++)
+                            {
+                                ArrayList<Integer> courseTime = new ArrayList<>();
+                                if (time.split("\\(")[j].contains(","))
+                                {
+                                    if (time.split("\\(")[j].split("\\)")[1].contains("-"))
+                                    {
+                                        if (time.split("\\(")[j].split("\\)")[1].split(",")[0].contains("-"))
+                                        {
+                                            for (int x = timeList.indexOf(time.split("\\(")[j].split("\\)")[1].split(",")[0].split("-")[0]); x <= timeList.indexOf(time.split("\\(")[j].split("\\)")[1].split(",")[0].split("-")[1]); x++)
+                                            {
+                                                courseTime.add(x);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            courseTime.add(timeList.indexOf(time.split("\\(")[j].split("\\)")[1].split(",")[0]));
+                                        }
+                                        if (time.split("\\(")[j].split("\\)")[1].split(",")[1].contains("-"))
+                                        {
+                                            for (int x = timeList.indexOf(time.split("\\(")[j].split("\\)")[1].split(",")[1].split("-")[0]); x <= timeList.indexOf(time.split("\\(")[j].split("\\)")[1].split(",")[1].split("-")[1]); x++)
+                                            {
+                                                courseTime.add(x);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            courseTime.add(timeList.indexOf(time.split("\\(")[j].split("\\)")[1].split(",")[1]));
+                                        }
+                                    }
+                                    else
+                                    {
+                                        for (int x = 0; x < time.split("\\(")[j].split("\\)")[1].split(",").length; x++)
+                                        {
+                                            courseTime.add(timeList.indexOf(time.split("\\(")[j].split("\\)")[1].split(",")[x]));
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    if (time.split("\\(")[j].split("\\)")[1].contains("-"))
+                                    {
+                                        for (int x = timeList.indexOf(time.split("\\(")[j].split("\\)")[1].split("-")[0]); x <= timeList.indexOf(time.split("\\(")[j].split("\\)")[1].split("-")[1]); x++)
+                                        {
+                                            courseTime.add(x);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        courseTime.add(timeList.indexOf(time.split("\\(")[j].split("\\)")[1]));
+                                    }
+                                }
+                                for (int x = 0; x < courseTime.size(); x++)
+                                {
+                                    if (!SimCourseList.get(courseTime.get(x)).get(dateList.indexOf(time.split("\\(")[j].split("\\)")[0])).ID.equals(""))
+                                    {
+                                        _isContain = true;
+                                    }
+                                }
+                            }
+                            if (!_isContain)
+                                SimCourseSearchResult.add(new SimCourseList(jsonObj.getJSONArray("data").getJSONObject(i).getString("courseName"),
+                                        jsonObj.getJSONArray("data").getJSONObject(i).getString("courseTime"),
+                                        jsonObj.getJSONArray("data").getJSONObject(i).getString("courseTeacher"),
+                                        jsonObj.getJSONArray("data").getJSONObject(i).getString("courseRoom"),
+                                        jsonObj.getJSONArray("data").getJSONObject(i).getInt("courseCredit")));
+                        }
+                    }
+                    SimCourseSearchHandler.sendEmptyMessage(-1);
+                } catch (Exception e) {
+                    SimCourseSearchHandler.sendEmptyMessage(1);
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        SimCourseSearchRunnable = new Runnable() {
+            @Override
+            public void run() {
+                Collection<Connection.KeyVal> values = new ArrayList<>();
+                values.add(HttpConnection.KeyVal.create("key", SimCourseKey));
+                values.add(HttpConnection.KeyVal.create("unit", SimCourseUnit));
+                values.add(HttpConnection.KeyVal.create("type", Integer.toString(SimCourseSearchPlace)));
+
+                for (int i = 0; i < SimCourseSearchDate.size(); i ++)
+                    values.add(HttpConnection.KeyVal.create("weekday[]", SimCourseSearchDate.get(i)));
+
+                SimCourseSearchResult = new ArrayList<>();
+                try {
+                    Document res = Jsoup.connect("http://course.kuas.cc/SearchResult").userAgent(USER_AGENT).data(values).method(Connection.Method.POST).post();
+                    SimCourseSearchData = res.body().text();
+                    JSONObject jsonObj = new JSONObject(SimCourseSearchData);
+                    if (jsonObj.getBoolean("success"))
+                    {
+                        ArrayList<String> dateList = new ArrayList<>(Arrays.asList("一", "二", "三", "四", "五", "六", "日"));
+                        ArrayList<String> timeList = new ArrayList<>(Arrays.asList("M", "1", "2", "3", "4", "A", "5", "6", "7", "8", "B", "11", "12", "13", "14"));
+                        for (int i = 0; i < jsonObj.getJSONArray("data").length(); i ++)
+                        {
+                            String time = jsonObj.getJSONArray("data").getJSONObject(i).getString("courseTime");
+                            boolean _isContain = false;
+                            for (int j = 1; j < time.split("\\(").length; j ++)
+                            {
+                                ArrayList<Integer> courseTime = new ArrayList<>();
+                                if (time.split("\\(")[j].contains(","))
+                                {
+                                    if (time.split("\\(")[j].split("\\)")[1].contains("-"))
+                                    {
+                                        if (time.split("\\(")[j].split("\\)")[1].split(",")[0].contains("-"))
+                                        {
+                                            for (int x = timeList.indexOf(time.split("\\(")[j].split("\\)")[1].split(",")[0].split("-")[0]); x <= timeList.indexOf(time.split("\\(")[j].split("\\)")[1].split(",")[0].split("-")[1]); x++)
+                                            {
+                                                courseTime.add(x);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            courseTime.add(timeList.indexOf(time.split("\\(")[j].split("\\)")[1].split(",")[0]));
+                                        }
+                                        if (time.split("\\(")[j].split("\\)")[1].split(",")[1].contains("-"))
+                                        {
+                                            for (int x = timeList.indexOf(time.split("\\(")[j].split("\\)")[1].split(",")[1].split("-")[0]); x <= timeList.indexOf(time.split("\\(")[j].split("\\)")[1].split(",")[1].split("-")[1]); x++)
+                                            {
+                                                courseTime.add(x);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            courseTime.add(timeList.indexOf(time.split("\\(")[j].split("\\)")[1].split(",")[1]));
+                                        }
+                                    }
+                                    else
+                                    {
+                                        for (int x = 0; x < time.split("\\(")[j].split("\\)")[1].split(",").length; x++)
+                                        {
+                                            courseTime.add(timeList.indexOf(time.split("\\(")[j].split("\\)")[1].split(",")[x]));
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    if (time.split("\\(")[j].split("\\)")[1].contains("-"))
+                                    {
+                                        for (int x = timeList.indexOf(time.split("\\(")[j].split("\\)")[1].split("-")[0]); x <= timeList.indexOf(time.split("\\(")[j].split("\\)")[1].split("-")[1]); x++)
+                                        {
+                                            courseTime.add(x);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        courseTime.add(timeList.indexOf(time.split("\\(")[j].split("\\)")[1]));
+                                    }
+                                }
+                                for (int x = 0; x < courseTime.size(); x++)
+                                {
+                                    if (!SimCourseList.get(courseTime.get(x)).get(dateList.indexOf(time.split("\\(")[j].split("\\)")[0])).ID.equals(""))
+                                    {
+                                        _isContain = true;
+                                    }
+                                }
+                            }
+                            if (!_isContain)
+                                SimCourseSearchResult.add(new SimCourseList(jsonObj.getJSONArray("data").getJSONObject(i).getString("courseName"),
+                                        jsonObj.getJSONArray("data").getJSONObject(i).getString("courseTime"),
+                                        jsonObj.getJSONArray("data").getJSONObject(i).getString("courseTeacher"),
+                                        jsonObj.getJSONArray("data").getJSONObject(i).getString("courseRoom"),
+                                        jsonObj.getJSONArray("data").getJSONObject(i).getInt("courseCredit")));
+                        }
+                    }
+                    SimCourseSearchHandler.sendEmptyMessage(-1);
+                } catch (Exception e) {
+                    SimCourseSearchHandler.sendEmptyMessage(1);
+                    e.printStackTrace();
+                }
+            }
+        };
     }
 
     private void initSimCourseSearch2()
     {
         setContentView(R.layout.simcourse_search2);
 
+        findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                initSimCourse(false, true);
+            }
+        });
+
         findViewById(R.id.relativeLayout).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 initSimCourseSearch1(false);
+            }
+        });
+
+        final ArrayList<String> data = new ArrayList<>();
+        for (int i = 0 ; i < SimCourseList.size(); i++)
+        {
+            for (int j = 0 ; j < SimCourseList.get(i).size(); j++)
+            {
+                if (!SimCourseList.get(i).get(j).ID.equals(""))
+                {
+                    if (!data.contains(SimCourseList.get(i).get(j).ID))
+                    {
+                        data.add(SimCourseList.get(i).get(j).ID);
+                    }
+                }
+            }
+        }
+        ArrayAdapter<String> adapter=new ArrayAdapter<String>(
+                this,android.R.layout.simple_list_item_1, data){
+            @Override
+            public View getView(int position, View convertView,
+                                ViewGroup parent) {
+                View view =super.getView(position, convertView, parent);
+
+                TextView textView=(TextView) view.findViewById(android.R.id.text1);
+
+                textView.setTextColor(getResources().getColor(R.color.grey));
+                textView.setTextSize(16);
+
+                return view;
+            }
+        };
+        ((ListView) findViewById(R.id.CourseList)).setAdapter(adapter);
+        ((ListView) findViewById(R.id.CourseList)).setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+                AlertDialogPro.Builder builder = CustomDialog("刪除", "確定要刪除「" + data.get(position) + "」？", false);
+                builder.setPositiveButton("確定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        for (int i = 0 ; i < SimCourseList.size(); i++)
+                        {
+                            for (int j = 0 ; j < SimCourseList.get(i).size(); j++)
+                            {
+                                if (SimCourseList.get(i).get(j).ID.equals(data.get(position)))
+                                {
+                                    SimCourseList.get(i).get(j).ID = "";
+                                }
+                            }
+                        }
+                        final ArrayList<String> datax = new ArrayList<>();
+                        for (int i = 0 ; i < SimCourseList.size(); i++)
+                        {
+                            for (int j = 0 ; j < SimCourseList.get(i).size(); j++)
+                            {
+                                if (!SimCourseList.get(i).get(j).ID.equals(""))
+                                {
+                                    if (!datax.contains(SimCourseList.get(i).get(j).ID))
+                                    {
+                                        datax.add(SimCourseList.get(i).get(j).ID);
+                                    }
+                                }
+                            }
+                        }
+                        ArrayAdapter<String> adapterx=new ArrayAdapter<String>(
+                                MainActivity.this,android.R.layout.simple_list_item_1, datax){
+                            @Override
+                            public View getView(int position, View convertView,
+                                                ViewGroup parent) {
+                                View view =super.getView(position, convertView, parent);
+
+                                TextView textView=(TextView) view.findViewById(android.R.id.text1);
+
+                                textView.setTextColor(getResources().getColor(R.color.grey));
+                                textView.setTextSize(16);
+
+                                return view;
+                            }
+                        };
+                        ((ListView) findViewById(R.id.CourseList)).setAdapter(adapterx);
+                        Toast.makeText(getApplicationContext(), "已將「" + data.get(position) + "」從模擬選課中刪除", Toast.LENGTH_SHORT).show();
+                    }
+                }).setNegativeButton("取消", null).setCancelable(false).show();
             }
         });
     }
@@ -2620,6 +3307,26 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
+    private Handler SimCourseReadCourseHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what)
+            {
+                case -1:
+                    break;
+                case 1:
+                    addSimCourse();
+                    LoadingDialog.dismiss();
+                    break;
+                case 2:
+                    addSimCourse();
+                    Toast.makeText(getApplicationContext(), "已將課表重置", Toast.LENGTH_SHORT).show();
+                    LoadingDialog.dismiss();
+                    break;
+            }
+        };
+    };
+
     private Handler checkVersionHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -2800,10 +3507,6 @@ public class MainActivity extends ActionBarActivity {
                     PasswordEditText.setEnabled(true);
                     initLogout();
                     break;
-                case 3:
-                    break;
-                case 4:
-                    break;
             }
         };
     };
@@ -2849,7 +3552,7 @@ public class MainActivity extends ActionBarActivity {
                     image.loadDataWithBaseURL("", jsonObj.getString(3),"text/html", "UTF-8", "");
                     AlertDialogPro.Builder builder;
                     final String Url = jsonObj.getString(4);
-                    if (!Url.equals(""))
+                    if (!Url.equals("") && Url.startsWith("http"))
                     {
                         builder = CustomDialog(jsonObj.getString(2), "", true);
                         builder.setView(image).
@@ -2897,6 +3600,65 @@ public class MainActivity extends ActionBarActivity {
                             ((TextView) row.findViewById(R.id.teacher)).setText(SimCourseSearchResult.get(i).courseTeacher);
                             ((TextView) row.findViewById(R.id.room)).setText(SimCourseSearchResult.get(i).courseRoom);
                             ((TextView) row.findViewById(R.id.credit)).setText(SimCourseSearchResult.get(i).courseCredit.toString());
+                            final String time = SimCourseSearchResult.get(i).courseTime;
+                            final int _i = i;
+                            row.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    AlertDialogPro.Builder builder = CustomDialog("新增課程", "確定要新增「" + SimCourseSearchResult.get(_i).courseName + "」？", false);
+                                    builder.setPositiveButton("確定", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            LoadingDialogHandler.sendEmptyMessage(-1);
+                                            ArrayList<String> dateList = new ArrayList<>(Arrays.asList("一", "二", "三", "四", "五", "六", "日"));
+                                            ArrayList<String> timeList = new ArrayList<>(Arrays.asList("M", "1", "2", "3", "4", "A", "5", "6", "7", "8", "B", "11", "12", "13", "14"));
+                                            ArrayList<String> timeList2 = new ArrayList<>(Arrays.asList("M", "第1節", "第2節", "第3節", "第4節", "A", "第5節", "第6節", "第7節", "第8節", "B", "第11節", "第12節", "第13節", "第14節"));
+                                            for (int j = 1; j < time.split("\\(").length; j++) {
+                                                ArrayList<Integer> courseTime = new ArrayList<>();
+                                                if (time.split("\\(")[j].contains(",")) {
+                                                    if (time.split("\\(")[j].split("\\)")[1].contains("-")) {
+                                                        if (time.split("\\(")[j].split("\\)")[1].split(",")[0].contains("-")) {
+                                                            for (int x = timeList.indexOf(time.split("\\(")[j].split("\\)")[1].split(",")[0].split("-")[0]); x <= timeList.indexOf(time.split("\\(")[j].split("\\)")[1].split(",")[0].split("-")[1]); x++) {
+                                                                courseTime.add(x);
+                                                            }
+                                                        } else {
+                                                            courseTime.add(timeList.indexOf(time.split("\\(")[j].split("\\)")[1].split(",")[0]));
+                                                        }
+                                                        if (time.split("\\(")[j].split("\\)")[1].split(",")[1].contains("-")) {
+                                                            for (int x = timeList.indexOf(time.split("\\(")[j].split("\\)")[1].split(",")[1].split("-")[0]); x <= timeList.indexOf(time.split("\\(")[j].split("\\)")[1].split(",")[1].split("-")[1]); x++) {
+                                                                courseTime.add(x);
+                                                            }
+                                                        } else {
+                                                            courseTime.add(timeList.indexOf(time.split("\\(")[j].split("\\)")[1].split(",")[1]));
+                                                        }
+                                                    } else {
+                                                        for (int x = 0; x < time.split("\\(")[j].split("\\)")[1].split(",").length; x++) {
+                                                            courseTime.add(timeList.indexOf(time.split("\\(")[j].split("\\)")[1].split(",")[x]));
+                                                        }
+                                                    }
+                                                } else {
+                                                    if (time.split("\\(")[j].split("\\)")[1].contains("-")) {
+                                                        for (int x = timeList.indexOf(time.split("\\(")[j].split("\\)")[1].split("-")[0]); x <= timeList.indexOf(time.split("\\(")[j].split("\\)")[1].split("-")[1]); x++) {
+                                                            courseTime.add(x);
+                                                        }
+                                                    } else {
+                                                        courseTime.add(timeList.indexOf(time.split("\\(")[j].split("\\)")[1]));
+                                                    }
+                                                }
+                                                for (int x = 0; x < courseTime.size(); x++)
+                                                {
+                                                    SimCourseList.get(courseTime.get(x)).get(dateList.indexOf(time.split("\\(")[j].split("\\)")[0])).ID = SimCourseSearchResult.get(_i).courseName;
+                                                    SimCourseList.get(courseTime.get(x)).get(dateList.indexOf(time.split("\\(")[j].split("\\)")[0])).Teacher = SimCourseSearchResult.get(_i).courseTeacher;
+                                                    SimCourseList.get(courseTime.get(x)).get(dateList.indexOf(time.split("\\(")[j].split("\\)")[0])).Place = SimCourseSearchResult.get(_i).courseRoom;
+                                                    SimCourseList.get(courseTime.get(x)).get(dateList.indexOf(time.split("\\(")[j].split("\\)")[0])).Time = parseTime(timeList2.get(courseTime.get(x)));
+                                                }
+                                            }
+                                            new Thread(ReLoadSimCourseSearchRunnable).start();
+                                            Toast.makeText(getApplicationContext(), "已將「" + SimCourseSearchResult.get(_i).courseName + "」新增至模擬選課", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }).setNegativeButton("取消", null).setCancelable(false).show();
+                                }
+                            });
                             table.addView(row);
                         }
                     }
@@ -2920,6 +3682,44 @@ public class MainActivity extends ActionBarActivity {
             LoadingDialogHandler.sendEmptyMessage(1);
         };
     };
+
+    private String parseTime(String Time)
+    {
+        if (Time.contains("M"))
+            return "M";
+        if (Time.contains("A"))
+            return "A";
+        if (Time.contains("B"))
+            return "B";
+        if (Time.contains("C"))
+            return "C";
+
+        if (Time.equals("第1節"))
+            return "08:10 - 09:00";
+        if (Time.equals("第2節"))
+            return "09:10 - 10:00";
+        if (Time.equals("第3節"))
+            return "10:10 - 11:00";
+        if (Time.equals("第4節"))
+            return "11:10 - 12:00";
+        if (Time.equals("第5節"))
+            return "13:30 - 14:20";
+        if (Time.equals("第6節"))
+            return "14:30 - 15:20";
+        if (Time.equals("第7節"))
+            return "15:30 - 16:20";
+        if (Time.equals("第8節"))
+            return "16:30 - 17:20";
+        if (Time.equals("第11節"))
+            return "18:30 - 19:20";
+        if (Time.equals("第12節"))
+            return "19:25 - 20:15";
+        if (Time.equals("第13節"))
+            return "20:20 - 21:00";
+        if (Time.equals("第14節"))
+            return "21:15 - 22:05";
+        return "";
+    }
 
     public Bitmap getBitmapFromURL(String src) {
         try {
@@ -3383,6 +4183,114 @@ public class MainActivity extends ActionBarActivity {
             e.printStackTrace();
         }
         addCourse();
+    }
+
+    public void addSimCourse() {
+        try {
+            ScrollView scrollView = (ScrollView) findViewById(R.id.scrollView);
+            scrollView.removeAllViews();
+            TableLayout table;
+            int x, y;
+
+            for (int i = 0; i < SimCourseList.size(); i++)
+            {
+                for (int j = 0; j < SimCourseList.get(i).size(); j++)
+                {
+                    if (j >= 5 && !SimCourseList.get(i).get(j).ID.equals(""))
+                    {
+                        isHolidayClass = true;
+                        if (i >= 10)
+                            isHolidayNightClass = true;
+                    }
+                    else if (!SimCourseList.get(i).get(j).ID.equals("") && i >= 10)
+                        isNightClass = true;
+                }
+            }
+
+            TextView textView = (TextView) findViewById(R.id.textView);
+            if (!isHolidayClass)
+                textView.setVisibility(View.GONE);
+            else
+                textView.setVisibility(View.VISIBLE);
+
+            if (getResources().getConfiguration().orientation == 2) //橫向
+            {
+                textView.setVisibility(View.GONE);
+                if (isHolidayClass)
+                {
+                    if (isNightClass || isHolidayNightClass)
+                        table = (TableLayout) LayoutInflater.from(MainActivity.this).inflate(R.layout.course_tablelayout_holiday_night, null);
+                    else
+                        table = (TableLayout) LayoutInflater.from(MainActivity.this).inflate(R.layout.course_tablelayout_holiday, null);
+
+                    if (isNightClass || isHolidayNightClass)
+                        y = SimCourseList.size();
+                    else
+                        y = 10;
+                    x = 7;
+                }
+                else
+                {
+                    if (isNightClass)
+                        table = (TableLayout) LayoutInflater.from(MainActivity.this).inflate(R.layout.course_tablelayout_normal_night, null);
+                    else
+                        table = (TableLayout) LayoutInflater.from(MainActivity.this).inflate(R.layout.course_tablelayout_normal, null);
+
+                    if (isNightClass)
+                        y = SimCourseList.size();
+                    else
+                        y = 10;
+                    x = 5;
+                }
+            }
+            else
+            {
+                if (isNightClass)
+                    table = (TableLayout) LayoutInflater.from(MainActivity.this).inflate(R.layout.course_tablelayout_normal_night, null);
+                else
+                    table = (TableLayout) LayoutInflater.from(MainActivity.this).inflate(R.layout.course_tablelayout_normal, null);
+
+                if (isNightClass)
+                    y = SimCourseList.size();
+                else
+                    y = 10;
+                x = 5;
+            }
+
+            if (SimCourseList.size() == 0)
+                return;
+
+            table.setStretchAllColumns(true);
+
+            for (int i = 0; i < y; i++) {
+                for (int j = 0; j < x; j++) {
+                    int id = getResources().getIdentifier("textView" +  i + "_" + (j+1), "id", getPackageName());
+                    final TextView testview = (TextView) table.findViewById(id);
+
+                    if (SimCourseList.get(i).get(j).ID.length() > 0)
+                        testview.setText(SimCourseList.get(i).get(j).ID.substring(0,2));
+                    else
+                        testview.setText("　　");
+
+                    final int yy = i;
+                    final int xx = j;
+                    if (!SimCourseList.get(i).get(j).ID.equals(""))
+                        testview.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                AlertDialogPro.Builder builder = CustomDialog("" , "\n課程名稱：" + SimCourseList.get(yy).get(xx).ID
+                                        + "\n授課老師：" +  SimCourseList.get(yy).get(xx).Teacher
+                                        + "\n教室位置：" + SimCourseList.get(yy).get(xx).Place
+                                        + "\n上課時間：" + SimCourseList.get(yy).get(xx).Time + "\n", false);
+                                builder.setPositiveButton("確定", null).show();
+                            }
+                        });
+                }
+            }
+            scrollView.addView(table);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void addCourse() {
@@ -3971,6 +4879,8 @@ public class MainActivity extends ActionBarActivity {
             if (AboutEasterEgg < 5)
                 initAboutPathView();
         }
+        else if (_fncid.equals("SimCourse"))
+            addSimCourse();
     }
 
     @Override

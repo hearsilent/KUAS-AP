@@ -74,16 +74,19 @@
                 android:text="轉橫向即可查看周末課程"
                 android:layout_marginBottom="5sp"
                 android:id="@+id/textView"
+                android:layout_marginTop="20dp"
+                android:layout_below="@+id/select"
                 android:layout_centerHorizontal="true"
                 android:textSize="15sp"
                 android:textColor="#ff000000"
-                android:layout_marginTop="20sp" />
+                android:visibility="gone" />
 
             <ScrollView
                 android:id="@+id/scrollView"
                 android:layout_below="@+id/textView"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
+                android:layout_marginTop="15dp"
                 android:layout_marginLeft="20sp"
                 android:layout_marginRight="20sp"
                 android:layout_marginBottom="10sp"
@@ -110,7 +113,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/RelativeLayout"
-                    android:layout_marginRight="40sp">
+                    android:layout_marginRight="35sp">
 
                     <ImageView
                         android:layout_width="35dp"
@@ -142,8 +145,8 @@
                     android:layout_toRightOf="@+id/RelativeLayout"
                     android:layout_toEndOf="@+id/RelativeLayout"
                     android:id="@+id/RelativeLayout2"
-                    android:layout_marginLeft="40sp"
-                    android:layout_marginRight="40sp">
+                    android:layout_marginLeft="35sp"
+                    android:layout_marginRight="35sp">
 
                     <ImageView
                         android:layout_width="35dp"
@@ -175,7 +178,7 @@
                     android:layout_toRightOf="@+id/RelativeLayout2"
                     android:layout_toEndOf="@+id/RelativeLayout2"
                     android:id="@+id/RelativeLayout3"
-                    android:layout_marginLeft="40sp">
+                    android:layout_marginLeft="35sp">
 
                     <ImageView
                         android:layout_width="35dp"
