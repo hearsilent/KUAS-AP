@@ -50,7 +50,6 @@
             android:layout_height="wrap_content">
 
             <ListView
-                android:layout_marginTop="15sp"
                 android:layout_marginRight="10sp"
                 android:layout_marginLeft="10sp"
                 android:id="@+id/CourseList"
