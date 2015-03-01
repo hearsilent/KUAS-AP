@@ -2968,6 +2968,8 @@ public class MainActivity extends ActionBarActivity {
         }
 
         if (nameData.size() > 0) {
+            findViewById(R.id.textView).setVisibility(View.GONE);
+            findViewById(R.id.scrollView).setVisibility(View.VISIBLE);
             for (int i = 0; i < nameData.size(); i++) {
                 final TableRow row = (TableRow) LayoutInflater.from(MainActivity.this).inflate(R.layout.simcourse_search_item2, null);
                 ((TextView) row.findViewById(R.id.title)).setText(nameData.get(i));
@@ -3006,6 +3008,11 @@ public class MainActivity extends ActionBarActivity {
                 });
                 table.addView(row);
             }
+        }
+        else
+        {
+            findViewById(R.id.textView).setVisibility(View.VISIBLE);
+            findViewById(R.id.scrollView).setVisibility(View.GONE);
         }
     }
 
@@ -4200,9 +4207,6 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void addOfflineCourse() {
-        //TableLayout table = (TableLayout) findViewById(R.id.tablelayout);
-        //table.setStretchAllColumns(true);
-        //table.removeAllViews();
         ScrollView scrollView = (ScrollView) findViewById(R.id.scrollView);
         scrollView.removeAllViews();
 
@@ -4266,6 +4270,19 @@ public class MainActivity extends ActionBarActivity {
             scrollView.removeAllViews();
             TableLayout table;
             int x, y;
+
+            ArrayList<String> nameData = new ArrayList<>();
+            for (int i = 0; i < SimCourseList.size(); i++)
+                for (int j = 0; j < SimCourseList.get(i).size(); j++)
+                    if (!SimCourseList.get(i).get(j).ID.equals(""))
+                        if (!(nameData.contains(SimCourseList.get(i).get(j).ID)))
+                            nameData.add(SimCourseList.get(i).get(j).ID);
+
+            if (nameData.size() == 0)
+            {
+                AlertDialogPro.Builder builder = CustomDialog("", "這課表也太爽了吧！", false);
+                builder.setPositiveButton("爽上大學", null).setCancelable(true).show();
+            }
 
             isHolidayClass = false;
             isHolidayNightClass = false;
