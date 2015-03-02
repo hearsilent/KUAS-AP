@@ -2686,6 +2686,8 @@ public class MainActivity extends ActionBarActivity {
     {
         setContentView(R.layout.simcourse_search1);
 
+        _fncid = "";
+
         if (Reload)
         {
             SimCourseSearchPlace = 0;
@@ -2970,6 +2972,8 @@ public class MainActivity extends ActionBarActivity {
     private void initSimCourseSearch2()
     {
         setContentView(R.layout.simcourse_search2);
+
+        _fncid = "";
 
         findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
             @Override
