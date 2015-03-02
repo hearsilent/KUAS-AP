@@ -93,7 +93,8 @@
                             android:hint="Username"
                             android:textSize="14sp"
                             android:autoText="false"
-                            android:background="@drawable/login_table_top" />
+                            android:background="@drawable/login_table_top"
+                            android:singleLine="true" />
 
                         <EditText
                             android:layout_width="match_parent"
@@ -102,7 +103,8 @@
                             android:hint="Password"
                             android:textSize="14sp"
                             android:background="@drawable/login_table_bottom"
-                            android:password="true" />
+                            android:password="true"
+                            android:singleLine="true" />
                     </TableLayout>
 
                     <com.andexert.library.RippleView

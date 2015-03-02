@@ -19,8 +19,10 @@ import android.os.Message;
 import android.os.StrictMode;
 import android.provider.CalendarContract;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.ViewDragHelper;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -84,6 +86,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -134,6 +137,7 @@ public class MainActivity extends ActionBarActivity {
     private ArrayList<String> SemesterList = new ArrayList<>();
     private ArrayList<String> SemesterValue = new ArrayList<>();
 
+    private boolean _isLogin = false;
     private boolean OnCreateCheck = false;
 
     // Server Status
@@ -161,6 +165,8 @@ public class MainActivity extends ActionBarActivity {
     boolean isNightClass = false;
     boolean isHolidayNightClass = false;
     boolean isHolidayClass = false;
+    boolean isHolidayBClass = false;
+    boolean isBClass = false;
     String OfflineCourseData = "";
     boolean isOfflineCourse = false;
 
@@ -363,6 +369,17 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+            if (_isLogin)
+                initLogout();
+            else
+                initLogin();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
     public boolean CheckVersion()
     {
         try{
@@ -474,6 +491,8 @@ public class MainActivity extends ActionBarActivity {
     public void initLogin(){
         setContentView(R.layout.login);
 
+        _isLogin = false;
+
         _fncid = "";
         UserNameEditText = (EditText) findViewById(R.id.Username);
         PasswordEditText = (EditText) findViewById(R.id.Password);
@@ -552,6 +571,8 @@ public class MainActivity extends ActionBarActivity {
     public void initLogout(){
         setContentView(R.layout.logout);
         _fncid = "";
+
+        _isLogin = true;
 
         initDrawer(new String[]{ "學期課表", "學期成績", "缺曠系統", "校車系統", "模擬選課", "校園資訊" }, new String[]{ "關於我們" }, true, false);
 
@@ -646,6 +667,8 @@ public class MainActivity extends ActionBarActivity {
 
     public void initReLogin(){
         setContentView(R.layout.relogin);
+
+        _isLogin = false;
 
         initDrawer(new String[]{}, new String[]{}, false, true);
 
@@ -770,6 +793,21 @@ public class MainActivity extends ActionBarActivity {
         drawerArrowDrawable = new DrawerArrowDrawable(resources, true);
         drawerArrowDrawable.setStrokeColor(Color.WHITE);
         imageView.setImageDrawable(drawerArrowDrawable);
+
+        try {
+            Field mDragger = drawer.getClass().getDeclaredField("mLeftDragger");
+            mDragger.setAccessible(true);
+            ViewDragHelper draggerObj = (ViewDragHelper) mDragger.get(drawer);
+
+            Field mEdgeSize = draggerObj.getClass().getDeclaredField("mEdgeSize");
+            mEdgeSize.setAccessible(true);
+            int edge = mEdgeSize.getInt(draggerObj);
+
+            mEdgeSize.setInt(draggerObj, 180);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         drawer.setDrawerListener(new DrawerLayout.SimpleDrawerListener() {
             @Override
             public void onDrawerSlide(View drawerView, float slideOffset) {
@@ -856,6 +894,8 @@ public class MainActivity extends ActionBarActivity {
                     isHolidayClass = false;
                     isHolidayNightClass = false;
                     isNightClass = false;
+                    isHolidayBClass = false;
+                    isBClass = false;
                     CourseList = new ArrayList<>();
 
                     // Server
@@ -875,10 +915,14 @@ public class MainActivity extends ActionBarActivity {
                                     if (j >= 6 && !itemdata.getString("course_name").equals(""))
                                     {
                                         isHolidayClass = true;
-                                        if (i >= 10)
+                                        if (i == 10)
+                                            isHolidayBClass = true;
+                                        else if (i > 10)
                                             isHolidayNightClass = true;
                                     }
-                                    else if (!itemdata.getString("course_name").equals("") && i >= 10)
+                                    else if (!itemdata.getString("course_name").equals("") && i == 10)
+                                        isBClass = true;
+                                    else if (!itemdata.getString("course_name").equals("") && i > 10)
                                         isNightClass = true;
 
                                     CourseList2.add(new CourseList(itemdata.getString("course_name"),
@@ -1793,8 +1837,6 @@ public class MainActivity extends ActionBarActivity {
             public void onClick(View v) {
                 if (!BusEndStation.equals("燕巢"))
                 {
-                    location1.setBackgroundColor(getResources().getColor(R.color.blue_2));
-                    location2.setBackgroundColor(getResources().getColor(R.color.bar_grey));
                     BusEndStation = "燕巢";
                     addBus();
                 }
@@ -1805,8 +1847,6 @@ public class MainActivity extends ActionBarActivity {
             public void onClick(View v) {
                 if (!BusEndStation.equals("建工"))
                 {
-                    location1.setBackgroundColor(getResources().getColor(R.color.bar_grey));
-                    location2.setBackgroundColor(getResources().getColor(R.color.green));
                     BusEndStation = "建工";
                     addBus();
                 }
@@ -1944,16 +1984,6 @@ public class MainActivity extends ActionBarActivity {
             }
             else
             {
-                if (BusEndStation.equals("建工"))
-                {
-                    location1.setBackgroundColor(getResources().getColor(R.color.bar_grey));
-                    location2.setBackgroundColor(getResources().getColor(R.color.green));
-                }
-                else if (BusEndStation.equals("燕巢"))
-                {
-                    location1.setBackgroundColor(getResources().getColor(R.color.blue_2));
-                    location2.setBackgroundColor(getResources().getColor(R.color.bar_grey));
-                }
                 timeTextView.setText("乘車時間 " + BusDate);
                 LoadingDialogHandler.sendEmptyMessage(-1);
                 new Thread(ReadBusRunnable).start();
@@ -2416,6 +2446,19 @@ public class MainActivity extends ActionBarActivity {
         drawerArrowDrawable = new DrawerArrowDrawable(resources, true);
         drawerArrowDrawable.setStrokeColor(Color.WHITE);
         imageView.setImageDrawable(drawerArrowDrawable);
+        try {
+            Field mDragger = drawer.getClass().getDeclaredField("mLeftDragger");
+            mDragger.setAccessible(true);
+            ViewDragHelper draggerObj = (ViewDragHelper) mDragger.get(drawer);
+
+            Field mEdgeSize = draggerObj.getClass().getDeclaredField("mEdgeSize");
+            mEdgeSize.setAccessible(true);
+            int edge = mEdgeSize.getInt(draggerObj);
+
+            mEdgeSize.setInt(draggerObj, 180);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         drawer.setDrawerListener(new DrawerLayout.SimpleDrawerListener() {
             @Override
             public void onDrawerSlide(View drawerView, float slideOffset) {
@@ -4216,6 +4259,8 @@ public class MainActivity extends ActionBarActivity {
         isHolidayClass = false;
         isHolidayNightClass = false;
         isNightClass = false;
+        isBClass = false;
+        isHolidayBClass = false;
         CourseList = new ArrayList<>();
 
         SharedPreferences setting = getSharedPreferences("KUAS AP", 0);
@@ -4245,10 +4290,14 @@ public class MainActivity extends ActionBarActivity {
                     if (j >= 6 && !itemdata.getString("course_name").equals(""))
                     {
                         isHolidayClass = true;
-                        if (i >= 10)
+                        if (i == 10)
+                            isHolidayBClass = true;
+                        else if (i > 10)
                             isHolidayNightClass = true;
                     }
-                    else if (!itemdata.getString("course_name").equals("") && i >= 10)
+                    else if (!itemdata.getString("course_name").equals("") && i == 10)
+                        isBClass = true;
+                    else if (!itemdata.getString("course_name").equals("") && i > 10)
                         isNightClass = true;
 
                     CourseList2.add(new CourseList(itemdata.getString("course_name"),
@@ -4287,6 +4336,8 @@ public class MainActivity extends ActionBarActivity {
             isHolidayClass = false;
             isHolidayNightClass = false;
             isNightClass = false;
+            isHolidayBClass = false;
+            isBClass = false;
             for (int i = 0; i < SimCourseList.size(); i++)
             {
                 for (int j = 0; j < SimCourseList.get(i).size(); j++)
@@ -4294,10 +4345,14 @@ public class MainActivity extends ActionBarActivity {
                     if (j >= 5 && !SimCourseList.get(i).get(j).ID.equals(""))
                     {
                         isHolidayClass = true;
-                        if (i >= 10)
+                        if (i == 10)
+                            isHolidayBClass = true;
+                        else if (i > 10)
                             isHolidayNightClass = true;
                     }
-                    else if (!SimCourseList.get(i).get(j).ID.equals("") && i >= 10)
+                    else if (!SimCourseList.get(i).get(j).ID.equals("") && i == 10)
+                        isBClass = true;
+                    else if (!SimCourseList.get(i).get(j).ID.equals("") && i > 10)
                         isNightClass = true;
                 }
             }
@@ -4315,11 +4370,15 @@ public class MainActivity extends ActionBarActivity {
                 {
                     if (isNightClass || isHolidayNightClass)
                         table = (TableLayout) LayoutInflater.from(MainActivity.this).inflate(R.layout.course_tablelayout_holiday_night, null);
+                    else if (isBClass || isHolidayBClass)
+                        table = (TableLayout) LayoutInflater.from(MainActivity.this).inflate(R.layout.course_tablelayout_holiday_b, null);
                     else
                         table = (TableLayout) LayoutInflater.from(MainActivity.this).inflate(R.layout.course_tablelayout_holiday, null);
 
                     if (isNightClass || isHolidayNightClass)
                         y = SimCourseList.size();
+                    else if (isBClass || isHolidayBClass)
+                        y = 11;
                     else
                         y = 10;
                     x = 7;
@@ -4328,11 +4387,15 @@ public class MainActivity extends ActionBarActivity {
                 {
                     if (isNightClass)
                         table = (TableLayout) LayoutInflater.from(MainActivity.this).inflate(R.layout.course_tablelayout_normal_night, null);
+                    else if (isBClass)
+                        table = (TableLayout) LayoutInflater.from(MainActivity.this).inflate(R.layout.course_tablelayout_normal_b, null);
                     else
                         table = (TableLayout) LayoutInflater.from(MainActivity.this).inflate(R.layout.course_tablelayout_normal, null);
 
                     if (isNightClass)
                         y = SimCourseList.size();
+                    else if (isBClass)
+                        y = 11;
                     else
                         y = 10;
                     x = 5;
@@ -4342,11 +4405,15 @@ public class MainActivity extends ActionBarActivity {
             {
                 if (isNightClass)
                     table = (TableLayout) LayoutInflater.from(MainActivity.this).inflate(R.layout.course_tablelayout_normal_night, null);
+                else if (isBClass)
+                    table = (TableLayout) LayoutInflater.from(MainActivity.this).inflate(R.layout.course_tablelayout_normal_b, null);
                 else
                     table = (TableLayout) LayoutInflater.from(MainActivity.this).inflate(R.layout.course_tablelayout_normal, null);
 
                 if (isNightClass)
                     y = SimCourseList.size();
+                else if (isBClass)
+                    y = 11;
                 else
                     y = 10;
                 x = 5;
@@ -4407,11 +4474,15 @@ public class MainActivity extends ActionBarActivity {
             {
                 if (isNightClass || isHolidayNightClass)
                     table = (TableLayout) LayoutInflater.from(MainActivity.this).inflate(R.layout.course_tablelayout_holiday_night, null);
+                else if (isBClass || isHolidayBClass)
+                    table = (TableLayout) LayoutInflater.from(MainActivity.this).inflate(R.layout.course_tablelayout_holiday_b, null);
                 else
                     table = (TableLayout) LayoutInflater.from(MainActivity.this).inflate(R.layout.course_tablelayout_holiday, null);
 
                 if (isNightClass || isHolidayNightClass)
                     y = CourseList.size();
+                else if (isBClass || isHolidayBClass)
+                    y = 11;
                 else
                     y = 10;
                 x = 7;
@@ -4420,11 +4491,15 @@ public class MainActivity extends ActionBarActivity {
             {
                 if (isNightClass)
                     table = (TableLayout) LayoutInflater.from(MainActivity.this).inflate(R.layout.course_tablelayout_normal_night, null);
+                else if (isBClass)
+                    table = (TableLayout) LayoutInflater.from(MainActivity.this).inflate(R.layout.course_tablelayout_normal_b, null);
                 else
                     table = (TableLayout) LayoutInflater.from(MainActivity.this).inflate(R.layout.course_tablelayout_normal, null);
 
                 if (isNightClass)
                     y = CourseList.size();
+                else if (isBClass)
+                    y = 11;
                 else
                     y = 10;
                 x = 5;
@@ -4434,11 +4509,15 @@ public class MainActivity extends ActionBarActivity {
         {
             if (isNightClass)
                 table = (TableLayout) LayoutInflater.from(MainActivity.this).inflate(R.layout.course_tablelayout_normal_night, null);
+            else if (isBClass)
+                table = (TableLayout) LayoutInflater.from(MainActivity.this).inflate(R.layout.course_tablelayout_normal_b, null);
             else
                 table = (TableLayout) LayoutInflater.from(MainActivity.this).inflate(R.layout.course_tablelayout_normal, null);
 
             if (isNightClass)
                 y = CourseList.size();
+            else if (isBClass)
+                y = 11;
             else
                 y = 10;
             x = 5;
