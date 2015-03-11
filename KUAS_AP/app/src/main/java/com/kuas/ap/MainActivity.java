@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -30,6 +31,7 @@ import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -63,7 +65,10 @@ import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.CoreProtocolPNames;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
@@ -104,6 +109,7 @@ import static android.view.Gravity.START;
 
 public class MainActivity extends ActionBarActivity {
     public static final String USER_AGENT = "Mozilla/5.0 (Windows NT 6.3; WOW64; rv:35.0) Gecko/20100101 Firefox/35.0";
+    public static final int TIME_OUT = 2500;
     String BusJs = "function baseEncryption(e) {function h(b, a) { var d, c, e, f, g; e = b & 2147483648; f = a & 2147483648; d = b & 1073741824; c = a & 1073741824; g = (b & 1073741823) + (a & 1073741823); return d & c ? g ^ 2147483648 ^ e ^ f : d | c ? g & 1073741824 ? g ^ 3221225472 ^ e ^ f : g ^ 1073741824 ^ e ^ f : g ^ e ^ f } function g(b, a, d, c, e, f, g) { b = h(b, h(h(a & d | ~a & c, e), g)); return h(b << f | b >>> 32 - f, a) } function i(b, a, d, c, e, f, g) { b = h(b, h(h(a & c | d & ~c, e), g)); return h(b << f | b >>> 32 - f, a) } function j(b, a, c, d, e, f, g) { b = h(b, h(h(a ^ c ^ d, e), g)); return h(b << f | b >>> 32 - f, a) } function k(b, a, c, d, e, f, g) {b = h(b, h(h(c ^(a | ~d), e), g)); return h(b << f | b >>> 32 - f, a)} function l(b) { var a = \"\", c = \"\", d; for (d = 0; 3 >= d; d++) c = b >>> 8 * d & 255, c = \"0\" + c.toString(16), a += c.substr(c.length - 2, 2); return a } var f = [], m, n, o, p, b, a, d, c, f = function (b) { var a, c = b.length; a = c + 8; for (var d = 16 * ((a - a % 64) / 64 + 1), e = Array(d - 1), f = 0, g = 0; g < c; ) a = (g - g % 4) / 4, f = 8 * (g % 4), e[a] |= b.charCodeAt(g) << f, g++; a = (g - g % 4) / 4; e[a] |= 128 << 8 * (g % 4); e[d - 2] = c << 3; e[d - 1] = c >>> 29; return e } (e); b = 1732584193; a = 4023233417; d = 2562383102; c = 271733878; for (e = 0; e < f.length; e += 16) m = b, n = a, o = d, p = c, b = g(b, a, d, c, f[e +0], 7, 3614090360), c = g(c, b, a, d, f[e + 1], 12, 3905402710), d = g(d, c, b, a, f[e + 2], 17, 606105819), a = g(a, d, c, b, f[e + 3], 22, 3250441966), b = g(b, a, d, c, f[e + 4], 7, 4118548399), c = g(c, b, a, d, f[e + 5], 12, 1200080426), d = g(d, c, b, a, f[e + 6], 17, 2821735955), a = g(a, d, c, b, f[e + 7], 22, 4249261313), b = g(b, a, d, c, f[e + 8], 7, 1770035416), c = g(c, b, a, d, f[e + 9], 12, 2336552879), d = g(d, c, b, a, f[e + 10], 17, 4294925233), a = g(a, d, c, b, f[e + 11], 22, 2304563134), b = g(b, a, d, c, f[e + 12], 7, 1804603682), c = g(c, b, a, d, f[e + 13], 12, 4254626195), d = g(d, c, b, a, f[e + 14], 17, 2792965006), a = g(a, d,c, b, f[e + 15], 22, 1236535329), b = i(b, a, d, c, f[e + 1], 5, 4129170786), c = i(c, b, a, d, f[e + 6], 9, 3225465664), d = i(d, c, b, a, f[e + 11], 14, 643717713), a = i(a, d, c, b, f[e + 0], 20, 3921069994), b = i(b, a, d, c, f[e + 5], 5, 3593408605), c = i(c, b, a, d, f[e + 10], 9, 38016083), d = i(d, c, b, a, f[e + 15], 14, 3634488961), a = i(a, d, c, b, f[e + 4], 20, 3889429448), b = i(b, a, d, c, f[e + 9], 5, 568446438), c = i(c, b, a, d, f[e + 14], 9, 3275163606), d = i(d, c, b, a, f[e + 3], 14, 4107603335), a = i(a, d, c, b, f[e + 8], 20, 1163531501), b = i(b, a, d, c, f[e + 13], 5, 2850285829), c = i(c, b, a, d, f[e + 2], 9, 4243563512), d = i(d,c, b, a, f[e + 7], 14, 1735328473), a = i(a, d, c, b, f[e + 12], 20, 2368359562), b = j(b, a, d, c, f[e + 5], 4, 4294588738), c = j(c, b, a, d, f[e + 8], 11, 2272392833), d = j(d, c, b, a, f[e + 11], 16, 1839030562), a = j(a, d, c, b, f[e + 14], 23, 4259657740), b = j(b, a, d, c, f[e + 1], 4, 2763975236), c = j(c, b, a, d, f[e + 4], 11, 1272893353), d = j(d, c, b, a, f[e + 7], 16, 4139469664), a = j(a, d, c, b, f[e + 10], 23, 3200236656), b = j(b, a, d, c, f[e + 13], 4, 681279174), c = j(c, b, a, d, f[e + 0], 11, 3936430074), d = j(d, c, b, a, f[e + 3], 16, 3572445317), a = j(a, d, c, b, f[e + 6], 23, 76029189), b = j(b, a, d, c, f[e + 9], 4, 3654602809),c = j(c, b, a, d, f[e + 12], 11, 3873151461), d = j(d, c, b, a, f[e + 15], 16, 530742520), a = j(a, d, c, b, f[e + 2], 23, 3299628645), b = k(b, a, d, c, f[e + 0], 6, 4096336452), c = k(c, b, a, d, f[e + 7], 10, 1126891415), d = k(d, c, b, a, f[e + 14], 15, 2878612391), a = k(a, d, c, b, f[e + 5], 21, 4237533241), b = k(b, a, d, c, f[e + 12], 6, 1700485571), c = k(c, b, a, d, f[e + 3], 10, 2399980690), d = k(d, c, b, a, f[e + 10], 15, 4293915773), a = k(a, d, c, b, f[e + 1], 21, 2240044497), b = k(b, a, d, c, f[e + 8], 6, 1873313359), c = k(c, b, a, d, f[e + 15], 10, 4264355552), d = k(d, c, b, a, f[e + 6], 15, 2734768916), a = k(a, d, c, b, f[e + 13], 21,1309151649), b = k(b, a, d, c, f[e + 4], 6, 4149444226), c = k(c, b, a, d, f[e + 11], 10, 3174756917), d = k(d, c, b, a, f[e + 2], 15, 718787259), a = k(a, d, c, b, f[e + 9], 21, 3951481745), b = h(b, m), a = h(a, n), d = h(d, o), c = h(c, p); return (l(b) + l(a) + l(d) + l(c)).toLowerCase()}loginEncryption = function (e, h) {var g = Math.floor(1163531501 * Math.random()) + 15441, i = Math.floor(1163531502 * Math.random()) + 0, j = Math.floor(1163531502 * Math.random()) + 0, k = Math.floor(1163531502 * Math.random()) + 0, g = baseEncryption(\"J\" + g), i = baseEncryption(\"E\" + i), j = baseEncryption(\"R\" + j), k = baseEncryption(\"Y\" + k), e = baseEncryption(e + encA1(g)), h = baseEncryption(e + h + \"JERRY\" + encA1(i)), l = baseEncryption(e + h + \"KUAS\" + encA1(j)), l = baseEncryption(l + e + encA1(\"ITALAB\") + encA1(k)), l = baseEncryption(l + h + \"MIS\" + k); return '{ a:\"' + l + '\",b:\"' +g + '\",c:\"' + i + '\",d:\"' + j + '\",e:\"' + k + '\",f:\"' + h + '\" }'}; function encA2(e) { return baseEncryption(e) };";
     CookieStore cookieStore = new BasicCookieStore();
     private String _loginUrl = "http://140.127.113.231/kuas/perchk.jsp";
@@ -117,7 +123,13 @@ public class MainActivity extends ActionBarActivity {
     private String Uid = "";
     private String Pwd = "";
 
+    private int LayoutId = R.layout.login;
+    private int SelectLayoutId = R.layout.course;
+
+    // Server
     private String api_server = "http://kuas.grd.idv.tw:14768/";
+    private String _api = "http://kuas.grd.idv.tw:14768/";
+    private String _backup = "http://api.grd.idv.tw:14768/";
 
     private String ymsScore = "";
 
@@ -130,6 +142,7 @@ public class MainActivity extends ActionBarActivity {
     public static final int LoginInit = -1;
     public static final int LoginSuccess = 2;
     public static final int LoginError = 1;
+    public static final int LoginError2 = 3;
 
     Runnable ReadSemesterRunnable;
 
@@ -141,6 +154,8 @@ public class MainActivity extends ActionBarActivity {
     private boolean OnCreateCheck = false;
 
     // Server Status
+    Runnable CheckFixedRunnable;
+    Runnable CheckBackUpRunnable;
     Runnable CheckServerStatusRunnable;
     boolean ap_status = false;
     boolean leave_status = false;
@@ -347,6 +362,31 @@ public class MainActivity extends ActionBarActivity {
             }
         };
 
+        CheckBackUpRunnable = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    CheckBackup();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        CheckFixedRunnable = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Message msg = new Message();
+                    msg.obj = CheckFixed();
+                    msg.what = 1;
+                    CheckFixedHandler.sendMessage(msg);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
         checkVersionRunnable = new Runnable() {
             @Override
             public void run() {
@@ -371,13 +411,51 @@ public class MainActivity extends ActionBarActivity {
 
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if ((keyCode == KeyEvent.KEYCODE_BACK)) {
-            if (_isLogin)
-                initLogout();
-            else
-                initLogin();
+            switch (LayoutId)
+            {
+                case R.layout.select:
+                    if (SelectLayoutId == R.layout.course)
+                        initCourse(true, true, true);
+                    else if (SelectLayoutId == R.layout.score)
+                        initScore(true, true);
+                    else if (SelectLayoutId == R.layout.leave1)
+                        initLeave1(true, true);
+                    break;
+                case R.layout.simcourse_search1:
+                case R.layout.simcourse_search2:
+                    initSimCourse(false, true);
+                    break;
+                default:
+                    if (_isLogin)
+                        initLogout();
+                    else
+                        initLogin();
+                    break;
+            }
             return true;
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    private void CheckBackup()
+    {
+        try{
+            if (get_url_contents(_backup + "backup", null, cookieStore).equals("1"))
+                api_server = _backup;
+            else
+                api_server = _api;
+        } catch (Exception e) {
+            api_server = _api;
+        }
+    }
+
+    private String CheckFixed()
+    {
+        try{
+            return get_url_contents(_api + "fixed", null, cookieStore);
+        } catch (Exception e) {
+            return "";
+        }
     }
 
     public boolean CheckVersion()
@@ -489,7 +567,10 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void initLogin(){
-        setContentView(R.layout.login);
+        setContentViewEx(R.layout.login);
+
+        new Thread(CheckBackUpRunnable).start();
+        new Thread(CheckFixedRunnable).start();
 
         _isLogin = false;
 
@@ -510,7 +591,12 @@ public class MainActivity extends ActionBarActivity {
                 imm.hideSoftInputFromWindow(UserNameEditText.getWindowToken(), 0);
                 imm.hideSoftInputFromWindow(PasswordEditText.getWindowToken(), 0);
 
-                new Thread(LoginRunnable).start();
+                if (UserNameEditText.getText().toString().equals(""))
+                    Toast.makeText(getApplicationContext(), "請輸入帳號", Toast.LENGTH_SHORT).show();
+                else if (PasswordEditText.getText().toString().equals(""))
+                    Toast.makeText(getApplicationContext(), "請輸入密碼", Toast.LENGTH_SHORT).show();
+                else
+                    new Thread(LoginRunnable).start();
             }
         });
 
@@ -548,7 +634,7 @@ public class MainActivity extends ActionBarActivity {
                         System.out.println("Error");
                     }
                 } catch (Exception e) {
-                    LoginHandler.sendEmptyMessage(LoginError);
+                    LoginHandler.sendEmptyMessage(LoginError2);
                     e.printStackTrace();
                 }
             }
@@ -569,7 +655,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void initLogout(){
-        setContentView(R.layout.logout);
+        setContentViewEx(R.layout.logout);
         _fncid = "";
 
         _isLogin = true;
@@ -589,7 +675,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void initSelect(){
-        setContentView(R.layout.select);
+        setContentViewEx(R.layout.select);
         isSelecting = true;
 
         ListView selectListView = (ListView) findViewById(R.id.listView);
@@ -633,11 +719,11 @@ public class MainActivity extends ActionBarActivity {
                     cancel = true;
                 ymsScore = SemesterValue.get(position);
                 isSelecting = false;
-                if (_fncid.equals("AG222"))
+                if (SelectLayoutId == R.layout.course)
                     initCourse(true, cancel, true);
-                else if (_fncid.equals("AG008"))
+                else if (SelectLayoutId == R.layout.score)
                     initScore(true, cancel);
-                else if (_fncid.equals("AK002"))
+                else if (SelectLayoutId == R.layout.leave1)
                     initLeave1(true, cancel);
             }
         });
@@ -645,11 +731,11 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 isSelecting = false;
-                if (_fncid.equals("AG222"))
+                if (SelectLayoutId == R.layout.course)
                     initCourse(true, true, true);
-                else if (_fncid.equals("AG008"))
+                else if (SelectLayoutId == R.layout.score)
                     initScore(true, true);
-                else if (_fncid.equals("AK002"))
+                else if (SelectLayoutId == R.layout.leave1)
                     initLeave1(true, true);
             }
         });
@@ -666,7 +752,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void initReLogin(){
-        setContentView(R.layout.relogin);
+        setContentViewEx(R.layout.relogin);
 
         _isLogin = false;
 
@@ -840,9 +926,9 @@ public class MainActivity extends ActionBarActivity {
 
     public void initCourse(boolean select, boolean cancel, final boolean _isLogin){
         if (_isLogin)
-            setContentView(R.layout.course);
+            setContentViewEx(R.layout.course);
         else
-            setContentView(R.layout.offlinecourse);
+            setContentViewEx(R.layout.offlinecourse);
         TextView textView = (TextView) findViewById(R.id.textView);
         textView.setVisibility(View.GONE);
 
@@ -1040,7 +1126,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void initScore(boolean select, boolean cancel){
-        setContentView(R.layout.score);
+        setContentViewEx(R.layout.score);
 
         RelativeLayout Select = (RelativeLayout) findViewById(R.id.select);
         Select.setOnClickListener(new View.OnClickListener() {
@@ -1139,7 +1225,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void initLeave1(boolean select, boolean cancel){
-        setContentView(R.layout.leave1);
+        setContentViewEx(R.layout.leave1);
 
         RelativeLayout Select = (RelativeLayout) findViewById(R.id.select);
         Select.setOnClickListener(new View.OnClickListener() {
@@ -1308,7 +1394,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void initLeave2(){
-        setContentView(R.layout.leave2);
+        setContentViewEx(R.layout.leave2);
 
         RelativeLayout Page1 = (RelativeLayout) findViewById(R.id.relativeLayout);
         Page1.setOnClickListener(new View.OnClickListener() {
@@ -1619,7 +1705,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void initEvent1(final boolean _isLogin, final boolean ReLoad){
-        setContentView(R.layout.event1);
+        setContentViewEx(R.layout.event1);
 
         final ListView NotificationListView = (ListView) findViewById(R.id.notification_listView);
 
@@ -1744,7 +1830,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void initEvent2(final boolean _isLogin){
-        setContentView(R.layout.event2);
+        setContentViewEx(R.layout.event2);
 
         final ListView PhoneListView = (ListView) findViewById(R.id.phone_listView);
 
@@ -1779,7 +1865,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void initEvent3(final boolean _isLogin){
-        setContentView(R.layout.event3);
+        setContentViewEx(R.layout.event3);
 
         final ScrollView scrollView = (ScrollView) findViewById(R.id.scrollView);
 
@@ -1820,7 +1906,7 @@ public class MainActivity extends ActionBarActivity {
 
     private void initBus1(boolean ShowCal)
     {
-        setContentView(R.layout.bus1);
+        setContentViewEx(R.layout.bus1);
 
         RelativeLayout Page2 = (RelativeLayout) findViewById(R.id.RelativeLayout2);
         Page2.setOnClickListener(new View.OnClickListener() {
@@ -1993,7 +2079,7 @@ public class MainActivity extends ActionBarActivity {
 
     private void initBus2()
     {
-        setContentView(R.layout.bus2);
+        setContentViewEx(R.layout.bus2);
 
         TextView noReserveTextView = (TextView) findViewById(R.id.noReserveTextView);
         ImageView noReserveImageView = (ImageView) findViewById(R.id.noReserveImageView);
@@ -2090,7 +2176,7 @@ public class MainActivity extends ActionBarActivity {
 
     private void initAbout(final boolean _isLogin)
     {
-        setContentView(R.layout.about);
+        setContentViewEx(R.layout.about);
 
         if (_isLogin)
             initDrawer(new String[]{ "學期課表", "學期成績", "缺曠系統", "校車系統", "模擬選課", "校園資訊" }, new String[]{}, _isLogin, true);
@@ -2101,8 +2187,16 @@ public class MainActivity extends ActionBarActivity {
         facebook.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.facebook.com/pages/%E9%AB%98%E6%87%89%E6%A0%A1%E5%8B%99%E9%80%9A/954175941266264?fref=ts"));
-                startActivity(browserIntent);
+                if (isPackageAvailable("com.facebook.katana"))
+                {
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("fb://page/954175941266264"));
+                    startActivity(browserIntent);
+                }
+                else
+                {
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.facebook.com/profile.php?id=954175941266264"));
+                    startActivity(browserIntent);
+                }
             }
         });
         ImageView github = (ImageView) findViewById(R.id.github);
@@ -2122,7 +2216,7 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
-        _fncid = "about";
+        _fncid = "";
 
         initAboutPathView();
     }
@@ -2182,9 +2276,9 @@ public class MainActivity extends ActionBarActivity {
 
     private void initSimCourse(boolean Reload, final boolean _isLogin)
     {
-        setContentView(R.layout.simcourse);
+        setContentViewEx(R.layout.simcourse);
 
-        _fncid = "SimCourse";
+        _fncid = "";
 
         findViewById(R.id.RelativeLayout).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -2684,7 +2778,7 @@ public class MainActivity extends ActionBarActivity {
 
     private void initSimCourseSearch1(boolean Reload)
     {
-        setContentView(R.layout.simcourse_search1);
+        setContentViewEx(R.layout.simcourse_search1);
 
         _fncid = "";
 
@@ -2971,7 +3065,7 @@ public class MainActivity extends ActionBarActivity {
 
     private void initSimCourseSearch2()
     {
-        setContentView(R.layout.simcourse_search2);
+        setContentViewEx(R.layout.simcourse_search2);
 
         _fncid = "";
 
@@ -3065,7 +3159,7 @@ public class MainActivity extends ActionBarActivity {
 
     private void initSimCourseSelectDepartment1()
     {
-        setContentView(R.layout.simcourse_select);
+        setContentViewEx(R.layout.simcourse_select);
 
         findViewById(R.id.up).setVisibility(View.GONE);
 
@@ -3425,6 +3519,22 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
+    private Handler CheckFixedHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what)
+            {
+                case 1:
+                    try {
+                        ((TextView) findViewById(R.id.Fixed)).setText((String) msg.obj);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    break;
+            }
+        };
+    };
+
     private Handler SimCourseReadCourseHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -3610,7 +3720,7 @@ public class MainActivity extends ActionBarActivity {
         public void handleMessage(Message msg) {
             switch (msg.what)
             {
-                case 1:
+                case LoginError:
                     LoadingDialog.dismiss();
                     AlertDialogPro.Builder builder = CustomDialog("Error", "帳號或密碼輸入錯誤 !", false);
                     builder.setPositiveButton("確定", null).show();
@@ -3618,12 +3728,19 @@ public class MainActivity extends ActionBarActivity {
                     UserNameEditText.setEnabled(true);
                     PasswordEditText.setEnabled(true);
                     break;
-                case 2:
+                case LoginSuccess:
                     LoadingDialog.dismiss();
                     SignInButton.setEnabled(true);
                     UserNameEditText.setEnabled(true);
                     PasswordEditText.setEnabled(true);
                     initLogout();
+                    break;
+                case LoginError2:
+                    LoadingDialog.dismiss();
+                    Toast.makeText(getApplicationContext(), "網路不穩定問題，請稍候嘗試...", Toast.LENGTH_SHORT).show();
+                    SignInButton.setEnabled(true);
+                    UserNameEditText.setEnabled(true);
+                    PasswordEditText.setEnabled(true);
                     break;
             }
         };
@@ -3667,8 +3784,9 @@ public class MainActivity extends ActionBarActivity {
                     jsonObj = new JSONArray(get_url_contents(api_server + "news", null, cookieStore));
                     WebView image = new WebView(MainActivity.this);
                     image.setBackgroundColor(0);
-                    image.loadDataWithBaseURL("", jsonObj.getString(3),"text/html", "UTF-8", "");
-                    AlertDialogPro.Builder builder;
+                    image.loadDataWithBaseURL("", jsonObj.getString(3), "text/html", "UTF-8", "");
+                    System.out.println(jsonObj.getString(3));
+                    final AlertDialogPro.Builder builder;
                     final String Url = jsonObj.getString(4);
                     if (!Url.equals("") && Url.startsWith("http"))
                     {
@@ -3681,15 +3799,20 @@ public class MainActivity extends ActionBarActivity {
                                         startActivity(browserIntent);
                                     }
                                 }).
-                                setNegativeButton("朕知道了", null).setCancelable(false).show();
+                                setNegativeButton("朕知道了", null).setCancelable(false);
                     }
                     else
                     {
                         builder = CustomDialog(jsonObj.getString(2), "", true);
                         builder.setView(image).
                                 setPositiveButton("朕知道了", null)
-                                .setCancelable(false).show();
+                                .setCancelable(false);
                     }
+                    image.setWebViewClient(new WebViewClient() {
+                        public void onPageFinished(WebView view, String url) {
+                            builder.show();
+                        }
+                    });
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -4815,7 +4938,9 @@ public class MainActivity extends ActionBarActivity {
 
     String get_url_contents( String url , List<NameValuePair> params , CookieStore cookieStore ) {
         try {
-            HttpClient client = new DefaultHttpClient();
+            HttpParams httpParameters = new BasicHttpParams();
+            HttpConnectionParams.setConnectionTimeout(httpParameters, TIME_OUT);
+            HttpClient client = new DefaultHttpClient(httpParameters);
             client.getParams().setParameter(CoreProtocolPNames.USER_AGENT, USER_AGENT);
             HttpResponse response = null;
 
@@ -4840,7 +4965,9 @@ public class MainActivity extends ActionBarActivity {
     }
     String post_url_contents( String url, List<NameValuePair> params , CookieStore cookieStore ) {
         try {
-            HttpClient client = new DefaultHttpClient();
+            HttpParams httpParameters = new BasicHttpParams();
+            HttpConnectionParams.setConnectionTimeout(httpParameters, TIME_OUT);
+            HttpClient client = new DefaultHttpClient(httpParameters);
             client.getParams().setParameter(CoreProtocolPNames.USER_AGENT, USER_AGENT);
             HttpPost mHttpPost = new HttpPost(url);
             HttpResponse response = null;
@@ -5043,22 +5170,60 @@ public class MainActivity extends ActionBarActivity {
 
         if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) { }
         else { }
-        if (_fncid.equals("AG222") && !LoadingDialog.isShowing() && !isSelecting)
+
+        switch (LayoutId)
         {
-            if (isOfflineCourse)
-                addOfflineCourse();
-            else
-                addCourse();
+            case R.layout.course:
+            case R.layout.offlinecourse:
+                if (!LoadingDialog.isShowing() && !isSelecting)
+                {
+                    if (isOfflineCourse)
+                        addOfflineCourse();
+                    else
+                        addCourse();
+                }
+                break;
+            case R.layout.leave1:
+                if (!LoadingDialog.isShowing() && !isSelecting)
+                    addLeave();
+                break;
+            case R.layout.about:
+                if (AboutEasterEgg < 5)
+                    initAboutPathView();
+                break;
+            case R.layout.simcourse:
+                addSimCourse();
+                break;
+            default:
+                break;
         }
-        else if (_fncid.equals("AK002") && !LoadingDialog.isShowing() && !isSelecting)
-            addLeave();
-        else if (_fncid.equals("about"))
+    }
+
+    private boolean isPackageAvailable(String packageName){
+        final PackageManager packageManager = getPackageManager();
+        List<PackageInfo> pinfo = packageManager.getInstalledPackages(0);
+        List<String> pName = new ArrayList<>();
+        if(pinfo != null){
+            for(int i = 0; i < pinfo.size(); i++){
+                String pn = pinfo.get(i).packageName;
+                pName.add(pn);
+            }
+        }
+        return pName.contains(packageName);
+    }
+
+    private void setContentViewEx(int _layoutID)
+    {
+        LayoutId = _layoutID;
+        switch (_layoutID)
         {
-            if (AboutEasterEgg < 5)
-                initAboutPathView();
+            case R.layout.course:
+            case R.layout.score:
+            case R.layout.leave1:
+                SelectLayoutId = _layoutID;
+                break;
         }
-        else if (_fncid.equals("SimCourse"))
-            addSimCourse();
+        setContentView(_layoutID);
     }
 
     @Override

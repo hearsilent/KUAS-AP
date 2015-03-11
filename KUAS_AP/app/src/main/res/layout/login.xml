@@ -156,6 +156,16 @@
                         android:layout_alignBaseline="@id/RememberPass"
                         android:layout_alignTop="@+id/RememberPass"
                         android:layout_alignBottom="@+id/RememberPass"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"
+                        android:id="@+id/Fixed"
+                        android:layout_below="@+id/RememberPass"
+                        android:layout_marginTop="5sp"
+                        android:layout_centerHorizontal="true"
+                        android:textColor="@color/red"/>
                 </RelativeLayout>
             </ScrollView>
 
