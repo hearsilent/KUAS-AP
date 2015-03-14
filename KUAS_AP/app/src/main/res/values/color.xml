@@ -18,4 +18,7 @@
     <color name="dialog_grey">#353535</color>
     <color name="blue_3">#3bafda</color>
     <color name="green_2">#8cc152</color>
+
+    <color name="preset_button_background">@android:color/transparent</color>
+    <color name="preset_button_background_selected">#66000000</color>
 </resources>

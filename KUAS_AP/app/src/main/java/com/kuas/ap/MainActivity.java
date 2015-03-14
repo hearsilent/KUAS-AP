@@ -243,6 +243,7 @@ public class MainActivity extends ActionBarActivity {
 
     // News
     Integer news_id = -1;
+    String NewsData = "";
     Runnable newsRunnable;
 
     // Version
@@ -655,7 +656,39 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void initLogout(){
-        setContentViewEx(R.layout.logout);
+        if (NewsData.equals(""))
+            setContentViewEx(R.layout.logout);
+        else
+        {
+            setContentViewEx(R.layout.logout_news);
+            try {
+                JSONArray jsonObj = new JSONArray(NewsData);
+                WebView newsWeb = (WebView) findViewById(R.id.webView);
+                newsWeb.setBackgroundColor(0);
+                newsWeb.loadDataWithBaseURL("", jsonObj.getString(3), "text/html", "UTF-8", "");
+                ((TextView) findViewById(R.id.title)).setText(jsonObj.getString(2));
+                final String Url = jsonObj.getString(4);
+                if (!Url.equals("") && Url.startsWith("http"))
+                {
+                    findViewById(R.id.OpenUrl).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(Url));
+                            startActivity(browserIntent);
+                        }
+                    });
+                    findViewById(R.id.OpenUrl).setVisibility(View.VISIBLE);
+                }
+                else
+                {
+                    findViewById(R.id.OpenUrl).setVisibility(View.GONE);
+                }
+            } catch (Exception e) {
+                setContentViewEx(R.layout.logout);
+                e.printStackTrace();
+            }
+        }
+
         _fncid = "";
 
         _isLogin = true;
@@ -3991,10 +4024,12 @@ public class MainActivity extends ActionBarActivity {
 
     public void showNews(){
         try {
+            NewsData = "";
             Message msg = new Message();
             msg.what = 1;
             msg.obj = get_url_contents(api_server + "news/status", null, cookieStore);
-            showNewsHandler.sendMessage(msg);
+            NewsData =get_url_contents(api_server + "news", null, cookieStore);;
+            //showNewsHandler.sendMessage(msg);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -4688,147 +4723,6 @@ public class MainActivity extends ActionBarActivity {
         scrollView.addView(table);
     }
 
-    public void addCourseOld() {
-        TableLayout table = (TableLayout) findViewById(R.id.tablelayout);
-        table.setStretchAllColumns(true);
-        table.removeAllViews();
-
-        TextView textView = (TextView) findViewById(R.id.textView);
-        if (!isHolidayClass)
-            textView.setVisibility(View.GONE);
-        else
-            textView.setVisibility(View.VISIBLE);
-
-        if (CourseList.size() == 0)
-        {
-            TableRow tablerow = new TableRow(MainActivity.this);
-            final TextView testview = new TextView(MainActivity.this);
-            testview.setTextSize(14);
-            testview.setGravity(Gravity.CENTER);
-            testview.setText("目前無學生個人選課資料");
-            testview.setBackgroundResource(R.drawable.tablelayout_oneitem);
-            tablerow.addView(testview,new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.MATCH_PARENT));
-            table.addView(tablerow);
-            return;
-        }
-
-        TableRow tablerowx = new TableRow(MainActivity.this);
-        String[] titles = {};
-
-        int x, y;
-        if (getResources().getConfiguration().orientation == 2) //橫向
-        {
-            textView.setVisibility(View.GONE);
-            if (isHolidayClass)
-            {
-                titles = new String[]{"　", "一", "二", "三", "四", "五", "六", "日"};
-                if (isNightClass || isHolidayNightClass)
-                    y = CourseList.size();
-                else
-                    y = 10;
-                x = 8;
-            }
-            else
-            {
-                titles = new String[]{"　", "一", "二", "三", "四", "五"};
-                if (isNightClass)
-                    y = CourseList.size();
-                else
-                    y = 10;
-                x = 6;
-            }
-        }
-        else //垂直
-        {
-            titles = new String[]{"　", "一", "二", "三", "四", "五"};
-            x = 6;
-            if (isNightClass)
-                y = CourseList.size();
-            else
-                y = 10;
-        }
-
-        for (int i = 0; i < titles.length; i++)
-        {
-            TextView title = new TextView(MainActivity.this);
-            title.setText(titles[i]);
-            title.setTextColor(getResources().getColor(R.color.blue));
-            title.setTextSize(14);
-            title.setGravity(Gravity.CENTER);
-            if (i == 0)
-                title.setBackgroundResource(R.drawable.course_top_left);
-            else if (i == titles.length-1)
-                title.setBackgroundResource(R.drawable.course_top_right);
-            else
-                title.setBackgroundResource(R.drawable.course_top_center);
-            tablerowx.addView(title);
-        }
-        table.addView(tablerowx);
-
-        String[] titles2 = {"M", "第1節", "第2節", "第3節", "第4節", "A", "第5節", "第6節", "第7節", "第8節", "B", "第11節", "第12節", "第13節", "第14節"};
-        for (int i = 0; i < y; i++) {
-            TableRow tablerow = new TableRow(MainActivity.this);
-            for (int j = 0; j < x; j++) {
-                final TextView testview = new TextView(MainActivity.this);
-                testview.setTextSize(16);
-
-                if (j == 0)
-                {
-                    testview.setTextColor(getResources().getColor(R.color.blue));
-                    testview.setTextSize(14);
-                    testview.setText(titles2[i]);
-                }
-                else
-                {
-                    testview.setTextColor(getResources().getColor(R.color.grey));
-                    if (CourseList.get(i).get(j - 1).ID.length() > 0)
-                        testview.setText(CourseList.get(i).get(j - 1).ID.substring(0,2));
-                    else
-                        testview.setText("　　");
-                }
-
-                final int yy = i;
-                final int xx = j;
-                if (j != 0 && !CourseList.get(i).get(j - 1).ID.equals(""))
-                    testview.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            AlertDialogPro.Builder builder = CustomDialog("", "課程名稱：" + CourseList.get(yy).get(xx - 1).ID
-                                    + "\n授課老師：" +  CourseList.get(yy).get(xx - 1).Teacher
-                                    + "\n教室位置：" + CourseList.get(yy).get(xx - 1).Place
-                                    + "\n上課時間：" + CourseList.get(yy).get(xx - 1).Time, false);
-                            builder.setPositiveButton("確定", null).show();
-                        }
-                    });
-
-                testview.setGravity(Gravity.CENTER);
-                if (j == 0)
-                {
-                    if (i == y-1)
-                        testview.setBackgroundResource(R.drawable.course_bottom_left);
-                    else
-                        testview.setBackgroundResource(R.drawable.course_normal_left);
-                }
-                else if (j == x-1)
-                {
-                    if (i == y-1)
-                        testview.setBackgroundResource(R.drawable.course_bottom_right);
-                    else
-                        testview.setBackgroundResource(R.drawable.course_normal_right);
-                }
-                else
-                {
-                    if (i == y-1)
-                        testview.setBackgroundResource(R.drawable.course_bottom_center);
-                    else
-                        testview.setBackgroundResource(R.drawable.course_normal_center);
-                }
-                tablerow.addView(testview, new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.MATCH_PARENT));
-            }
-            table.addView(tablerow);
-        }
-    }
-
     public void addScore() {
         TableLayout table = (TableLayout) findViewById(R.id.tablelayout);
         TableLayout table2 = (TableLayout) findViewById(R.id.tablelayout2);
@@ -5193,6 +5087,10 @@ public class MainActivity extends ActionBarActivity {
                 break;
             case R.layout.simcourse:
                 addSimCourse();
+                break;
+            case R.layout.logout:
+            case R.layout.logout_news:
+                initLogout();
                 break;
             default:
                 break;
