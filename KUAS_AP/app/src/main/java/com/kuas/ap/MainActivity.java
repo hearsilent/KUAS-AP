@@ -703,8 +703,6 @@ public class MainActivity extends ActionBarActivity {
                 initLogin();
             }
         });
-
-        initServerStatus();
     }
 
     public void initSelect(){
