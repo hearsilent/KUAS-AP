@@ -5,13 +5,13 @@
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/grey</item>
         <item name="colorPrimaryDark">@color/thumbColor</item>
-        <item name="colorAccent">@color/actionbar_color2</item>
+        <item name="colorAccent">@color/actionbar_color</item>
         <item name="alertDialogProTheme">@style/AppTheme.FlavoredMaterial</item>
     </style>
     <style name="AppTheme.FlavoredMaterial" parent="Theme.AlertDialogPro.Material.Light">
         <item name="colorPrimary">@color/grey</item>
         <item name="colorPrimaryDark">@color/thumbColor</item>
-        <item name="colorAccent">@color/actionbar_color2</item>
+        <item name="colorAccent">@color/actionbar_color</item>
         <item name="android:windowTitleStyle">@style/AdpTitleStyle</item>
         <item name="adpButtonBarNegativeButtonStyle">@style/AdpNormalButtonStyle</item>
         <item name="adpButtonBarNeutralButtonStyle">@style/AdpNormalButtonStyle</item>

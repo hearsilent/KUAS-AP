@@ -99,7 +99,7 @@
                         android:text="登出"
                         android:width="200dp"
                         android:textColor="@color/white"
-                        android:background="@color/actionbar_color2"
+                        android:background="@color/actionbar_color"
                         android:layout_centerHorizontal="true" />
                 </RelativeLayout>
             </ScrollView>

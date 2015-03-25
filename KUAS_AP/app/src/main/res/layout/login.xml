@@ -127,7 +127,7 @@
                             android:enabled="true"
                             android:width="200dp"
                             android:textColor="@color/white"
-                            android:background="@color/actionbar_color2" />
+                            android:background="@color/actionbar_color" />
                     </com.andexert.library.RippleView>
 
                     <CheckBox

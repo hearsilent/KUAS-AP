@@ -47,8 +47,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alertdialogpro.AlertDialogPro;
+import com.alertdialogpro.ProgressDialogPro;
 import com.eftimoff.androipathview.PathView;
-import com.pnikosis.materialishprogress.ProgressWheel;
 import com.roomorama.caldroid.CaldroidFragment;
 import com.roomorama.caldroid.CaldroidListener;
 
@@ -406,23 +406,8 @@ public class MainActivity extends ActionBarActivity {
         if (!OnCreateCheck)
         {
             initLogin();
-            //initTest();
             OnCreateCheck = true;
         }
-    }
-
-    void initTest()
-    {
-        AlertDialogPro.Builder builder = new AlertDialogPro.Builder(MainActivity.this);
-        //builder.setView();
-        RelativeLayout layout = (RelativeLayout) LayoutInflater.from(MainActivity.this).inflate(R.layout.loading_dialog, null);
-        final ProgressWheel wheel = (ProgressWheel) layout.findViewById(R.id.progress_wheel);
-        wheel.setBarWidth(6);
-        wheel.setMaterial(true);
-        wheel.spin();
-        builder.setView(layout);
-        builder.show();
-        //(TableLayout) LayoutInflater.from(MainActivity.this).inflate(R.layout.course_tablelayout_holiday_night, null);
     }
 
     public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -598,7 +583,7 @@ public class MainActivity extends ActionBarActivity {
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
-        LoadingDialog = LoadingDialog("Login", 6, getResources().getColor(R.color.actionbar_color2));
+        LoadingDialog = new ProgressDialogPro(this, R.style.Theme_AlertDialogPro_Material_Light);
 
         SignInButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -707,8 +692,6 @@ public class MainActivity extends ActionBarActivity {
         _fncid = "";
 
         _isLogin = true;
-
-        LoadingDialog = LoadingDialog("Loading...", 6, getResources().getColor(R.color.actionbar_color2));
 
         initDrawer(new String[]{ "學期課表", "學期成績", "缺曠系統", "校車系統", "模擬選課", "校園資訊" }, new String[]{ "關於我們" }, true, false);
 
@@ -2775,8 +2758,6 @@ public class MainActivity extends ActionBarActivity {
         SharedPreferences setting = getSharedPreferences("KUAS AP", 0);
         setting.edit().putString("SimCourse", jsonArray.toString()).apply();
 
-        Toast.makeText(getApplicationContext(), "已儲存課表！", Toast.LENGTH_SHORT).show();
-
         // Debug
         /*
         for(int i=0; i<jsonArray.toString().length(); i+=1024)
@@ -3639,6 +3620,10 @@ public class MainActivity extends ActionBarActivity {
             switch (msg.what)
             {
                 case -1:
+                    LoadingDialog.setMessage("Loading...");
+                    ProgressDialogPro progressDialog = (ProgressDialogPro) LoadingDialog;
+                    progressDialog.setProgressStyle(ProgressDialogPro.STYLE_SPINNER);
+                    progressDialog.setIndeterminate(true);
                     LoadingDialog.setCancelable(false);
                     LoadingDialog.setCanceledOnTouchOutside(false);
                     LoadingDialog.show();
@@ -4067,23 +4052,16 @@ public class MainActivity extends ActionBarActivity {
 
         PhoneListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(getApplicationContext(), "長按以撥出電話", Toast.LENGTH_SHORT).show();
-            }
-        });
-        PhoneListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
                 AlertDialogPro.Builder builder = CustomDialog("撥出電話", "確定要撥給「" + PhoneList.get(position).title + "」？", false);
                 builder.setPositiveButton("撥出", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Intent myIntentDial = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:"+ PhoneList.get(position).number.replace("#", ",")));
-                        startActivity(myIntentDial);
-                    }
-                }).
-                        setNegativeButton("返回", null).show();
-                return false;
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Intent myIntentDial = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:"+ PhoneList.get(position).number.replace("#", ",")));
+                                startActivity(myIntentDial);
+                            }
+                        }).
+                        setNegativeButton("返回", null).setCancelable(false).show();
             }
         });
     }
@@ -4112,30 +4090,17 @@ public class MainActivity extends ActionBarActivity {
                         public void onClick(View v) {
                             try {
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-                                    Toast.makeText(getApplicationContext(), "長按以新增至行事曆", Toast.LENGTH_SHORT).show();
-                                }
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    });
-                    rowx.setOnLongClickListener(new View.OnLongClickListener() {
-                        @Override
-                        public boolean onLongClick(View v) {
-                            try {
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                                     AlertDialogPro.Builder builder = CustomDialog("行事曆", "確定要將「" + msg.split("\\) ")[1] + "」新增至行事曆？", false);
                                     builder.setPositiveButton("確定", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
                                             AddCalendarEvent(msg);
                                         }
-                                    }).setNegativeButton("返回", null).show();
+                                    }).setNegativeButton("返回", null).setCancelable(false).show();
                                 }
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
-                            return false;
                         }
                     });
                     table.addView(rowx);
@@ -5050,25 +5015,6 @@ public class MainActivity extends ActionBarActivity {
         calendarIntent.putExtra(CalendarContract.Events.TITLE, _msg);
         calendarIntent.putExtra(CalendarContract.Events.EVENT_LOCATION, "國立高雄應用科技大學");
         startActivity(calendarIntent);
-    }
-
-    public AlertDialogPro LoadingDialog(String Title, int BarWidth, int BackgroundColor)
-    {
-        AlertDialogPro builder = new AlertDialogPro.Builder(MainActivity.this).create();
-
-        if (BarWidth == 0) BarWidth = 6;
-
-        RelativeLayout layout = (RelativeLayout) LayoutInflater.from(MainActivity.this).inflate(R.layout.loading_dialog, null);
-        ProgressWheel wheel = (ProgressWheel) layout.findViewById(R.id.progress_wheel);
-        wheel.setBarWidth(BarWidth);
-        wheel.setMaterial(true);
-        wheel.spin();
-        if (BackgroundColor >= 0)
-            layout.findViewById(R.id.progress_wheel).setBackgroundColor(BackgroundColor);
-        ((TextView) layout.findViewById(R.id.title)).setText(Title);
-
-        builder.setView(layout);
-        return builder;
     }
 
     public AlertDialogPro.Builder CustomDialog(String Title, String Message, boolean _HighLight)
