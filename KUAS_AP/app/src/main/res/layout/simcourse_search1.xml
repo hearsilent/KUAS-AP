@@ -316,7 +316,7 @@
                     android:background="@drawable/tablelayout_oneitem"
                     android:textSize="15sp"
                     android:id="@+id/noResult"
-                    android:text="找不到相關課程"
+                    android:text="找不到相關課程或衝堂"
                     android:textColor="@color/blue"
                     android:visibility="gone" />
             </RelativeLayout>

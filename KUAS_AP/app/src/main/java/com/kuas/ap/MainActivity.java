@@ -47,8 +47,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alertdialogpro.AlertDialogPro;
-import com.alertdialogpro.ProgressDialogPro;
 import com.eftimoff.androipathview.PathView;
+import com.pnikosis.materialishprogress.ProgressWheel;
 import com.roomorama.caldroid.CaldroidFragment;
 import com.roomorama.caldroid.CaldroidListener;
 
@@ -582,8 +582,6 @@ public class MainActivity extends ActionBarActivity {
         RememberPass = (CheckBox) findViewById(R.id.RememberPass);
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-
-        LoadingDialog = new ProgressDialogPro(this, R.style.Theme_AlertDialogPro_Material_Light);
 
         SignInButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -2758,6 +2756,8 @@ public class MainActivity extends ActionBarActivity {
         SharedPreferences setting = getSharedPreferences("KUAS AP", 0);
         setting.edit().putString("SimCourse", jsonArray.toString()).apply();
 
+        Toast.makeText(getApplicationContext(), "已儲存課表！", Toast.LENGTH_SHORT).show();
+
         // Debug
         /*
         for(int i=0; i<jsonArray.toString().length(); i+=1024)
@@ -3576,11 +3576,13 @@ public class MainActivity extends ActionBarActivity {
                 case 1:
                     addSimCourse();
                     LoadingDialog.dismiss();
+                    ProgressWheel.stopSpinning();
                     break;
                 case 2:
                     addSimCourse();
                     Toast.makeText(getApplicationContext(), "已將課表重置", Toast.LENGTH_SHORT).show();
                     LoadingDialog.dismiss();
+                    ProgressWheel.stopSpinning();
                     break;
             }
         };
@@ -3620,16 +3622,14 @@ public class MainActivity extends ActionBarActivity {
             switch (msg.what)
             {
                 case -1:
-                    LoadingDialog.setMessage("Loading...");
-                    ProgressDialogPro progressDialog = (ProgressDialogPro) LoadingDialog;
-                    progressDialog.setProgressStyle(ProgressDialogPro.STYLE_SPINNER);
-                    progressDialog.setIndeterminate(true);
                     LoadingDialog.setCancelable(false);
                     LoadingDialog.setCanceledOnTouchOutside(false);
+                    ProgressWheel.spin();
                     LoadingDialog.show();
                     break;
                 case 1:
                     LoadingDialog.dismiss();
+                    ProgressWheel.stopSpinning();
                     break;
             }
         };
@@ -3643,6 +3643,7 @@ public class MainActivity extends ActionBarActivity {
                 case 1:
                     addScore();
                     LoadingDialog.dismiss();
+                    ProgressWheel.stopSpinning();
                     break;
             }
         };
@@ -3656,6 +3657,7 @@ public class MainActivity extends ActionBarActivity {
                 case 1:
                     addCourse();
                     LoadingDialog.dismiss();
+                    ProgressWheel.stopSpinning();
                     break;
             }
         };
@@ -3669,6 +3671,7 @@ public class MainActivity extends ActionBarActivity {
                 case 1:
                     addLeave();
                     LoadingDialog.dismiss();
+                    ProgressWheel.stopSpinning();
                     break;
             }
         };
@@ -3683,6 +3686,7 @@ public class MainActivity extends ActionBarActivity {
                     AlertDialogPro.Builder builder = CustomDialog("假單送出結果",(String) msg.obj, false);
                     builder.setPositiveButton("OK", null).show();
                     LoadingDialog.dismiss();
+                    ProgressWheel.stopSpinning();
                     break;
             }
         };
@@ -3714,19 +3718,23 @@ public class MainActivity extends ActionBarActivity {
                 case 1:
                     addBus();
                     LoadingDialog.dismiss();
+                    ProgressWheel.stopSpinning();
                     break;
                 case 2:
                     addReserveBus();
                     LoadingDialog.dismiss();
+                    ProgressWheel.stopSpinning();
                     break;
                 case 3:
                     Toast.makeText(getApplicationContext(), (String) msg.obj, Toast.LENGTH_SHORT).show();
-                    LoadingDialogHandler.sendEmptyMessage(-1);
+                    LoadingDialog.dismiss();
+                    ProgressWheel.stopSpinning();
                     new Thread(ReadBusRunnable).start();
                     break;
                 case 4:
                     Toast.makeText(getApplicationContext(), (String) msg.obj, Toast.LENGTH_SHORT).show();
-                    LoadingDialogHandler.sendEmptyMessage(-1);
+                    LoadingDialog.dismiss();
+                    ProgressWheel.stopSpinning();
                     new Thread(BusReserveRunnable).start();
                     break;
             }
@@ -3741,6 +3749,7 @@ public class MainActivity extends ActionBarActivity {
                 case 1:
                     addNotification();
                     LoadingDialog.dismiss();
+                    ProgressWheel.stopSpinning();
                     break;
             }
         };
@@ -3753,6 +3762,7 @@ public class MainActivity extends ActionBarActivity {
             {
                 case LoginError:
                     LoadingDialog.dismiss();
+                    ProgressWheel.stopSpinning();
                     AlertDialogPro.Builder builder = CustomDialog("Error", "帳號或密碼輸入錯誤 !", false);
                     builder.setPositiveButton("確定", null).show();
                     SignInButton.setEnabled(true);
@@ -3761,6 +3771,7 @@ public class MainActivity extends ActionBarActivity {
                     break;
                 case LoginSuccess:
                     LoadingDialog.dismiss();
+                    ProgressWheel.stopSpinning();
                     SignInButton.setEnabled(true);
                     UserNameEditText.setEnabled(true);
                     PasswordEditText.setEnabled(true);
@@ -3768,6 +3779,7 @@ public class MainActivity extends ActionBarActivity {
                     break;
                 case LoginError2:
                     LoadingDialog.dismiss();
+                    ProgressWheel.stopSpinning();
                     Toast.makeText(getApplicationContext(), "網路不穩定問題，請稍候嘗試...", Toast.LENGTH_SHORT).show();
                     SignInButton.setEnabled(true);
                     UserNameEditText.setEnabled(true);
@@ -3784,6 +3796,7 @@ public class MainActivity extends ActionBarActivity {
             {
                 case -1:
                     LoadingDialog.dismiss();
+                    ProgressWheel.stopSpinning();
                     initReLogin();
                     break;
             }
@@ -3962,7 +3975,8 @@ public class MainActivity extends ActionBarActivity {
                     findViewById(R.id.scrollView).scrollTo(0, 0);
                 }
             });
-            LoadingDialogHandler.sendEmptyMessage(1);
+            LoadingDialog.dismiss();
+            ProgressWheel.stopSpinning();
         };
     };
 
@@ -4052,16 +4066,23 @@ public class MainActivity extends ActionBarActivity {
 
         PhoneListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Toast.makeText(getApplicationContext(), "長按以撥出電話", Toast.LENGTH_SHORT).show();
+            }
+        });
+        PhoneListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
                 AlertDialogPro.Builder builder = CustomDialog("撥出電話", "確定要撥給「" + PhoneList.get(position).title + "」？", false);
                 builder.setPositiveButton("撥出", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                Intent myIntentDial = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:"+ PhoneList.get(position).number.replace("#", ",")));
-                                startActivity(myIntentDial);
-                            }
-                        }).
-                        setNegativeButton("返回", null).setCancelable(false).show();
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent myIntentDial = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:"+ PhoneList.get(position).number.replace("#", ",")));
+                        startActivity(myIntentDial);
+                    }
+                }).
+                        setNegativeButton("返回", null).show();
+                return false;
             }
         });
     }
@@ -4090,17 +4111,30 @@ public class MainActivity extends ActionBarActivity {
                         public void onClick(View v) {
                             try {
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                                    Toast.makeText(getApplicationContext(), "長按以新增至行事曆", Toast.LENGTH_SHORT).show();
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                    rowx.setOnLongClickListener(new View.OnLongClickListener() {
+                        @Override
+                        public boolean onLongClick(View v) {
+                            try {
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                                     AlertDialogPro.Builder builder = CustomDialog("行事曆", "確定要將「" + msg.split("\\) ")[1] + "」新增至行事曆？", false);
                                     builder.setPositiveButton("確定", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
                                             AddCalendarEvent(msg);
                                         }
-                                    }).setNegativeButton("返回", null).setCancelable(false).show();
+                                    }).setNegativeButton("返回", null).show();
                                 }
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
+                            return false;
                         }
                     });
                     table.addView(rowx);
@@ -5016,6 +5050,25 @@ public class MainActivity extends ActionBarActivity {
         calendarIntent.putExtra(CalendarContract.Events.EVENT_LOCATION, "國立高雄應用科技大學");
         startActivity(calendarIntent);
     }
+    ProgressWheel ProgressWheel;
+    public AlertDialogPro LoadingDialog(String Title, int BarWidth, int BackgroundColor)
+    {
+        AlertDialogPro builder = new AlertDialogPro.Builder(MainActivity.this).create();
+
+        if (BarWidth == 0) BarWidth = 6;
+
+        RelativeLayout layout = (RelativeLayout) LayoutInflater.from(MainActivity.this).inflate(R.layout.loading_dialog, null);
+        ProgressWheel = (ProgressWheel) layout.findViewById(R.id.progress_wheel);
+        ProgressWheel.setBarWidth(BarWidth);
+        ProgressWheel.setMaterial(true);
+
+        if (BackgroundColor >= 0)
+            layout.findViewById(R.id.progress_wheel).setBackgroundColor(BackgroundColor);
+        ((TextView) layout.findViewById(R.id.title)).setText(Title);
+
+        builder.setView(layout);
+        return builder;
+    }
 
     public AlertDialogPro.Builder CustomDialog(String Title, String Message, boolean _HighLight)
     {
@@ -5111,6 +5164,12 @@ public class MainActivity extends ActionBarActivity {
     private void setContentViewEx(int _layoutID)
     {
         LayoutId = _layoutID;
+
+        if (_layoutID == R.layout.login)
+            LoadingDialog = LoadingDialog("Login", 6, getResources().getColor(R.color.actionbar_color2));
+        else
+            LoadingDialog = LoadingDialog("Loading...", 6, getResources().getColor(R.color.actionbar_color2));
+
         switch (_layoutID)
         {
             case R.layout.course:

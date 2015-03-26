@@ -90,8 +90,8 @@
                     android:textColor="#ff000000" />
 
                 <ImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
                     android:id="@+id/selectimageView"
                     android:layout_alignParentTop="true"
                     android:layout_toRightOf="@+id/selecttextView"
