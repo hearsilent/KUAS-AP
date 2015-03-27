@@ -1,0 +1,75 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#ffffffff">
+    <FrameLayout
+        android:id="@+id/action_bar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/actionbar_dimen"
+        android:background="@color/actionbar_color">
+
+        <TextView
+            android:id="@+id/up"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/actionbar_dimen"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:text="上一頁"
+            android:gravity="center"
+            android:background="@drawable/drawer_selector"
+            android:layout_gravity="left|center_vertical"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:layout_marginLeft="5dp" />
+
+        <TextView
+            android:id="@+id/indicator_style"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/actionbar_dimen"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:text="選擇科系"
+            android:gravity="center"
+            android:background="@drawable/drawer_selector"
+            android:layout_gravity="center"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:layout_marginLeft="5dp"/>
+
+        <TextView
+            android:id="@+id/cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/actionbar_dimen"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:text="取消"
+            android:gravity="center"
+            android:background="@drawable/drawer_selector"
+            android:layout_gravity="right|center_vertical"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:layout_marginLeft="5dp" />
+    </FrameLayout>
+
+    <android.support.v4.widget.DrawerLayout
+        android:id="@+id/drawer_layout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ListView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/listView"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true" />
+        </RelativeLayout>
+
+    </android.support.v4.widget.DrawerLayout>
+</LinearLayout>

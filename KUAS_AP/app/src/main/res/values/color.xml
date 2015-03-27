@@ -7,7 +7,8 @@
     <color name="white">#ffffff</color>
     <color name="grey">#404040</color>
     <color name="light_white">#DCDCDC</color>
-    <color name="actionbar_color">#1E88E5</color>
+    <color name="actionbar_color">#0277bd</color>
+    <color name="actionbar_color2">#0288d1</color>
     <color name="drawer_arrow_second_color">#303f9f</color>
     <color name="thumbColor">#66aaaaaa</color>
     <color name="page_grey">#757575</color>
@@ -16,4 +17,15 @@
     <color name="blue_2">#4a87ee</color>
     <color name="background_grey">#0b000000</color>
     <color name="dialog_grey">#353535</color>
+    <color name="blue_3">#3bafda</color>
+    <color name="green_2">#8cc152</color>
+    <color name="red_2">#d32f2f</color>
+
+    <color name="progress_red">#FFC93437</color>
+    <color name="progress_blue">#FF375BF1</color>
+    <color name="progress_yellow">#FFF7D23E</color>
+    <color name="progress_green">#FF34A350</color>
+
+    <color name="preset_button_background">@android:color/transparent</color>
+    <color name="preset_button_background_selected">#66000000</color>
 </resources>

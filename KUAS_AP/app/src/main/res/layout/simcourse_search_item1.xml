@@ -1,0 +1,158 @@
+<TableRow xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#ffffffff">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#ffffffff">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="商用套裝軟體(二)"
+            android:id="@+id/title"
+            android:textColor="#c8000000"
+            android:layout_marginLeft="15sp"
+            android:layout_marginRight="15sp"
+            android:textSize="16dp"
+            android:maxLines="1"
+            android:layout_toLeftOf="@+id/RelativeLayout"
+            android:layout_alignParentLeft="true"
+            android:layout_alignTop="@+id/RelativeLayout"
+            android:layout_alignBottom="@+id/RelativeLayout"
+            android:gravity="center_vertical"
+            android:textStyle="bold" />
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:id="@+id/RelativeLayout"
+            android:layout_marginRight="15sp"
+            android:gravity="center"
+            android:layout_marginTop="7sp">
+            <ImageView
+                android:layout_width="25sp"
+                android:layout_height="25sp"
+                android:id="@+id/imageView1"
+                android:background="@drawable/calendar52" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/imageView1"
+                android:text="(四)5-6"
+                android:textSize="15sp"
+                android:id="@+id/time"
+                android:gravity="center"
+                android:textColor="#c8000000"
+                android:layout_alignTop="@+id/imageView1"
+                android:layout_alignBottom="@+id/imageView1"
+                android:layout_marginLeft="5sp"
+                android:maxLines="1" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/RelativeLayout2"
+            android:gravity="center"
+            android:layout_marginLeft="15sp"
+            android:layout_marginRight="15sp"
+            android:paddingBottom="7sp"
+            android:layout_marginTop="5sp"
+            android:layout_below="@+id/title">
+            <ImageView
+                android:layout_width="25sp"
+                android:layout_height="25sp"
+                android:id="@+id/imageView2"
+                android:background="@drawable/user77" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/imageView2"
+                android:text="張家源"
+                android:textSize="15sp"
+                android:id="@+id/teacher"
+                android:gravity="center"
+                android:textColor="#c8000000"
+                android:layout_alignTop="@+id/imageView2"
+                android:layout_alignBottom="@+id/imageView2"
+                android:layout_marginLeft="5sp"
+                android:maxLines="1" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/RelativeLayout3"
+            android:gravity="center"
+            android:paddingBottom="7sp"
+            android:layout_marginTop="5sp"
+            android:layout_below="@+id/title"
+            android:layout_toRightOf="@id/RelativeLayout2"
+            android:layout_toLeftOf="@+id/RelativeLayout4">
+            <ImageView
+                android:layout_width="25sp"
+                android:layout_height="25sp"
+                android:id="@+id/imageView3"
+                android:background="@drawable/map25" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/imageView3"
+                android:text="北305"
+                android:textSize="15sp"
+                android:id="@+id/room"
+                android:gravity="center"
+                android:textColor="#c8000000"
+                android:layout_alignTop="@+id/imageView3"
+                android:layout_alignBottom="@+id/imageView3"
+                android:layout_marginLeft="5sp"
+                android:maxLines="1" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/RelativeLayout4"
+            android:gravity="center"
+            android:layout_marginLeft="15sp"
+            android:layout_marginRight="15sp"
+            android:paddingBottom="7sp"
+            android:layout_marginTop="5sp"
+            android:layout_below="@+id/title"
+            android:layout_alignParentRight="true">
+            <ImageView
+                android:layout_width="25sp"
+                android:layout_height="25sp"
+                android:id="@+id/imageView4"
+                android:background="@drawable/trophy3" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/imageView4"
+                android:text="3"
+                android:textSize="15sp"
+                android:id="@+id/credit"
+                android:gravity="center"
+                android:textColor="#c8000000"
+                android:layout_alignTop="@+id/imageView4"
+                android:layout_alignBottom="@+id/imageView4"
+                android:layout_marginLeft="5sp"
+                android:maxLines="1" />
+        </RelativeLayout>
+
+        <View android:layout_height="1sp" android:background="@color/bar_grey2"
+            android:layout_width="fill_parent"
+            android:layout_alignBottom="@+id/RelativeLayout2"
+            android:layout_marginTop="1sp"/>
+
+    </RelativeLayout>
+</TableRow>

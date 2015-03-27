@@ -57,7 +57,6 @@
                 android:id="@+id/scrollView"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:layout_above="@+id/ServerStatus"
                 android:layout_marginBottom="10sp">
 
                 <RelativeLayout
@@ -90,123 +89,20 @@
                         android:layout_centerHorizontal="true"
                         android:textColor="#ff000000" />
 
-                    <com.andexert.library.RippleView
-                        android:id="@+id/more"
+                    <Button
                         android:layout_width="100dp"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentTop="false"
-                        ripple:rv_rippleDuration="300"
-                        android:gravity="center"
+                        android:id="@+id/Logout"
                         android:layout_below="@+id/textView2"
                         android:layout_marginTop="10dp"
-                        android:layout_centerHorizontal="true">
-                        <Button
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/Logout"
-                            android:textSize="15sp"
-                            android:text="登出"
-                            android:enabled="true"
-                            android:width="200dp"
-                            android:textColor="@color/white"
-                            android:background="@color/actionbar_color"
-                            android:layout_centerHorizontal="true" />
-                    </com.andexert.library.RippleView>
+                        android:textSize="15sp"
+                        android:text="登出"
+                        android:width="200dp"
+                        android:textColor="@color/white"
+                        android:background="@color/actionbar_color2"
+                        android:layout_centerHorizontal="true" />
                 </RelativeLayout>
             </ScrollView>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:gravity="center"
-                android:id="@+id/ServerStatus"
-                android:layout_marginTop="5dp"
-                android:paddingBottom="15sp">
-
-                <RelativeLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/relativeLayout">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="校務"
-                        android:id="@+id/textView1"
-                        android:layout_centerHorizontal="true"
-                        android:textSize="12sp"
-                        android:textColor="#ff000000" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="●"
-                        android:id="@+id/ap"
-                        android:layout_below="@id/textView1"
-                        android:layout_centerHorizontal="true"
-                        android:textSize="14sp"
-                        android:textColor="@color/red" />
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentTop="true"
-                    android:layout_toRightOf="@+id/relativeLayout"
-                    android:layout_toEndOf="@+id/relativeLayout"
-                    android:id="@+id/RelativeLayout2"
-                    android:layout_marginLeft="20sp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="請假"
-                        android:id="@+id/textView4"
-                        android:layout_centerHorizontal="true"
-                        android:textSize="12sp"
-                        android:textColor="#ff000000"/>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="●"
-                        android:id="@+id/leave"
-                        android:layout_below="@id/textView4"
-                        android:layout_centerHorizontal="true"
-                        android:textSize="14sp"
-                        android:textColor="@color/red"/>
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentTop="true"
-                    android:layout_toRightOf="@+id/RelativeLayout2"
-                    android:layout_toEndOf="@+id/RelativeLayout2"
-                    android:id="@+id/RelativeLayout3"
-                    android:layout_marginLeft="20sp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="校車"
-                        android:id="@+id/textView3"
-                        android:layout_centerHorizontal="true"
-                        android:textSize="12sp"
-                        android:textColor="#ff000000"/>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="●"
-                        android:id="@+id/bus"
-                        android:layout_below="@id/textView3"
-                        android:layout_centerHorizontal="true"
-                        android:textSize="14sp"
-                        android:textColor="@color/red" />
-                </RelativeLayout>
-            </RelativeLayout>
         </RelativeLayout>
 
         <RelativeLayout

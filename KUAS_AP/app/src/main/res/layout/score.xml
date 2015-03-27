@@ -41,15 +41,20 @@
             android:textSize="18sp"
             android:layout_marginLeft="5dp"/>
 
-        <ImageView
+        <RelativeLayout
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:layout_marginRight="5dp"
+            android:layout_gravity="right"
             android:id="@+id/Logout"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:scaleType="centerInside"
-            android:background="@drawable/ic_settings_applications_white_48dp"
-            android:layout_gravity="end"
-            android:layout_marginTop="8dp"
-            android:layout_marginRight="10dp" />
+            android:gravity="center_vertical|center_horizontal">
+
+            <ImageView
+                android:layout_width="27dp"
+                android:layout_height="27dp"
+                android:scaleType="centerInside"
+                android:background="@drawable/ic_settings_white_48dp" />
+        </RelativeLayout>
     </FrameLayout>
 
     <android.support.v4.widget.DrawerLayout
@@ -85,8 +90,8 @@
                     android:layout_alignBottom="@+id/selectimageView" />
 
                 <ImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
                     android:id="@+id/selectimageView"
                     android:layout_alignParentTop="true"
                     android:layout_toRightOf="@+id/selecttextView"

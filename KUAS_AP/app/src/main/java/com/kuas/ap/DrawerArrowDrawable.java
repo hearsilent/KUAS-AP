@@ -126,7 +126,7 @@ public class DrawerArrowDrawable extends Drawable {
         bounds = new Rect(0, 0, dimen, dimen);
         Path first, second;
         JoinedPath joinedA, joinedB;
-// Top
+        // Top
         first = new Path();
         first.moveTo(5.042f, 20f);
         first.rCubicTo(8.125f, -16.317f, 39.753f, -27.851f, 55.49f, -2.765f);
@@ -146,7 +146,7 @@ public class DrawerArrowDrawable extends Drawable {
         scalePath(second, density);
         joinedB = new JoinedPath(first, second);
         topLine = new BridgingLine(joinedA, joinedB);
-// Middle
+        // Middle
         first = new Path();
         first.moveTo(5.042f, 35f);
         first.cubicTo(5.042f, 20.333f, 18.625f, 6.791f, 35f, 6.791f);
@@ -166,7 +166,7 @@ public class DrawerArrowDrawable extends Drawable {
         scalePath(second, density);
         joinedB = new JoinedPath(first, second);
         middleLine = new BridgingLine(joinedA, joinedB);
-// Bottom
+        // Bottom
         first = new Path();
         first.moveTo(5.042f, 50f);
         first.cubicTo(2.5f, 43.312f, 0.013f, 26.546f, 9.475f, 17.346f);
@@ -186,6 +186,9 @@ public class DrawerArrowDrawable extends Drawable {
         scalePath(second, density);
         joinedB = new JoinedPath(first, second);
         bottomLine = new BridgingLine(joinedA, joinedB);
+
+        System.out.println(first.toString());
+        System.out.println(second.toString());
     }
     @Override public int getIntrinsicHeight() {
         return bounds.height();
@@ -224,7 +227,11 @@ public class DrawerArrowDrawable extends Drawable {
      */
     public void setParameter(float parameter) {
         if (parameter > 1 || parameter < 0) {
-            throw new IllegalArgumentException("Value must be between 1 and zero inclusive!");
+            try {
+                throw new IllegalArgumentException("Value must be between 1 and zero inclusive!");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         this.parameter = parameter;
         invalidateSelf();
