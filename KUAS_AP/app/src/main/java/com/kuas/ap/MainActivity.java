@@ -245,6 +245,7 @@ public class MainActivity extends ActionBarActivity {
     String SimCourseSearchData = "";
     Integer SimCourseReadCourseType = 1;
     boolean SimCourseChange = false;
+    int SimCourseSelectDepartment = 1;
 
     // About
     int AboutEasterEgg = 0;
@@ -437,6 +438,12 @@ public class MainActivity extends ActionBarActivity {
             {
                 switch (LayoutId)
                 {
+                    case R.layout.simcourse_select:
+                        if (SimCourseSelectDepartment == 1)
+                            initSimCourseSearch1(false);
+                        else
+                            initSimCourseSelectDepartment1();
+                        break;
                     case R.layout.simcourse_search1:
                     case R.layout.simcourse_search2:
                         initSimCourse(false, true);
@@ -612,6 +619,8 @@ public class MainActivity extends ActionBarActivity {
                 if (UserNameEditText.getText().toString().equals("") || PasswordEditText.getText().toString().equals(""))
                 {
                     Toast.makeText(getApplicationContext(), "帳號或密碼不得為空", Toast.LENGTH_SHORT).show();
+                    UserNameEditText.setBackgroundResource(R.drawable.login_table_top_red);
+                    PasswordEditText.setBackgroundResource(R.drawable.login_table_bottom_red);
                     YoYo.with(Techniques.Shake).duration(700).playOn(findViewById(R.id.tablelayout));
                 }
                 else
@@ -3301,6 +3310,7 @@ public class MainActivity extends ActionBarActivity {
     private void initSimCourseSelectDepartment1()
     {
         setContentViewEx(R.layout.simcourse_select);
+        SimCourseSelectDepartment = 1;
 
         findViewById(R.id.up).setVisibility(View.GONE);
 
@@ -3338,6 +3348,8 @@ public class MainActivity extends ActionBarActivity {
 
     private void initSimCourseSelectDepartment2(int Unit)
     {
+        SimCourseSelectDepartment = 2;
+
         findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -3874,6 +3886,8 @@ public class MainActivity extends ActionBarActivity {
                     LoadingDialog.dismiss();
                     ProgressWheel.stopSpinning();
                     Toast.makeText(getApplicationContext(), "帳號或密碼輸入錯誤 !", Toast.LENGTH_SHORT).show();
+                    UserNameEditText.setBackgroundResource(R.drawable.login_table_top_red);
+                    PasswordEditText.setBackgroundResource(R.drawable.login_table_bottom_red);
                     YoYo.with(Techniques.Shake).duration(700).playOn(findViewById(R.id.tablelayout));
                     SignInButton.setEnabled(true);
                     UserNameEditText.setEnabled(true);

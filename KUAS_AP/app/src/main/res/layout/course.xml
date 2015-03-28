@@ -101,14 +101,14 @@
                             android:textColor="#ff000000" />
 
                         <ImageView
-                            android:layout_width="35dp"
-                            android:layout_height="35dp"
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
                             android:id="@+id/selectimageView"
                             android:layout_alignParentTop="true"
                             android:layout_toRightOf="@+id/selecttextView"
                             android:layout_toEndOf="@+id/selecttextView"
                             android:layout_marginTop="6dp"
-                            android:background="@drawable/ic_keyboard_arrow_down_black_48dp" />
+                            android:background="@drawable/ic_arrow_drop_down_grey800_48dp" />
                     </RelativeLayout>
 
                     <TextView
