@@ -52,6 +52,11 @@ import com.alertdialogpro.AlertDialogPro;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 import com.eftimoff.androipathview.PathView;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.EncodeHintType;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.roomorama.caldroid.CaldroidFragment;
 import com.roomorama.caldroid.CaldroidListener;
@@ -103,6 +108,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -262,6 +268,11 @@ public class MainActivity extends ActionBarActivity {
     // Select
     boolean isSelecting = false;
 
+    // User
+    Runnable ReadUserInfoRunnable;
+    String stuID;
+    int UserPicIndex = 0;
+
     // Debug
     public static final boolean NewsDebug = false;
     @Override
@@ -418,6 +429,188 @@ public class MainActivity extends ActionBarActivity {
             initLogin();
             OnCreateCheck = true;
         }
+    }
+
+    void changeUserPic()
+    {
+        switch (UserPicIndex)
+        {
+            case 0:
+                findViewById(R.id.pic).setBackgroundResource(R.drawable.tablelayout_oneitem_left_green);
+                findViewById(R.id.qr_code).setBackgroundResource(R.drawable.tablelayout_oneitem_center_blue);
+                findViewById(R.id.bar_code).setBackgroundResource(R.drawable.tablelayout_oneitem_right_blue);
+                break;
+            case 1:
+                findViewById(R.id.pic).setBackgroundResource(R.drawable.tablelayout_oneitem_left_blue);
+                findViewById(R.id.qr_code).setBackgroundResource(R.drawable.tablelayout_oneitem_center_green);
+                findViewById(R.id.bar_code).setBackgroundResource(R.drawable.tablelayout_oneitem_right_blue);
+                break;
+            case 2:
+                findViewById(R.id.pic).setBackgroundResource(R.drawable.tablelayout_oneitem_left_blue);
+                findViewById(R.id.qr_code).setBackgroundResource(R.drawable.tablelayout_oneitem_center_blue);
+                findViewById(R.id.bar_code).setBackgroundResource(R.drawable.tablelayout_oneitem_right_green);
+                break;
+        }
+    }
+
+    void initUser(){
+        setContentViewEx(R.layout.user);
+
+        initDrawer(new String[]{ "學期課表", "缺曠系統", "校車系統", "模擬選課", "校園資訊" }, new String[]{ "關於我們" }, true, true);
+        UserPicIndex = 0;
+
+        findViewById(R.id.pic).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (UserPicIndex == 0)
+                    return;
+                UserPicIndex = 0;
+                changeUserPic();
+                try {
+                    if (!CheckLoginState())
+                    {
+                        if (!ReLogin())
+                        {
+                            ReLoginHandler.sendEmptyMessage(-1);
+                            return;
+                        }
+                    }
+
+                    ((ImageView) findViewById(R.id.picture)).setImageBitmap(getBitmapFromURL(get_url_contents(api_server + "ap/user/picture", null, cookieStore)));
+                } catch (Exception e) {
+                    Toast.makeText(getApplicationContext(), "網路不穩定問題，請稍候嘗試...", Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        findViewById(R.id.qr_code).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (UserPicIndex == 1)
+                    return;
+                UserPicIndex = 1;
+                changeUserPic();
+                try {
+                    ((ImageView) findViewById(R.id.picture)).setImageBitmap(encodeAsBitmap(stuID, BarcodeFormat.QR_CODE, 500, 500));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        findViewById(R.id.bar_code).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (UserPicIndex == 2)
+                    return;
+                UserPicIndex = 2;
+                changeUserPic();
+                try {
+                    ((ImageView) findViewById(R.id.picture)).setImageBitmap(encodeAsBitmap(stuID, BarcodeFormat.CODE_39, 1000, 200));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        _fncid = "";
+        ReadUserInfoRunnable = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    if (!CheckLoginState())
+                    {
+                        if (!ReLogin())
+                        {
+                            ReLoginHandler.sendEmptyMessage(-1);
+                            return;
+                        }
+                    }
+
+                    try {
+                        final JSONObject jsonObj = new JSONObject(get_url_contents(api_server + "ap/user/info", null, cookieStore));
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    stuID = jsonObj.getString("student_id");
+                                    ((TextView) findViewById(R.id.education)).setText("學制：" + jsonObj.getString("education_system"));
+                                    ((TextView) findViewById(R.id.id)).setText("學號：" + jsonObj.getString("student_id"));
+                                    ((TextView) findViewById(R.id.department)).setText("科系：" + jsonObj.getString("department"));
+                                    ((TextView) findViewById(R.id.stuClass)).setText("班級：" + jsonObj.getString("class"));
+                                    ((TextView) findViewById(R.id.userName)).setText(jsonObj.getString("student_name_cht"));
+                                    ((ImageView) findViewById(R.id.picture)).setImageBitmap(getBitmapFromURL(get_url_contents(api_server + "ap/user/picture", null, cookieStore)));
+                                    LoadingDialogHandler.sendEmptyMessage(1);
+                                } catch (Exception e) {
+
+                                }
+                            }
+                        });
+                    } catch (Exception e) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                LoadingDialogHandler.sendEmptyMessage(1);
+                                Toast.makeText(getApplicationContext(), "網路不穩定問題，請稍候嘗試...", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                        e.printStackTrace();
+                    }
+                } catch (Exception e) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            LoadingDialogHandler.sendEmptyMessage(1);
+                            Toast.makeText(getApplicationContext(), "網路不穩定問題，請稍候嘗試...", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        LoadingDialogHandler.sendEmptyMessage(-1);
+        new Thread(ReadUserInfoRunnable).start();
+    }
+
+    public static Bitmap encodeAsBitmap(String contents, BarcodeFormat format, int desiredWidth, int desiredHeight) throws WriterException
+    {
+        if (contents.length() == 0) return null;
+        final int WHITE = 0xFFFFFFFF;
+        final int BLACK = 0xFF000000;
+        HashMap<EncodeHintType, String> hints = null;
+        String encoding = null;
+        for (int i = 0; i < contents.length(); i++)
+        {
+            if (contents.charAt(i) > 0xFF)
+            {
+                encoding = "UTF-8";
+                break;
+            }
+        }
+        if (encoding != null)
+        {
+            hints = new HashMap<>(2);
+            hints.put(EncodeHintType.CHARACTER_SET, encoding);
+        }
+        MultiFormatWriter writer = new MultiFormatWriter();
+        BitMatrix result = writer.encode(contents, format, desiredWidth, desiredHeight, hints);
+        int width = result.getWidth();
+        int height = result.getHeight();
+        int[] pixels = new int[width * height];
+        for (int y = 0; y < height; y++)
+        {
+            int offset = y * width;
+            for (int x = 0; x < width; x++)
+            {
+                pixels[offset + x] = result.get(x, y) ? BLACK : WHITE;
+            }
+        }
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        bitmap.setPixels(pixels, 0, width, 0, 0, width, height);
+        return bitmap;
     }
 
     public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -653,6 +846,8 @@ public class MainActivity extends ActionBarActivity {
                     {
                         Uid = UserNameEditText.getText().toString();
                         Pwd =  PasswordEditText.getText().toString();
+                        System.out.println(get_url_contents(api_server + "ap/user/info", null, cookieStore)); // json
+                        System.out.println(get_url_contents(api_server + "ap/user/picture", null, cookieStore)); // url
                         savePrefs();
                         LoginHandler.sendEmptyMessage(LoginSuccess);
                     }
@@ -720,7 +915,7 @@ public class MainActivity extends ActionBarActivity {
 
         _isLogin = true;
 
-        initDrawer(new String[]{ "學期課表", "學期成績", "缺曠系統", "校車系統", "模擬選課", "校園資訊" }, new String[]{ "關於我們" }, true, false);
+        initDrawer(new String[]{ "學期課表", "學期成績", "缺曠系統", "校車系統", "模擬選課", "校園資訊", "個人資訊" }, new String[]{ "關於我們" }, true, false);
 
         Button Logout = (Button) findViewById(R.id.Logout);
         Logout.setOnClickListener(new View.OnClickListener() {
@@ -940,6 +1135,10 @@ public class MainActivity extends ActionBarActivity {
                 {
                     initSimCourse(true, true);
                 }
+                else if (DrawerListValue[position].equals("個人資訊"))
+                {
+                    initUser();
+                }
             }
         });
         final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -1024,7 +1223,7 @@ public class MainActivity extends ActionBarActivity {
         }
 
         if (_isLogin)
-            initDrawer(new String[]{ "學期成績", "缺曠系統", "校車系統", "模擬選課", "校園資訊" }, new String[]{ "關於我們" }, _isLogin, true);
+            initDrawer(new String[]{ "學期成績", "缺曠系統", "校車系統", "模擬選課", "校園資訊", "個人資訊" }, new String[]{ "關於我們" }, _isLogin, true);
         else
             initDrawer(new String[]{ "校園資訊" }, new String[]{ "關於我們" }, _isLogin, true);
 
@@ -1034,7 +1233,10 @@ public class MainActivity extends ActionBarActivity {
             public void run() {
                 try {
                     if (select)
+                    {
                         Thread.sleep(400);
+                        LoadingDialogHandler.sendEmptyMessage(-1);
+                    }
 
                     if (!CheckLoginState())
                     {
@@ -1188,7 +1390,6 @@ public class MainActivity extends ActionBarActivity {
             {
                 if (!cancel)
                 {
-                    LoadingDialogHandler.sendEmptyMessage(-1);
                     new Thread(ReadCourseRunnable).start();
                     initSelectSemester();
                 }
@@ -1222,7 +1423,7 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
-        initDrawer(new String[]{ "學期課表", "缺曠系統", "校車系統", "模擬選課", "校園資訊" }, new String[]{ "關於我們" }, true, true);
+        initDrawer(new String[]{ "學期課表", "缺曠系統", "校車系統", "模擬選課", "校園資訊", "個人資訊" }, new String[]{ "關於我們" }, true, true);
 
         _fncid = "AG008";
         ReadScoreRunnable = new Runnable() {
@@ -1230,7 +1431,10 @@ public class MainActivity extends ActionBarActivity {
             public void run() {
                 try {
                     if (select)
+                    {
                         Thread.sleep(400);
+                        LoadingDialogHandler.sendEmptyMessage(-1);
+                    }
 
                     if (!CheckLoginState())
                     {
@@ -1300,7 +1504,6 @@ public class MainActivity extends ActionBarActivity {
         {
             if (!cancel)
             {
-                LoadingDialogHandler.sendEmptyMessage(-1);
                 new Thread(ReadScoreRunnable).start();
                 initSelectSemester();
             }
@@ -1319,7 +1522,7 @@ public class MainActivity extends ActionBarActivity {
         initLeave1(select, cancel);
     }
 
-    public void initLeave1(boolean select, boolean cancel){
+    public void initLeave1(final boolean select, boolean cancel){
         LoadingDialog = LoadingDialog("Loading...", 6, getResources().getColor(R.color.actionbar_color2));
 
         findViewById(R.id.imageView1).setBackgroundResource(R.drawable.ic_search_black_48dp);
@@ -1349,13 +1552,19 @@ public class MainActivity extends ActionBarActivity {
         TextView textView = (TextView) findViewById(R.id.textView);
         textView.setVisibility(View.GONE);
 
-        initDrawer(new String[]{ "學期課表", "學期成績", "校車系統", "模擬選課", "校園資訊" }, new String[]{ "關於我們" }, true, true);
+        initDrawer(new String[]{ "學期課表", "學期成績", "校車系統", "模擬選課", "校園資訊", "個人資訊" }, new String[]{ "關於我們" }, true, true);
 
         _fncid = "AK002";
         ReadLeaveRunnable = new Runnable() {
             @Override
             public void run() {
                 try {
+                    if (select)
+                    {
+                        Thread.sleep(400);
+                        LoadingDialogHandler.sendEmptyMessage(-1);
+                    }
+
                     if (!CheckLoginState())
                     {
                         if (!ReLogin())
@@ -1483,7 +1692,6 @@ public class MainActivity extends ActionBarActivity {
         {
             if (!cancel)
             {
-                LoadingDialogHandler.sendEmptyMessage(-1);
                 new Thread(ReadLeaveRunnable).start();
                 initSelectSemester();
             }
@@ -1510,7 +1718,7 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
-        initDrawer(new String[]{ "學期課表", "學期成績", "校車系統", "模擬選課", "校園資訊" }, new String[]{ "關於我們" }, true, true);
+        initDrawer(new String[]{ "學期課表", "學期成績", "校車系統", "模擬選課", "校園資訊", "個人資訊" }, new String[]{ "關於我們" }, true, true);
 
         _fncid = "";
 
@@ -1848,7 +2056,7 @@ public class MainActivity extends ActionBarActivity {
         });
 
         if (_isLogin)
-            initDrawer(new String[]{ "學期課表", "學期成績", "缺曠系統", "校車系統", "模擬選課" }, new String[]{ "關於我們" }, _isLogin, true);
+            initDrawer(new String[]{ "學期課表", "學期成績", "缺曠系統", "校車系統", "模擬選課", "個人資訊" }, new String[]{ "關於我們" }, _isLogin, true);
         else
             initDrawer(new String[]{ "離線課表" }, new String[]{ "關於我們" }, _isLogin, true);
 
@@ -1979,7 +2187,7 @@ public class MainActivity extends ActionBarActivity {
         });
 
         if (_isLogin)
-            initDrawer(new String[]{ "學期課表", "學期成績", "缺曠系統", "校車系統", "模擬選課" }, new String[]{ "關於我們" }, _isLogin, true);
+            initDrawer(new String[]{ "學期課表", "學期成績", "缺曠系統", "校車系統", "模擬選課", "個人資訊" }, new String[]{ "關於我們" }, _isLogin, true);
         else
             initDrawer(new String[]{ "離線課表" }, new String[]{ "關於我們" }, _isLogin, true);
 
@@ -2020,7 +2228,7 @@ public class MainActivity extends ActionBarActivity {
         });
 
         if (_isLogin)
-            initDrawer(new String[]{ "學期課表", "學期成績", "缺曠系統", "校車系統", "模擬選課" }, new String[]{ "關於我們" }, _isLogin, true);
+            initDrawer(new String[]{ "學期課表", "學期成績", "缺曠系統", "校車系統", "模擬選課", "個人資訊" }, new String[]{ "關於我們" }, _isLogin, true);
         else
             initDrawer(new String[]{ "離線課表" }, new String[]{ "關於我們" }, _isLogin, true);
 
@@ -2084,7 +2292,7 @@ public class MainActivity extends ActionBarActivity {
         TextView noBusTextView = (TextView) findViewById(R.id.noBusTextView);
         noBusTextView.setVisibility(View.GONE);
 
-        initDrawer(new String[]{ "學期課表", "學期成績", "缺曠系統", "模擬選課", "校園資訊" }, new String[]{ "關於我們" }, true, true);
+        initDrawer(new String[]{ "學期課表", "學期成績", "缺曠系統", "模擬選課", "校園資訊", "個人資訊" }, new String[]{ "關於我們" }, true, true);
 
         _fncid = "";
 
@@ -2242,7 +2450,7 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
-        initDrawer(new String[]{ "學期課表", "學期成績", "缺曠系統", "模擬選課", "校園資訊" }, new String[]{ "關於我們" }, true, true);
+        initDrawer(new String[]{ "學期課表", "學期成績", "缺曠系統", "模擬選課", "校園資訊", "個人資訊" }, new String[]{ "關於我們" }, true, true);
 
         _fncid = "";
 
@@ -2327,7 +2535,7 @@ public class MainActivity extends ActionBarActivity {
         setContentViewEx(R.layout.about);
 
         if (_isLogin)
-            initDrawer(new String[]{ "學期課表", "學期成績", "缺曠系統", "校車系統", "模擬選課", "校園資訊" }, new String[]{}, _isLogin, true);
+            initDrawer(new String[]{ "學期課表", "學期成績", "缺曠系統", "校車系統", "模擬選課", "校園資訊", "個人資訊" }, new String[]{}, _isLogin, true);
         else
             initDrawer(new String[]{ "離線課表", "校園資訊" }, new String[]{}, _isLogin, true);
 
@@ -2469,7 +2677,7 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
-        final String[] DrawerListValue = new String[]{ "學期課表", "學期成績", "缺曠系統", "校車系統", "校園資訊" };
+        final String[] DrawerListValue = new String[]{ "學期課表", "學期成績", "缺曠系統", "校車系統", "校園資訊", "個人資訊" };
         final String[] AboutListValue = new String[]{ "關於我們" };
 
         RelativeLayout Logout = (RelativeLayout) findViewById(R.id.Logout);
@@ -2630,6 +2838,10 @@ public class MainActivity extends ActionBarActivity {
                             {
                                 initEvent(_isLogin, true);
                             }
+                            else if (DrawerListValue[position].equals("個人資訊"))
+                            {
+                                initUser();
+                            }
                         }
                     }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
                         @Override
@@ -2653,6 +2865,10 @@ public class MainActivity extends ActionBarActivity {
                             else if (DrawerListValue[position].equals("校園資訊"))
                             {
                                 initEvent(_isLogin, true);
+                            }
+                            else if (DrawerListValue[position].equals("個人資訊"))
+                            {
+                                initUser();
                             }
                         }
                     }).show();
@@ -2678,6 +2894,10 @@ public class MainActivity extends ActionBarActivity {
                     else if (DrawerListValue[position].equals("校園資訊"))
                     {
                         initEvent(_isLogin, true);
+                    }
+                    else if (DrawerListValue[position].equals("個人資訊"))
+                    {
+                        initUser();
                     }
                 }
             }

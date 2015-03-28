@@ -199,7 +199,7 @@
                         android:id="@+id/ap"
                         android:layout_below="@id/textView1"
                         android:layout_centerHorizontal="true"
-                        android:textSize="14sp"
+                        android:textSize="18sp"
                         android:textColor="@color/red" />
                 </RelativeLayout>
 
@@ -228,7 +228,7 @@
                         android:id="@+id/leave"
                         android:layout_below="@id/textView2"
                         android:layout_centerHorizontal="true"
-                        android:textSize="14sp"
+                        android:textSize="18sp"
                         android:textColor="@color/red"/>
                 </RelativeLayout>
 
@@ -257,7 +257,7 @@
                         android:id="@+id/bus"
                         android:layout_below="@id/textView3"
                         android:layout_centerHorizontal="true"
-                        android:textSize="14sp"
+                        android:textSize="18sp"
                         android:textColor="@color/red" />
                 </RelativeLayout>
             </RelativeLayout>
