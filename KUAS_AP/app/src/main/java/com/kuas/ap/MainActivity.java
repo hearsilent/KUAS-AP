@@ -290,7 +290,7 @@ public class MainActivity extends ActionBarActivity {
                 try {
                     LoadingDialogHandler.sendEmptyMessage(-1);
 
-                    if (!CheckLoginState())
+                    if (CheckLoginState() != 1)
                     {
                         if (!ReLogin())
                         {
@@ -467,7 +467,7 @@ public class MainActivity extends ActionBarActivity {
                 UserPicIndex = 0;
                 changeUserPic();
                 try {
-                    if (!CheckLoginState())
+                    if (CheckLoginState() != 1)
                     {
                         if (!ReLogin())
                         {
@@ -519,7 +519,7 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void run() {
                 try {
-                    if (!CheckLoginState())
+                    if (CheckLoginState() != 1)
                     {
                         if (!ReLogin())
                         {
@@ -615,6 +615,8 @@ public class MainActivity extends ActionBarActivity {
 
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+            if (LayoutId == R.layout.login || LayoutId == R.layout.logout || LayoutId == R.layout.logout_news)
+                return true;
             if (isSelecting)
             {
                 mViewFlipper.setInAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.hold));
@@ -631,15 +633,18 @@ public class MainActivity extends ActionBarActivity {
             {
                 switch (LayoutId)
                 {
-                    case R.layout.simcourse_select:
+                    case R.layout.simcourse_search:
                         if (SimCourseSelectDepartment == 1)
+                        {
+                            mViewFlipper.setInAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.hold));
+                            mViewFlipper.setOutAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.slide_down_out));
+                            mViewFlipper.setDisplayedChild(1);
                             initSimCourseSearch1(false);
+                        }
+                        else if (SimCourseSelectDepartment == 0)
+                            initSimCourse(false, true);
                         else
                             initSimCourseSelectDepartment1();
-                        break;
-                    case R.layout.simcourse_search1:
-                    case R.layout.simcourse_search2:
-                        initSimCourse(false, true);
                         break;
                     default:
                         if (_isLogin)
@@ -720,7 +725,7 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    public Boolean CheckLoginState()
+    public int CheckLoginState()
     {
         try {
             // Cilent
@@ -733,12 +738,15 @@ public class MainActivity extends ActionBarActivity {
             */
 
             // Server
-            if (post_url_contents(api_server + "ap/is_login", null, cookieStore).equals("true"))
-                return true;
+            String data = post_url_contents(api_server + "ap/is_login", null, cookieStore);
+            if (data.equals("true"))
+                return 1;
+            else if (data.equals(""))
+                return -1;
             else
-                return false;
+                return 0;
         } catch (Exception e) {
-            return false;
+            return -1;
         }
     }
 
@@ -757,7 +765,7 @@ public class MainActivity extends ActionBarActivity {
         params.add(new BasicNameValuePair("username", UserNameEditText.getText().toString()));
         params.add(new BasicNameValuePair("password", PasswordEditText.getText().toString()));
         post_url_contents(api_server + "ap/login", params, cookieStore);
-        return CheckLoginState();
+        return CheckLoginState() == 1;
     }
 
     public void initServerStatus(){
@@ -842,7 +850,7 @@ public class MainActivity extends ActionBarActivity {
                     params.add(new BasicNameValuePair("username", UserNameEditText.getText().toString()));
                     params.add(new BasicNameValuePair("password", PasswordEditText.getText().toString()));
                     post_url_contents(api_server + "ap/login", params, cookieStore);
-                    if (CheckLoginState())
+                    if (CheckLoginState() == 1)
                     {
                         Uid = UserNameEditText.getText().toString();
                         Pwd =  PasswordEditText.getText().toString();
@@ -851,10 +859,14 @@ public class MainActivity extends ActionBarActivity {
                         savePrefs();
                         LoginHandler.sendEmptyMessage(LoginSuccess);
                     }
-                    else
+                    else if (CheckLoginState() == 0)
                     {
                         LoginHandler.sendEmptyMessage(LoginError);
                         System.out.println("Error");
+                    }
+                    else
+                    {
+                        LoginHandler.sendEmptyMessage(LoginError2);
                     }
                 } catch (Exception e) {
                     LoginHandler.sendEmptyMessage(LoginError2);
@@ -1238,7 +1250,7 @@ public class MainActivity extends ActionBarActivity {
                         LoadingDialogHandler.sendEmptyMessage(-1);
                     }
 
-                    if (!CheckLoginState())
+                    if (CheckLoginState() != 1)
                     {
                         if (!ReLogin())
                         {
@@ -1436,7 +1448,7 @@ public class MainActivity extends ActionBarActivity {
                         LoadingDialogHandler.sendEmptyMessage(-1);
                     }
 
-                    if (!CheckLoginState())
+                    if (CheckLoginState() != 1)
                     {
                         if (!ReLogin())
                         {
@@ -1565,7 +1577,7 @@ public class MainActivity extends ActionBarActivity {
                         LoadingDialogHandler.sendEmptyMessage(-1);
                     }
 
-                    if (!CheckLoginState())
+                    if (CheckLoginState() != 1)
                     {
                         if (!ReLogin())
                         {
@@ -1893,7 +1905,7 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void run() {
                 try {
-                    if (!CheckLoginState())
+                    if (CheckLoginState() != 1)
                     {
                         if (!ReLogin())
                         {
@@ -2336,7 +2348,7 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void run() {
                 try {
-                    if (!CheckLoginState())
+                    if (CheckLoginState() != 1)
                     {
                         if (!ReLogin())
                         {
@@ -2370,7 +2382,7 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void run() {
                 try {
-                    if (!CheckLoginState())
+                    if (CheckLoginState() != 1)
                     {
                         if (!ReLogin())
                         {
@@ -2458,7 +2470,7 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void run() {
                 try {
-                    if (!CheckLoginState())
+                    if (CheckLoginState() != 1)
                     {
                         if (!ReLogin())
                         {
@@ -2492,7 +2504,7 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void run() {
             try {
-                if (!CheckLoginState())
+                if (CheckLoginState() != 1)
                 {
                     if (!ReLogin())
                     {
@@ -2956,7 +2968,7 @@ public class MainActivity extends ActionBarActivity {
                 try {
                     LoadingDialogHandler.sendEmptyMessage(-1);
 
-                    if (!CheckLoginState())
+                    if (CheckLoginState() != 1)
                     {
                         if (!ReLogin())
                         {
@@ -3148,7 +3160,15 @@ public class MainActivity extends ActionBarActivity {
 
     private void initSimCourseSearch1(boolean Reload)
     {
-        setContentViewEx(R.layout.simcourse_search1);
+        if (Reload)
+            setContentViewEx(R.layout.simcourse_search);
+
+        SimCourseSelectDepartment = 0;
+
+        mViewFlipper = (ViewFlipper) this.findViewById(R.id.view_flipper);
+        mViewFlipper.setDisplayedChild(0);
+        ViewFlipper mViewFlipper2 = (ViewFlipper) this.findViewById(R.id.view_flipper2);
+        mViewFlipper2.setDisplayedChild(0);
 
         _fncid = "";
 
@@ -3231,10 +3251,14 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 SimCourseKey = ((EditText) findViewById(R.id.SearchEditText)).getText().toString();
+                mViewFlipper.setInAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.push_up_in));
+                mViewFlipper.setOutAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.hold));
+                mViewFlipper.setDisplayedChild(1);
                 initSimCourseSelectDepartment1();
             }
         });
 
+        findViewById(R.id.relativeLayout).setOnClickListener(null);
         findViewById(R.id.RelativeLayout2).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -3435,7 +3459,10 @@ public class MainActivity extends ActionBarActivity {
 
     private void initSimCourseSearch2()
     {
-        setContentViewEx(R.layout.simcourse_search2);
+        LoadingDialog = LoadingDialog("Loading...", 6, getResources().getColor(R.color.actionbar_color2));
+
+        ViewFlipper mViewFlipper2 = (ViewFlipper) this.findViewById(R.id.view_flipper2);
+        mViewFlipper2.setDisplayedChild(1);
 
         _fncid = "";
 
@@ -3452,6 +3479,8 @@ public class MainActivity extends ActionBarActivity {
                 initSimCourseSearch1(false);
             }
         });
+
+        findViewById(R.id.RelativeLayout2).setOnClickListener(null);
 
         final TableLayout table = (TableLayout) findViewById(R.id.CourseList);
         table.setStretchAllColumns(true);
@@ -3529,14 +3558,16 @@ public class MainActivity extends ActionBarActivity {
 
     private void initSimCourseSelectDepartment1()
     {
-        setContentViewEx(R.layout.simcourse_select);
         SimCourseSelectDepartment = 1;
 
         findViewById(R.id.up).setVisibility(View.GONE);
 
-        findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.cancel2).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mViewFlipper.setInAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.hold));
+                mViewFlipper.setOutAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.slide_down_out));
+                mViewFlipper.setDisplayedChild(1);
                 initSimCourseSearch1(false);
             }
         });
@@ -3570,9 +3601,12 @@ public class MainActivity extends ActionBarActivity {
     {
         SimCourseSelectDepartment = 2;
 
-        findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.cancel2).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mViewFlipper.setInAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.hold));
+                mViewFlipper.setOutAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.slide_down_out));
+                mViewFlipper.setDisplayedChild(1);
                 initSimCourseSearch1(false);
             }
         });
@@ -3810,6 +3844,9 @@ public class MainActivity extends ActionBarActivity {
 
         if (values[0].equals(""))
         {
+            mViewFlipper.setInAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.hold));
+            mViewFlipper.setOutAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.slide_down_out));
+            mViewFlipper.setDisplayedChild(1);
             initSimCourseSearch1(false);
             return;
         }
@@ -3835,6 +3872,9 @@ public class MainActivity extends ActionBarActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 SimCourseUnit = unitValues[position];
                 SimCourseUnitName = values[position];
+                mViewFlipper.setInAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.hold));
+                mViewFlipper.setOutAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.slide_down_out));
+                mViewFlipper.setDisplayedChild(1);
                 initSimCourseSearch1(false);
             }
         });
