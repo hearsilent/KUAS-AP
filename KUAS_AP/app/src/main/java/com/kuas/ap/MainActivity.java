@@ -639,7 +639,7 @@ public class MainActivity extends ActionBarActivity {
                             mViewFlipper.setInAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.hold));
                             mViewFlipper.setOutAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.slide_down_out));
                             mViewFlipper.setDisplayedChild(1);
-                            initSimCourseSearch1(false);
+                            initSimCourseSearch1(false, false);
                         }
                         else if (SimCourseSelectDepartment == 0)
                             initSimCourse(false, true);
@@ -1538,7 +1538,9 @@ public class MainActivity extends ActionBarActivity {
         LoadingDialog = LoadingDialog("Loading...", 6, getResources().getColor(R.color.actionbar_color2));
 
         findViewById(R.id.imageView1).setBackgroundResource(R.drawable.ic_search_black_48dp);
+        ((TextView) findViewById(R.id.textView1)).setTextColor(Color.BLACK);
         findViewById(R.id.imageView2).setBackgroundResource(R.drawable.ic_create_grey600_48dp);
+        ((TextView) findViewById(R.id.textView2)).setTextColor(getResources().getColor(R.color.page_grey));
 
         RelativeLayout Select = (RelativeLayout) findViewById(R.id.select);
         Select.setOnClickListener(new View.OnClickListener() {
@@ -1719,7 +1721,9 @@ public class MainActivity extends ActionBarActivity {
         LoadingDialog = LoadingDialog("Loading...", 6, getResources().getColor(R.color.actionbar_color2));
 
         findViewById(R.id.imageView1).setBackgroundResource(R.drawable.ic_search_grey600_48dp);
+        ((TextView) findViewById(R.id.textView1)).setTextColor(getResources().getColor(R.color.page_grey));
         findViewById(R.id.imageView2).setBackgroundResource(R.drawable.ic_create_black_48dp);
+        ((TextView) findViewById(R.id.textView2)).setTextColor(Color.BLACK);
 
         RelativeLayout Page1 = (RelativeLayout) findViewById(R.id.relativeLayout);
         Page1.setOnClickListener(new View.OnClickListener() {
@@ -2043,8 +2047,11 @@ public class MainActivity extends ActionBarActivity {
         final ListView NotificationListView = (ListView) findViewById(R.id.notification_listView);
 
         findViewById(R.id.imageView1).setBackgroundResource(R.drawable.ic_announcement_black_48dp);
+        ((TextView) findViewById(R.id.textView1)).setTextColor(Color.BLACK);
         findViewById(R.id.imageView2).setBackgroundResource(R.drawable.ic_phone_grey600_48dp);
+        ((TextView) findViewById(R.id.textView2)).setTextColor(getResources().getColor(R.color.page_grey));
         findViewById(R.id.imageView3).setBackgroundResource(R.drawable.ic_event_note_grey600_48dp);
+        ((TextView) findViewById(R.id.textView3)).setTextColor(getResources().getColor(R.color.page_grey));
 
         RelativeLayout Page2 = (RelativeLayout) findViewById(R.id.RelativeLayout2);
         Page2.setOnClickListener(new View.OnClickListener() {
@@ -2064,6 +2071,7 @@ public class MainActivity extends ActionBarActivity {
                 NotificationListViewIndex = NotificationListView.getFirstVisiblePosition();
                 NotificationListViewTop = (NotificationListView.getChildAt(0) == null) ? 0 : (NotificationListView.getChildAt(0).getTop() - NotificationListView.getPaddingTop());
                 mViewFlipper.setDisplayedChild(2);
+                initEvent3(_isLogin);
             }
         });
 
@@ -2099,7 +2107,10 @@ public class MainActivity extends ActionBarActivity {
                             e.printStackTrace();
                         }
                     }
-                    ReadNotificationHandler.sendEmptyMessage(1);
+                    if (data.equals("[]") || data.equals(""))
+                        ReadNotificationHandler.sendEmptyMessage(2);
+                    else
+                        ReadNotificationHandler.sendEmptyMessage(1);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -2156,9 +2167,18 @@ public class MainActivity extends ActionBarActivity {
         }
         else
         {
-            NowPage.setText("第" + NotificationPage + "頁");
-            addNotification();
-            NotificationListView.setSelectionFromTop(NotificationListViewIndex, NotificationListViewTop);
+            if (NotificationList.size() == 0)
+            {
+                NotificationPage = 1;
+                LoadingDialogHandler.sendEmptyMessage(-1);
+                new Thread(ReadNotificationRunnable).start();
+            }
+            else
+            {
+                NowPage.setText("第" + NotificationPage + "頁");
+                addNotification();
+                NotificationListView.setSelectionFromTop(NotificationListViewIndex, NotificationListViewTop);
+            }
         }
 
         if (NotificationPage == 1)
@@ -2173,8 +2193,11 @@ public class MainActivity extends ActionBarActivity {
         final ListView PhoneListView = (ListView) findViewById(R.id.phone_listView);
 
         findViewById(R.id.imageView1).setBackgroundResource(R.drawable.ic_announcement_grey600_48dp);
+        ((TextView) findViewById(R.id.textView1)).setTextColor(getResources().getColor(R.color.page_grey));
         findViewById(R.id.imageView2).setBackgroundResource(R.drawable.ic_phone_black_48dp);
+        ((TextView) findViewById(R.id.textView2)).setTextColor(Color.BLACK);
         findViewById(R.id.imageView3).setBackgroundResource(R.drawable.ic_event_note_grey600_48dp);
+        ((TextView) findViewById(R.id.textView3)).setTextColor(getResources().getColor(R.color.page_grey));
 
         RelativeLayout Page1 = (RelativeLayout) findViewById(R.id.RelativeLayout);
         Page1.setOnClickListener(new View.OnClickListener() {
@@ -2214,8 +2237,11 @@ public class MainActivity extends ActionBarActivity {
         final ScrollView scrollView = (ScrollView) findViewById(R.id.scrollView);
 
         findViewById(R.id.imageView1).setBackgroundResource(R.drawable.ic_announcement_grey600_48dp);
+        ((TextView) findViewById(R.id.textView1)).setTextColor(getResources().getColor(R.color.page_grey));
         findViewById(R.id.imageView2).setBackgroundResource(R.drawable.ic_phone_grey600_48dp);
+        ((TextView) findViewById(R.id.textView2)).setTextColor(getResources().getColor(R.color.page_grey));
         findViewById(R.id.imageView3).setBackgroundResource(R.drawable.ic_event_note_black_48dp);
+        ((TextView) findViewById(R.id.textView3)).setTextColor(Color.BLACK);
 
         RelativeLayout Page1 = (RelativeLayout) findViewById(R.id.RelativeLayout);
         Page1.setOnClickListener(new View.OnClickListener() {
@@ -2267,7 +2293,9 @@ public class MainActivity extends ActionBarActivity {
 
         ((TextView) findViewById(R.id.indicator_style)).setText("校車預約");
         findViewById(R.id.imageView1).setBackgroundResource(R.drawable.ic_directions_bus_black_48dp);
+        ((TextView) findViewById(R.id.textView1)).setTextColor(Color.BLACK);
         findViewById(R.id.imageView2).setBackgroundResource(R.drawable.ic_search_grey600_48dp);
+        ((TextView) findViewById(R.id.textView2)).setTextColor(getResources().getColor(R.color.page_grey));
 
         RelativeLayout Page2 = (RelativeLayout) findViewById(R.id.RelativeLayout2);
         Page2.setOnClickListener(new View.OnClickListener() {
@@ -2449,8 +2477,10 @@ public class MainActivity extends ActionBarActivity {
         noReserveImageView.setVisibility(View.GONE);
 
         ((TextView) findViewById(R.id.indicator_style)).setText("預約查詢");
-        findViewById(R.id.imageView).setBackgroundResource(R.drawable.ic_directions_bus_grey600_48dp);
+        findViewById(R.id.imageView1).setBackgroundResource(R.drawable.ic_directions_bus_grey600_48dp);
+        ((TextView) findViewById(R.id.textView1)).setTextColor(getResources().getColor(R.color.page_grey));
         findViewById(R.id.imageView2).setBackgroundResource(R.drawable.ic_search_black_48dp);
+        ((TextView) findViewById(R.id.textView2)).setTextColor(Color.BLACK);
 
 
         RelativeLayout Page1 = (RelativeLayout) findViewById(R.id.relativeLayout);
@@ -2651,7 +2681,7 @@ public class MainActivity extends ActionBarActivity {
         findViewById(R.id.RelativeLayout).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                initSimCourseSearch1(true);
+                initSimCourseSearch1(true, true);
             }
         });
 
@@ -3158,17 +3188,21 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    private void initSimCourseSearch1(boolean Reload)
+    private void initSimCourseSearch1(boolean ReloadContext, boolean Reload)
     {
-        if (Reload)
+        if (ReloadContext)
             setContentViewEx(R.layout.simcourse_search);
-
-        SimCourseSelectDepartment = 0;
-
         mViewFlipper = (ViewFlipper) this.findViewById(R.id.view_flipper);
         mViewFlipper.setDisplayedChild(0);
+        SimCourseSelectDepartment = 0;
+
         ViewFlipper mViewFlipper2 = (ViewFlipper) this.findViewById(R.id.view_flipper2);
         mViewFlipper2.setDisplayedChild(0);
+
+        findViewById(R.id.imageView1).setBackgroundResource(R.drawable.ic_add_circle_black_48dp);
+        ((TextView) findViewById(R.id.textView1)).setTextColor(Color.BLACK);
+        findViewById(R.id.imageView2).setBackgroundResource(R.drawable.ic_cancel_grey600_48dp);
+        ((TextView) findViewById(R.id.textView2)).setTextColor(getResources().getColor(R.color.page_grey));
 
         _fncid = "";
 
@@ -3461,8 +3495,16 @@ public class MainActivity extends ActionBarActivity {
     {
         LoadingDialog = LoadingDialog("Loading...", 6, getResources().getColor(R.color.actionbar_color2));
 
+        setContentViewEx(R.layout.simcourse_search);
+        mViewFlipper = (ViewFlipper) this.findViewById(R.id.view_flipper);
+        mViewFlipper.setDisplayedChild(0);
         ViewFlipper mViewFlipper2 = (ViewFlipper) this.findViewById(R.id.view_flipper2);
         mViewFlipper2.setDisplayedChild(1);
+
+        findViewById(R.id.imageView1).setBackgroundResource(R.drawable.ic_add_circle_grey600_48dp);
+        ((TextView) findViewById(R.id.textView1)).setTextColor(getResources().getColor(R.color.page_grey));
+        findViewById(R.id.imageView2).setBackgroundResource(R.drawable.ic_cancel_black_48dp);
+        ((TextView) findViewById(R.id.textView2)).setTextColor(Color.BLACK);
 
         _fncid = "";
 
@@ -3476,7 +3518,7 @@ public class MainActivity extends ActionBarActivity {
         findViewById(R.id.relativeLayout).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                initSimCourseSearch1(false);
+                initSimCourseSearch1(true, false);
             }
         });
 
@@ -3568,7 +3610,7 @@ public class MainActivity extends ActionBarActivity {
                 mViewFlipper.setInAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.hold));
                 mViewFlipper.setOutAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.slide_down_out));
                 mViewFlipper.setDisplayedChild(1);
-                initSimCourseSearch1(false);
+                initSimCourseSearch1(false, false);
             }
         });
 
@@ -3607,7 +3649,7 @@ public class MainActivity extends ActionBarActivity {
                 mViewFlipper.setInAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.hold));
                 mViewFlipper.setOutAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.slide_down_out));
                 mViewFlipper.setDisplayedChild(1);
-                initSimCourseSearch1(false);
+                initSimCourseSearch1(false, false);
             }
         });
 
@@ -3847,7 +3889,7 @@ public class MainActivity extends ActionBarActivity {
             mViewFlipper.setInAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.hold));
             mViewFlipper.setOutAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.slide_down_out));
             mViewFlipper.setDisplayedChild(1);
-            initSimCourseSearch1(false);
+            initSimCourseSearch1(false, false);
             return;
         }
 
@@ -3875,7 +3917,7 @@ public class MainActivity extends ActionBarActivity {
                 mViewFlipper.setInAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.hold));
                 mViewFlipper.setOutAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.slide_down_out));
                 mViewFlipper.setDisplayedChild(1);
-                initSimCourseSearch1(false);
+                initSimCourseSearch1(false, false);
             }
         });
     }
@@ -4129,9 +4171,18 @@ public class MainActivity extends ActionBarActivity {
             switch (msg.what)
             {
                 case 1:
-                    addNotification();
+                    try {
+                        addNotification();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                     LoadingDialog.dismiss();
                     ProgressWheel.stopSpinning();
+                    break;
+                case 2:
+                    LoadingDialog.dismiss();
+                    ProgressWheel.stopSpinning();
+                    Toast.makeText(getApplicationContext(), "網路不穩定問題，請稍候嘗試...", Toast.LENGTH_SHORT).show();
                     break;
             }
         };

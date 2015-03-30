@@ -162,7 +162,6 @@
                                 android:id="@+id/scrollView2"
                                 android:layout_width="fill_parent"
                                 android:layout_height="fill_parent"
-                                android:layout_above="@+id/leaveSend"
                                 android:layout_marginBottom="5sp">
 
                                 <RelativeLayout
@@ -310,30 +309,28 @@
                                         android:layout_width="fill_parent"
                                         android:layout_alignBottom="@+id/leavePeriod"
                                         android:layout_marginTop="1sp"/>
+
+                                    <RelativeLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:paddingTop="20sp"
+                                        android:paddingBottom="20sp"
+                                        android:id="@+id/leaveSend"
+                                        android:layout_below="@+id/leavePeriod"
+                                        android:layout_marginBottom="5sp"
+                                        android:background="@color/blue_2">
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="送出請假登錄"
+                                            android:layout_centerHorizontal="true"
+                                            android:textSize="16sp"
+                                            android:textColor="@color/white" />
+                                    </RelativeLayout>
                                 </RelativeLayout>
                             </ScrollView>
-
-                            <RelativeLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:paddingTop="20sp"
-                                android:paddingBottom="20sp"
-                                android:id="@+id/leaveSend"
-                                android:layout_marginBottom="5sp"
-                                android:layout_alignParentBottom="true"
-                                android:background="@color/blue_2">
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="送出請假登錄"
-                                    android:layout_centerHorizontal="true"
-                                    android:textSize="16sp"
-                                    android:textColor="@color/white" />
-                            </RelativeLayout>
                         </RelativeLayout>
                     </ViewFlipper>
-
-
 
                     <RelativeLayout
                         android:layout_width="match_parent"
