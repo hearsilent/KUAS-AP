@@ -456,7 +456,8 @@ public class MainActivity extends ActionBarActivity {
     void initUser(){
         setContentViewEx(R.layout.user);
 
-        initDrawer(new String[]{ "學期課表", "缺曠系統", "校車系統", "模擬選課", "校園資訊" }, new String[]{ "關於我們" }, true, true);
+        initDrawer(new String[]{ "學期課表", "學期成績", "缺曠系統", "校車系統", "模擬選課", "校園資訊" }, new String[]{ "關於我們" }, true, true);
+
         UserPicIndex = 0;
 
         findViewById(R.id.pic).setOnClickListener(new View.OnClickListener() {
@@ -615,9 +616,29 @@ public class MainActivity extends ActionBarActivity {
 
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if ((keyCode == KeyEvent.KEYCODE_BACK)) {
-            if (LayoutId == R.layout.login || LayoutId == R.layout.logout || LayoutId == R.layout.logout_news)
-                return true;
-            if (isSelecting)
+            AlertDialogPro.Builder builder;
+            if (LayoutId == R.layout.login)
+            {
+                builder = CustomDialog("", "是否要離開高應校務通？", false);
+                builder.setCancelable(false).setPositiveButton("確定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
+                    }
+                }).setNegativeButton("取消", null).show();
+            }
+            else if (LayoutId == R.layout.logout || LayoutId == R.layout.logout_news)
+            {
+                builder = CustomDialog("", "是否要登出？", false);
+                builder.setCancelable(false).setPositiveButton("確定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        cookieStore = new BasicCookieStore();
+                        initLogin();
+                    }
+                }).setNegativeButton("返回", null).show();
+            }
+            else if (isSelecting)
             {
                 mViewFlipper.setInAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.hold));
                 mViewFlipper.setOutAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.slide_down_out));
