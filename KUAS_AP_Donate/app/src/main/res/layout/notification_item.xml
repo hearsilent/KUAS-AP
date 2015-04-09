@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="#ffffffff">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="教學發展中心"
+        android:id="@+id/from"
+        android:layout_below="@+id/title"
+        android:layout_marginTop="6sp"
+        android:paddingBottom="15sp"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="10sp"
+        android:textSize="16sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="教育部青年發展署公告補助大專校院推動以社區為基礎的服務學習創新方案實施計畫，歡迎師生踴躍提案參選!"
+        android:id="@+id/title"
+        android:layout_marginTop="15sp"
+        android:layout_marginLeft="10sp"
+        android:layout_marginRight="10sp"
+        android:textStyle="bold"
+        android:textColor="#c8000000"
+        android:textSize="16sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="2015-01-27 "
+        android:id="@+id/time"
+        android:layout_below="@+id/title"
+        android:layout_marginTop="6sp"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="10sp"
+        android:textSize="16sp" />
+</RelativeLayout>

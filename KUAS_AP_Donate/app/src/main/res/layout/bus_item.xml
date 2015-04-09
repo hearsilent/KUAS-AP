@@ -1,0 +1,46 @@
+<TableRow xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:background="@color/blue_2"
+        android:layout_marginTop="7sp"
+        android:paddingTop="10sp"
+        android:id="@+id/RelativeLayout"
+        android:paddingBottom="5sp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="√ 到燕巢，發車："
+            android:id="@+id/location"
+            android:textColor="#ffffffff"
+            android:textSize="16dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="07:20"
+            android:id="@+id/time"
+            android:textColor="#ffffffff"
+            android:layout_below="@id/location"
+            android:textSize="30dp"
+            android:layout_marginTop="7sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="(8／999)"
+            android:id="@+id/count"
+            android:textColor="#ffffffff"
+            android:textSize="16dp"
+            android:layout_alignBottom="@+id/time"
+            android:layout_toRightOf="@+id/time"
+            android:layout_marginLeft="5sp"
+            android:layout_marginBottom="5sp" />
+    </RelativeLayout>
+
+</TableRow>
