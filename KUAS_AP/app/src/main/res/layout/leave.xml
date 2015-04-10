@@ -96,7 +96,7 @@
                                 android:layout_height="wrap_content"
                                 android:id="@+id/select"
                                 android:layout_marginTop="5dp"
-                                android:layout_marginBottom="5dp"
+                                android:layout_marginBottom="10dp"
                                 android:gravity="center_horizontal">
 
                                 <TextView
@@ -127,7 +127,8 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="轉橫向即可查看周末缺曠"
-                                android:layout_marginBottom="5sp"
+                                android:layout_marginTop="-5sp"
+                                android:layout_marginBottom="10sp"
                                 android:id="@+id/textView"
                                 android:layout_below="@+id/select"
                                 android:layout_centerHorizontal="true"
