@@ -17,6 +17,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".LoadingDialog"
+            android:configChanges="orientation|keyboard|keyboardHidden|screenSize"
+            android:theme="@style/loading_dialog">
+        </activity>
     </application>
 
 </manifest>

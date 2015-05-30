@@ -93,7 +93,7 @@
                     android:width="200dp"
                     android:layout_marginRight="15sp"
                     android:textColor="@color/white"
-                    android:background="@color/blue_2" />
+                    android:background="@drawable/button_blue" />
 
                 <Button
                     android:layout_width="100dp"
@@ -104,7 +104,7 @@
                     android:width="200dp"
                     android:layout_toRightOf="@+id/OpenUrl"
                     android:textColor="@color/white"
-                    android:background="@color/red" />
+                    android:background="@drawable/button_red" />
             </RelativeLayout>
         </RelativeLayout>
 
