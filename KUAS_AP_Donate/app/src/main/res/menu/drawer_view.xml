@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_home"
+            android:icon="@drawable/ic_class_black_48dp"
+            android:title="離線課表"/>
+        <item
+            android:id="@+id/nav_course"
+            android:icon="@drawable/ic_class_black_48dp"
+            android:title="學期課表"
+            android:visible="false"/>
+        <item
+            android:id="@+id/nav_score"
+            android:icon="@drawable/ic_assignment_black_48dp"
+            android:title="學期成績"
+            android:visible="false"/>
+        <item
+            android:id="@+id/nav_leave"
+            android:icon="@drawable/ic_event_black_48dp"
+            android:title="缺曠系統"
+            android:visible="false"/>
+        <item
+            android:id="@+id/nav_bus"
+            android:icon="@drawable/ic_directions_bus_black_48dp"
+            android:title="校車系統"
+            android:visible="false"/>
+        <item
+            android:id="@+id/nav_simcourse"
+            android:icon="@drawable/ic_star_black_48dp"
+            android:title="模擬選課"
+            android:visible="false"/>
+        <item
+            android:id="@+id/nav_messages"
+            android:icon="@drawable/ic_info_black_48dp"
+            android:title="校園資訊" />
+        <item
+            android:id="@+id/nav_user"
+            android:icon="@drawable/ic_face_black_48dp"
+            android:title="個人資訊"
+            android:visible="false"/>
+        <item
+            android:id="@+id/nav_about"
+            android:icon="@drawable/ic_code_black_48dp"
+            android:title="關於我們" />
+    </group>
+</menu>

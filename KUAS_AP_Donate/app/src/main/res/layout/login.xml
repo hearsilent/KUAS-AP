@@ -265,31 +265,15 @@
                         android:textColor="@color/red" />
                 </RelativeLayout>
             </RelativeLayout>
-
         </RelativeLayout>
 
-        <RelativeLayout
-            android:layout_width="180dp"
+        <android.support.design.widget.NavigationView
+            android:id="@+id/nav_view"
             android:layout_height="match_parent"
-            android:orientation="vertical"
+            android:layout_width="wrap_content"
             android:layout_gravity="start"
-            android:background="#ffffffff">
-
-        <ListView
-            android:layout_width="180dp"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:background="@color/white"
-            android:id="@+id/drawerlistView"
-            android:layout_above="@+id/aboutlistView"
-            android:layout_alignParentTop="true"/>
-        <ListView
-            android:id="@+id/aboutlistView"
-            android:layout_width="180dp"
-            android:gravity="center"
-            android:background="@color/white"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true" />
-        </RelativeLayout>
+            android:fitsSystemWindows="true"
+            app:headerLayout="@layout/nav_header"
+            app:menu="@menu/drawer_view"/>
     </android.support.v4.widget.DrawerLayout>
 </LinearLayout>

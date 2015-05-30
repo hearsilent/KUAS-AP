@@ -19,12 +19,14 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.StrictMode;
 import android.provider.CalendarContract;
+import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.ViewDragHelper;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -55,6 +57,7 @@ import com.google.zxing.EncodeHintType;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
+import com.nostra13.universalimageloader.core.ImageLoader;
 import com.roomorama.caldroid.CaldroidFragment;
 import com.roomorama.caldroid.CaldroidListener;
 
@@ -425,6 +428,7 @@ public class MainActivity extends ActionBarActivity {
         {
             initLogin();
             OnCreateCheck = true;
+            mImageLoader = Utils.getDefaultImageLoader(this);
         }
     }
 
@@ -453,7 +457,7 @@ public class MainActivity extends ActionBarActivity {
     void initUser(){
         setContentViewEx(R.layout.user);
 
-        initDrawer(new ArrayList<>(Arrays.asList("學期課表", "學期成績", "缺曠系統", "校車系統", "模擬選課", "校園資訊")), new String[]{ "關於我們" }, true, true);
+        initDrawerHack(_isLogin, true, "個人資訊");
 
         UserPicIndex = 0;
 
@@ -828,8 +832,7 @@ public class MainActivity extends ActionBarActivity {
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
-
-        initDrawer(new ArrayList<>(Arrays.asList("離線課表", "校園資訊")), new String[]{ "關於我們" }, false, false);
+        initDrawerHack(_isLogin, false, "Login");
 
         restorePrefs();
 
@@ -923,6 +926,8 @@ public class MainActivity extends ActionBarActivity {
         new Thread(newsRunnable).start();
     }
 
+    public String nav_pic_url, nav_user_id, nav_user_name;
+
     public void initLogout(){
         if (NewsData.equals(""))
             setContentViewEx(R.layout.logout);
@@ -957,11 +962,20 @@ public class MainActivity extends ActionBarActivity {
             }
         }
 
+        try {
+            final JSONObject jsonObj = new JSONObject(get_url_contents(api_server + "ap/user/info", null, cookieStore));
+            nav_pic_url = get_url_contents(api_server + "ap/user/picture", null, cookieStore);
+            nav_user_id = jsonObj.getString("student_id");
+            nav_user_name = jsonObj.getString("student_name_cht");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         _fncid = "";
 
         _isLogin = true;
 
-        initDrawer(new ArrayList<>(Arrays.asList("學期課表", "學期成績", "缺曠系統", "校車系統", "模擬選課", "校園資訊", "個人資訊")), new String[]{"關於我們"}, true, false);
+        initDrawerHack(_isLogin, false, "Logout");
 
         Button Logout = (Button) findViewById(R.id.Logout);
         Logout.setOnClickListener(new View.OnClickListener() {
@@ -1068,220 +1082,91 @@ public class MainActivity extends ActionBarActivity {
 
         _isLogin = false;
 
-        initDrawer(new ArrayList<String>(), new String[]{}, false, true);
+        initDrawerHack(_isLogin, false, "ReLogin");
 
         _fncid = "";
     }
 
-    private void initDrawer(final ArrayList<String> DrawerListValue, final String[] AboutListValue, final boolean _isLogin , boolean _isLogout)
+    private DrawerLayout mDrawerLayout;
+    private ImageLoader mImageLoader;
+    private void initDrawerHack(final boolean _isLogin, boolean _isLogout, String title)
     {
-        final String[] List;
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+
         if (_isLogout)
         {
             RelativeLayout Logout = (RelativeLayout) findViewById(R.id.Logout);
             Logout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (SimCourseChange && LayoutId == R.layout.simcourse)
-                    {
-                        AlertDialogPro.Builder builder = CustomDialog("模擬選課", "尚未儲存變更，是否儲存課表？", false);
-                        builder.setPositiveButton("確定", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                SaveSimCourseData();
-                                if (_isLogin)
-                                    initLogout();
-                                else
-                                    initLogin();
-                            }
-                        }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                if (_isLogin)
-                                    initLogout();
-                                else
-                                    initLogin();
-                            }
-                        }).show();
-                    }
-                    else
-                    {
-                        if (_isLogin)
-                            initLogout();
-                        else
-                            initLogin();
-                    }
-                }
+               @Override
+               public void onClick(View v) {
+                   if (SimCourseChange && LayoutId == R.layout.simcourse)
+                   {
+                       AlertDialogPro.Builder builder = CustomDialog("模擬選課", "尚未儲存變更，是否儲存課表？", false);
+                       builder.setPositiveButton("確定", new DialogInterface.OnClickListener() {
+                           @Override
+                           public void onClick(DialogInterface dialog, int which) {
+                               SaveSimCourseData();
+                               if (_isLogin)
+                                   initLogout();
+                               else
+                                   initLogin();
+                           }
+                       }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                           @Override
+                           public void onClick(DialogInterface dialog, int which) {
+                               if (_isLogin)
+                                   initLogout();
+                               else
+                                   initLogin();
+                           }
+                       }).show();
+                   }
+                   else
+                   {
+                       if (_isLogin)
+                           initLogout();
+                       else
+                           initLogin();
+                   }
+               }
             });
         }
 
+        if (navigationView != null) {
+            setupDrawerContent(navigationView);
+        }
         if (_isLogin)
-            List = new String[]{ "學期課表", "學期成績", "缺曠系統", "校車系統", "模擬選課", "校園資訊", "個人資訊" };
+        {
+            for (int i = 0; i < navigationView.getMenu().size(); i++)
+                navigationView.getMenu().getItem(i).setVisible(true);
+            navigationView.getMenu().getItem(0).setVisible(false);
+            mImageLoader.displayImage(nav_pic_url, (ImageView) mDrawerLayout.findViewById(R.id.imageView_mycard), Utils.getHeadDisplayImageOptions(getResources().getDimensionPixelSize(R.dimen.head_mycard) / 2));
+            ((TextView) mDrawerLayout.findViewById(R.id.textView_name)).setText(nav_user_name);
+            ((TextView) mDrawerLayout.findViewById(R.id.textView_email)).setText(nav_user_id);
+        }
         else
-            List = new String[]{ "離線課表", "校園資訊" };
+        {
+            for (int i = 0; i < navigationView.getMenu().size(); i++)
+                navigationView.getMenu().getItem(i).setVisible(true);
+            for (int i = 1; i < 6; i++)
+                navigationView.getMenu().getItem(i).setVisible(false);
+            navigationView.getMenu().getItem(7).setVisible(false);
+            ((ImageView) mDrawerLayout.findViewById(R.id.imageView_mycard)).setImageResource(R.drawable.ic_head_anon);
+            ((TextView) mDrawerLayout.findViewById(R.id.textView_name)).setText("遊客");
+            ((TextView) mDrawerLayout.findViewById(R.id.textView_email)).setText("請先登入");
+        }
+        for (int i = 0; i < navigationView.getMenu().size(); i++)
+        {
+            if (navigationView.getMenu().getItem(i).getTitle().equals(title))
+            {
+                navigationView.getMenu().getItem(i).setChecked(true);
+                break;
+            }
+        }
 
-        mDrawerList = (ListView)findViewById(R.id.drawerlistView);
-        mAboutList = (ListView)findViewById(R.id.aboutlistView);
-        ArrayAdapter<String> adapter=new ArrayAdapter<String>(
-                this,R.layout.menulistview_item, List){
-            private LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
-
-            class ViewHolder {
-                public TextView textView;
-                public ImageView imageView;
-            }
-
-            @Override
-            public View getView(int position, View convertView,
-                                ViewGroup parent) {
-                ViewHolder holder;
-                if (convertView == null) {
-                    holder = new ViewHolder();
-                    convertView = mInflater.inflate(R.layout.menulistview_item, null);
-                    holder.textView = (TextView) convertView.findViewById(R.id.textView);
-                    if (DrawerListValue.contains(List[position]))
-                        holder.textView.setTextColor(getResources().getColor(R.color.grey));
-                    else
-                        holder.textView.setTextColor(getResources().getColor(R.color.md_grey_700));
-                    holder.imageView = (ImageView) convertView.findViewById(R.id.imageView);
-                    convertView.setTag(holder);
-                } else {
-                    holder = (ViewHolder)convertView.getTag();
-                }
-                holder.textView.setText(List[position]);
-                return convertView;
-            }
-        };
-        ArrayAdapter<String> aboutadapter=new ArrayAdapter<String>(
-                this,R.layout.menulistview_item, AboutListValue){
-            private LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
-
-            class ViewHolder {
-                public TextView textView;
-                public ImageView imageView;
-            }
-
-            @Override
-            public View getView(int position, View convertView,
-                                ViewGroup parent) {
-                ViewHolder holder;
-                if (convertView == null) {
-                    holder = new ViewHolder();
-                    convertView = mInflater.inflate(R.layout.menulistview_item, null);
-                    holder.textView = (TextView) convertView.findViewById(R.id.textView);
-                    holder.imageView = (ImageView) convertView.findViewById(R.id.imageView);
-                    convertView.setTag(holder);
-                } else {
-                    holder = (ViewHolder)convertView.getTag();
-                }
-                holder.textView.setText(AboutListValue[position]);
-                holder.imageView.setBackgroundResource(R.drawable.ic_thumb_up_black_48dp);
-                return convertView;
-            }
-        };
-        if (AboutListValue.length != 0)
-            mAboutList.setAdapter(aboutadapter);
-        if (DrawerListValue.size() != 0)
-            mDrawerList.setAdapter(adapter);
-        mAboutList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (AboutListValue[position].equals("關於我們"))
-                {
-                    initAbout(_isLogin);
-                }
-            }
-        });
-        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
-                if (!DrawerListValue.contains(List[position]))
-                    return;
-                if (SimCourseChange && LayoutId == R.layout.simcourse)
-                {
-                    AlertDialogPro.Builder builder = CustomDialog("模擬選課", "尚未儲存變更，是否儲存課表？", false);
-                    builder.setPositiveButton("確定", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            SaveSimCourseData();
-                            if (List[position].equals("學期課表") || List[position].equals("離線課表"))
-                            {
-                                initCourse(false, false, _isLogin);
-                            }
-                            else if (List[position].equals("學期成績")) {
-                                initScore(false, false);
-                            }
-                            else if (List[position].equals("缺曠系統")) {
-                                initLeave(false, false);
-                            }
-                            else if (List[position].equals("校車系統")) {
-                                initBus(true);
-                            }
-                            else if (List[position].equals("校園資訊")) {
-                                initEvent(_isLogin, true);
-                            }
-                            else if (List[position].equals("模擬選課")) {
-                                initSimCourse(true, true);
-                            }
-                            else if (List[position].equals("個人資訊")) {
-                                initUser();
-                            }
-                        }
-                    }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            if (List[position].equals("學期課表") || List[position].equals("離線課表"))
-                            {
-                                initCourse(false, false, _isLogin);
-                            }
-                            else if (List[position].equals("學期成績")) {
-                                initScore(false, false);
-                            }
-                            else if (List[position].equals("缺曠系統")) {
-                                initLeave(false, false);
-                            }
-                            else if (List[position].equals("校車系統")) {
-                                initBus(true);
-                            }
-                            else if (List[position].equals("校園資訊")) {
-                                initEvent(_isLogin, true);
-                            }
-                            else if (List[position].equals("模擬選課")) {
-                                initSimCourse(true, true);
-                            }
-                            else if (List[position].equals("個人資訊")) {
-                                initUser();
-                            }
-                        }
-                    }).show();
-                }
-                else
-                {
-                    if (List[position].equals("學期課表") || List[position].equals("離線課表"))
-                    {
-                        initCourse(false, false, _isLogin);
-                    }
-                    else if (List[position].equals("學期成績")) {
-                        initScore(false, false);
-                    }
-                    else if (List[position].equals("缺曠系統")) {
-                        initLeave(false, false);
-                    }
-                    else if (List[position].equals("校車系統")) {
-                        initBus(true);
-                    }
-                    else if (List[position].equals("校園資訊")) {
-                        initEvent(_isLogin, true);
-                    }
-                    else if (List[position].equals("模擬選課")) {
-                        initSimCourse(true, true);
-                    }
-                    else if (List[position].equals("個人資訊")) {
-                        initUser();
-                    }
-                }
-            }
-        });
+        mImageLoader = Utils.getDefaultImageLoader(this);
         final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         final ImageView imageView = (ImageView) findViewById(R.id.drawer_indicator);
         final Resources resources = getResources();
@@ -1318,19 +1203,123 @@ public class MainActivity extends ActionBarActivity {
                 drawerArrowDrawable.setParameter(offset);
             }
         });
-        if (!(DrawerListValue.size() == 0 && AboutListValue.length == 0))
-        {
-            imageView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (drawer.isDrawerVisible(START)) {
-                        drawer.closeDrawer(START);
-                    } else {
-                        drawer.openDrawer(START);
-                    }
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mDrawerLayout.isDrawerVisible(START)) {
+                    mDrawerLayout.closeDrawer(START);
+                } else {
+                    mDrawerLayout.openDrawer(START);
                 }
-            });
-        }
+            }
+        });
+
+
+    }
+
+    private void setupDrawerContent(NavigationView navigationView) {
+        navigationView.setNavigationItemSelectedListener(
+                new NavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(final MenuItem menuItem) {
+                        mDrawerLayout.closeDrawers();
+                        if (menuItem.isChecked()) return true;
+                        menuItem.setChecked(true);
+                        if (SimCourseChange && LayoutId == R.layout.simcourse)
+                        {
+                            AlertDialogPro.Builder builder = CustomDialog("模擬選課", "尚未儲存變更，是否儲存課表？", false);
+                            builder.setPositiveButton("確定", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    SaveSimCourseData();
+                                    if (menuItem.getTitle().toString().equals("學期課表") || menuItem.getTitle().toString().equals("離線課表"))
+                                    {
+                                        initCourse(false, false, _isLogin);
+                                    }
+                                    else if (menuItem.getTitle().toString().equals("學期成績")) {
+                                        initScore(false, false);
+                                    }
+                                    else if (menuItem.getTitle().toString().equals("缺曠系統")) {
+                                        initLeave(false, false);
+                                    }
+                                    else if (menuItem.getTitle().toString().equals("校車系統")) {
+                                        initBus(true);
+                                    }
+                                    else if (menuItem.getTitle().toString().equals("校園資訊")) {
+                                        initEvent(_isLogin, true);
+                                    }
+                                    else if (menuItem.getTitle().toString().equals("模擬選課")) {
+                                        initSimCourse(true, true);
+                                    }
+                                    else if (menuItem.getTitle().toString().equals("個人資訊")) {
+                                        initUser();
+                                    }
+                                    else if (menuItem.getTitle().toString().equals("關於我們")) {
+                                        initAbout(_isLogin);
+                                    }
+                                }
+                            }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    if (menuItem.getTitle().toString().equals("學期課表") || menuItem.getTitle().toString().equals("離線課表"))
+                                    {
+                                        initCourse(false, false, _isLogin);
+                                    }
+                                    else if (menuItem.getTitle().toString().equals("學期成績")) {
+                                        initScore(false, false);
+                                    }
+                                    else if (menuItem.getTitle().toString().equals("缺曠系統")) {
+                                        initLeave(false, false);
+                                    }
+                                    else if (menuItem.getTitle().toString().equals("校車系統")) {
+                                        initBus(true);
+                                    }
+                                    else if (menuItem.getTitle().toString().equals("校園資訊")) {
+                                        initEvent(_isLogin, true);
+                                    }
+                                    else if (menuItem.getTitle().toString().equals("模擬選課")) {
+                                        initSimCourse(true, true);
+                                    }
+                                    else if (menuItem.getTitle().toString().equals("個人資訊")) {
+                                        initUser();
+                                    }
+                                    else if (menuItem.getTitle().toString().equals("關於我們")) {
+                                        initAbout(_isLogin);
+                                    }
+                                }
+                            }).show();
+                        }
+                        else
+                        {
+                            if (menuItem.getTitle().toString().equals("學期課表") || menuItem.getTitle().toString().equals("離線課表"))
+                            {
+                                initCourse(false, false, _isLogin);
+                            }
+                            else if (menuItem.getTitle().toString().equals("學期成績")) {
+                                initScore(false, false);
+                            }
+                            else if (menuItem.getTitle().toString().equals("缺曠系統")) {
+                                initLeave(false, false);
+                            }
+                            else if (menuItem.getTitle().toString().equals("校車系統")) {
+                                initBus(true);
+                            }
+                            else if (menuItem.getTitle().toString().equals("校園資訊")) {
+                                initEvent(_isLogin, true);
+                            }
+                            else if (menuItem.getTitle().toString().equals("模擬選課")) {
+                                initSimCourse(true, true);
+                            }
+                            else if (menuItem.getTitle().toString().equals("個人資訊")) {
+                                initUser();
+                            }
+                            else if (menuItem.getTitle().toString().equals("關於我們")) {
+                                initAbout(_isLogin);
+                            }
+                        }
+                        return true;
+                    }
+                });
     }
 
     public void initCourse(final boolean select, boolean cancel, final boolean _isLogin){
@@ -1363,10 +1352,7 @@ public class MainActivity extends ActionBarActivity {
             });
         }
 
-        if (_isLogin)
-            initDrawer(new ArrayList<>(Arrays.asList("學期成績", "缺曠系統", "校車系統", "模擬選課", "校園資訊", "個人資訊")), new String[]{ "關於我們" }, _isLogin, true);
-        else
-            initDrawer(new ArrayList<>(Arrays.asList("校園資訊")), new String[]{ "關於我們" }, _isLogin, true);
+        initDrawerHack(_isLogin, true, "模擬選課");
 
         _fncid = "AG222";
         ReadCourseRunnable = new Runnable() {
@@ -1564,7 +1550,7 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
-        initDrawer(new ArrayList<>(Arrays.asList("學期課表", "缺曠系統", "校車系統", "模擬選課", "校園資訊", "個人資訊")), new String[]{ "關於我們" }, true, true);
+        initDrawerHack(_isLogin, true, "學期成績");
 
         _fncid = "AG008";
         ReadScoreRunnable = new Runnable() {
@@ -1693,7 +1679,7 @@ public class MainActivity extends ActionBarActivity {
         TextView textView = (TextView) findViewById(R.id.textView);
         textView.setVisibility(View.GONE);
 
-        initDrawer(new ArrayList<>(Arrays.asList("學期課表", "學期成績", "校車系統", "模擬選課", "校園資訊", "個人資訊")), new String[]{ "關於我們" }, true, true);
+        initDrawerHack(_isLogin, true, "缺曠系統");
 
         _fncid = "AK002";
         ReadLeaveRunnable = new Runnable() {
@@ -1859,7 +1845,7 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
-        initDrawer(new ArrayList<>(Arrays.asList("學期課表", "學期成績", "校車系統", "模擬選課", "校園資訊", "個人資訊")), new String[]{ "關於我們" }, true, true);
+        initDrawerHack(_isLogin, true, "缺曠系統");
 
         _fncid = "";
 
@@ -2198,10 +2184,7 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
-        if (_isLogin)
-            initDrawer(new ArrayList<>(Arrays.asList("學期課表", "學期成績", "缺曠系統", "校車系統", "模擬選課", "個人資訊")), new String[]{ "關於我們" }, _isLogin, true);
-        else
-            initDrawer(new ArrayList<>(Arrays.asList("離線課表")), new String[]{ "關於我們" }, _isLogin, true);
+        initDrawerHack(_isLogin, true, "校園資訊");
 
         _fncid = "";
 
@@ -2342,10 +2325,7 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
-        if (_isLogin)
-            initDrawer(new ArrayList<>(Arrays.asList("學期課表", "學期成績", "缺曠系統", "校車系統", "模擬選課", "個人資訊")), new String[]{ "關於我們" }, _isLogin, true);
-        else
-            initDrawer(new ArrayList<>(Arrays.asList("離線課表")), new String[]{ "關於我們" }, _isLogin, true);
+        initDrawerHack(_isLogin, true, "校園資訊");
 
         _fncid = "";
         new addPhoneAsyncTask().execute();
@@ -2384,10 +2364,7 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
-        if (_isLogin)
-            initDrawer(new ArrayList<>(Arrays.asList("學期課表", "學期成績", "缺曠系統", "校車系統", "模擬選課", "個人資訊")), new String[]{ "關於我們" }, _isLogin, true);
-        else
-            initDrawer(new ArrayList<>(Arrays.asList("離線課表")), new String[]{ "關於我們" }, _isLogin, true);
+        initDrawerHack(_isLogin, true, "校園資訊");
 
         _fncid = "";
         new addScheduleAsyncTask().execute();
@@ -2449,7 +2426,7 @@ public class MainActivity extends ActionBarActivity {
         TextView noBusTextView = (TextView) findViewById(R.id.noBusTextView);
         noBusTextView.setVisibility(View.GONE);
 
-        initDrawer(new ArrayList<>(Arrays.asList("學期課表", "學期成績", "缺曠系統", "模擬選課", "校園資訊", "個人資訊")), new String[]{ "關於我們" }, true, true);
+        initDrawerHack(_isLogin, true, "校車系統");
 
         _fncid = "";
 
@@ -2607,7 +2584,7 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
-        initDrawer(new ArrayList<>(Arrays.asList("學期課表", "學期成績", "缺曠系統", "模擬選課", "校園資訊", "個人資訊")), new String[]{ "關於我們" }, true, true);
+        initDrawerHack(_isLogin, true, "校車系統");
 
         _fncid = "";
 
@@ -2691,10 +2668,7 @@ public class MainActivity extends ActionBarActivity {
     {
         setContentViewEx(R.layout.about);
 
-        if (_isLogin)
-            initDrawer(new ArrayList<>(Arrays.asList("學期課表", "學期成績", "缺曠系統", "校車系統", "模擬選課", "校園資訊", "個人資訊")), new String[]{}, _isLogin, true);
-        else
-            initDrawer(new ArrayList<>(Arrays.asList("離線課表", "校園資訊")), new String[]{}, _isLogin, true);
+        initDrawerHack(_isLogin, true, "關於我們");
 
         ImageView facebook = (ImageView) findViewById(R.id.facebook);
         facebook.setOnClickListener(new View.OnClickListener() {
@@ -2836,7 +2810,7 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
-        initDrawer(new ArrayList<>(Arrays.asList("學期課表", "學期成績", "缺曠系統", "校車系統", "校園資訊", "個人資訊")), new String[]{"關於我們"}, true, true);
+        initDrawerHack(_isLogin, true, "模擬選課");
 
         SimCourseReadCourseRunnable = new Runnable() {
             @Override

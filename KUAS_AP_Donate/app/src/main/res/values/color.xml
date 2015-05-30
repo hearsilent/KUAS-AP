@@ -26,6 +26,11 @@
     <color name="progress_yellow">#FFF7D23E</color>
     <color name="progress_green">#FF34A350</color>
 
+    <color name="white_dividers">#1fffffff</color>
+    <color name="white_text_disabled">#4dffffff</color>
+    <color name="white_text_secondary">#b3ffffff</color>
+    <color name="white_text">#ffffff</color>
+
     <!-- red -->
     <color name="md_red_50">#fde0dc</color>
     <color name="md_red_100">#f9bdbb</color>
