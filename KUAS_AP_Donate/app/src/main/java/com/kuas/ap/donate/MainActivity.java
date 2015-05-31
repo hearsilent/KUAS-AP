@@ -133,8 +133,8 @@ public class MainActivity extends ActionBarActivity {
     private String Uid = "";
     private String Pwd = "";
 
-    private int LayoutId = R.layout.login;
-    private int SelectLayoutId = R.layout.course;
+    private int LayoutId = R.layout.login_hack;
+    private int SelectLayoutId = R.layout.course_hack;
 
     // Server
     private String api_server = "http://kuas.grd.idv.tw:14768/";
@@ -455,7 +455,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     void initUser(){
-        setContentViewEx(R.layout.user);
+        setContentViewEx(R.layout.user_hack);
 
         initDrawerHack(_isLogin, true, "個人資訊");
 
@@ -618,7 +618,7 @@ public class MainActivity extends ActionBarActivity {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if ((keyCode == KeyEvent.KEYCODE_BACK)) {
             AlertDialogPro.Builder builder;
-            if (LayoutId == R.layout.login)
+            if (LayoutId == R.layout.login_hack)
             {
                 builder = CustomDialog("", "是否要離開高應校務通？", false);
                 builder.setCancelable(false).setPositiveButton("確定", new DialogInterface.OnClickListener() {
@@ -628,7 +628,7 @@ public class MainActivity extends ActionBarActivity {
                     }
                 }).setNegativeButton("取消", null).show();
             }
-            else if (LayoutId == R.layout.logout || LayoutId == R.layout.logout_news)
+            else if (LayoutId == R.layout.logout_hack || LayoutId == R.layout.logout_news_hack)
             {
                 builder = CustomDialog("", "是否要登出？", false);
                 builder.setCancelable(false).setPositiveButton("確定", new DialogInterface.OnClickListener() {
@@ -644,18 +644,18 @@ public class MainActivity extends ActionBarActivity {
                 mViewFlipper.setInAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.hold));
                 mViewFlipper.setOutAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.slide_down_out));
                 mViewFlipper.setDisplayedChild(0);
-                if (SelectLayoutId == R.layout.course)
+                if (SelectLayoutId == R.layout.course_hack)
                     initCourse(true, true, true);
-                else if (SelectLayoutId == R.layout.score)
+                else if (SelectLayoutId == R.layout.score_hack)
                     initScore(true, true);
-                else if (SelectLayoutId == R.layout.leave)
+                else if (SelectLayoutId == R.layout.leave_hack)
                     initLeave1(true, true);
             }
             else
             {
                 switch (LayoutId)
                 {
-                    case R.layout.simcourse_search:
+                    case R.layout.simcourse_search_hack:
                         if (SimCourseSelectDepartment == 1)
                         {
                             mViewFlipper.setInAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.hold));
@@ -814,7 +814,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void initLogin(){
-        setContentViewEx(R.layout.login);
+        setContentViewEx(R.layout.login_hack);
 
         new Thread(CheckBackUpRunnable).start();
         new Thread(CheckFixedRunnable).start();
@@ -867,7 +867,7 @@ public class MainActivity extends ActionBarActivity {
                     }
                     else
                     {
-                        LoginHandler.sendEmptyMessage(LoginError2);
+                        LoginHandler.sendEmptyMessage(LoginError);
                     }
                 } catch (Exception e) {
                     LoginHandler.sendEmptyMessage(LoginError2);
@@ -930,10 +930,10 @@ public class MainActivity extends ActionBarActivity {
 
     public void initLogout(){
         if (NewsData.equals(""))
-            setContentViewEx(R.layout.logout);
+            setContentViewEx(R.layout.logout_hack);
         else
         {
-            setContentViewEx(R.layout.logout_news);
+            setContentViewEx(R.layout.logout_news_hack);
             try {
                 JSONArray jsonObj = new JSONArray(NewsData);
                 WebView newsWeb = (WebView) findViewById(R.id.webView);
@@ -957,7 +957,7 @@ public class MainActivity extends ActionBarActivity {
                     findViewById(R.id.OpenUrl).setVisibility(View.GONE);
                 }
             } catch (Exception e) {
-                setContentViewEx(R.layout.logout);
+                setContentViewEx(R.layout.logout_hack);
                 e.printStackTrace();
             }
         }
@@ -1040,11 +1040,11 @@ public class MainActivity extends ActionBarActivity {
                 mViewFlipper.setInAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.hold));
                 mViewFlipper.setOutAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.slide_down_out));
                 mViewFlipper.setDisplayedChild(0);
-                if (SelectLayoutId == R.layout.course)
+                if (SelectLayoutId == R.layout.course_hack)
                     initCourse(true, cancel, true);
-                else if (SelectLayoutId == R.layout.score)
+                else if (SelectLayoutId == R.layout.score_hack)
                     initScore(true, cancel);
-                else if (SelectLayoutId == R.layout.leave)
+                else if (SelectLayoutId == R.layout.leave_hack)
                     initLeave1(true, cancel);
             }
         });
@@ -1055,11 +1055,11 @@ public class MainActivity extends ActionBarActivity {
                 mViewFlipper.setInAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.hold));
                 mViewFlipper.setOutAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.slide_down_out));
                 mViewFlipper.setDisplayedChild(0);
-                if (SelectLayoutId == R.layout.course)
+                if (SelectLayoutId == R.layout.course_hack)
                     initCourse(true, true, true);
-                else if (SelectLayoutId == R.layout.score)
+                else if (SelectLayoutId == R.layout.score_hack)
                     initScore(true, true);
-                else if (SelectLayoutId == R.layout.leave)
+                else if (SelectLayoutId == R.layout.leave_hack)
                     initLeave1(true, true);
             }
         });
@@ -1076,13 +1076,19 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void initReLogin(){
-        setContentViewEx(R.layout.relogin);
+        setContentViewEx(R.layout.relogin_hack);
 
         LoadingDialogHandler.sendEmptyMessage(1);
 
         _isLogin = false;
 
-        initDrawerHack(_isLogin, false, "ReLogin");
+        RelativeLayout Logout = (RelativeLayout) findViewById(R.id.Logout);
+        Logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                initLogin();
+            }
+        });
 
         _fncid = "";
     }
@@ -1091,130 +1097,142 @@ public class MainActivity extends ActionBarActivity {
     private ImageLoader mImageLoader;
     private void initDrawerHack(final boolean _isLogin, boolean _isLogout, String title)
     {
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-
-        if (_isLogout)
-        {
-            RelativeLayout Logout = (RelativeLayout) findViewById(R.id.Logout);
-            Logout.setOnClickListener(new View.OnClickListener() {
-               @Override
-               public void onClick(View v) {
-                   if (SimCourseChange && LayoutId == R.layout.simcourse)
-                   {
-                       AlertDialogPro.Builder builder = CustomDialog("模擬選課", "尚未儲存變更，是否儲存課表？", false);
-                       builder.setPositiveButton("確定", new DialogInterface.OnClickListener() {
-                           @Override
-                           public void onClick(DialogInterface dialog, int which) {
-                               SaveSimCourseData();
-                               if (_isLogin)
-                                   initLogout();
-                               else
-                                   initLogin();
-                           }
-                       }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                           @Override
-                           public void onClick(DialogInterface dialog, int which) {
-                               if (_isLogin)
-                                   initLogout();
-                               else
-                                   initLogin();
-                           }
-                       }).show();
-                   }
-                   else
-                   {
-                       if (_isLogin)
-                           initLogout();
-                       else
-                           initLogin();
-                   }
-               }
-            });
-        }
-
-        if (navigationView != null) {
-            setupDrawerContent(navigationView);
-        }
-        if (_isLogin)
-        {
-            for (int i = 0; i < navigationView.getMenu().size(); i++)
-                navigationView.getMenu().getItem(i).setVisible(true);
-            navigationView.getMenu().getItem(0).setVisible(false);
-            mImageLoader.displayImage(nav_pic_url, (ImageView) mDrawerLayout.findViewById(R.id.imageView_mycard), Utils.getHeadDisplayImageOptions(getResources().getDimensionPixelSize(R.dimen.head_mycard) / 2));
-            ((TextView) mDrawerLayout.findViewById(R.id.textView_name)).setText(nav_user_name);
-            ((TextView) mDrawerLayout.findViewById(R.id.textView_email)).setText(nav_user_id);
-        }
-        else
-        {
-            for (int i = 0; i < navigationView.getMenu().size(); i++)
-                navigationView.getMenu().getItem(i).setVisible(true);
-            for (int i = 1; i < 6; i++)
-                navigationView.getMenu().getItem(i).setVisible(false);
-            navigationView.getMenu().getItem(7).setVisible(false);
-            ((ImageView) mDrawerLayout.findViewById(R.id.imageView_mycard)).setImageResource(R.drawable.ic_head_anon);
-            ((TextView) mDrawerLayout.findViewById(R.id.textView_name)).setText("遊客");
-            ((TextView) mDrawerLayout.findViewById(R.id.textView_email)).setText("請先登入");
-        }
-        for (int i = 0; i < navigationView.getMenu().size(); i++)
-        {
-            if (navigationView.getMenu().getItem(i).getTitle().equals(title))
-            {
-                navigationView.getMenu().getItem(i).setChecked(true);
-                break;
-            }
-        }
-
-        mImageLoader = Utils.getDefaultImageLoader(this);
-        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        final ImageView imageView = (ImageView) findViewById(R.id.drawer_indicator);
-        final Resources resources = getResources();
-        drawerArrowDrawable = new DrawerArrowDrawable(resources, true);
-        drawerArrowDrawable.setStrokeColor(Color.WHITE);
-        imageView.setImageDrawable(drawerArrowDrawable);
-
         try {
-            Field mDragger = drawer.getClass().getDeclaredField("mLeftDragger");
-            mDragger.setAccessible(true);
-            ViewDragHelper draggerObj = (ViewDragHelper) mDragger.get(drawer);
+            mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
-            Field mEdgeSize = draggerObj.getClass().getDeclaredField("mEdgeSize");
-            mEdgeSize.setAccessible(true);
-            int edge = mEdgeSize.getInt(draggerObj);
+            NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
 
-            mEdgeSize.setInt(draggerObj, 180);
+            if (_isLogout)
+            {
+                RelativeLayout Logout = (RelativeLayout) findViewById(R.id.Logout);
+                Logout.setOnClickListener(new View.OnClickListener() {
+                   @Override
+                   public void onClick(View v) {
+                       if (SimCourseChange && LayoutId == R.layout.simcourse_hack)
+                       {
+                           AlertDialogPro.Builder builder = CustomDialog("模擬選課", "尚未儲存變更，是否儲存課表？", false);
+                           builder.setPositiveButton("確定", new DialogInterface.OnClickListener() {
+                               @Override
+                               public void onClick(DialogInterface dialog, int which) {
+                                   SaveSimCourseData();
+                                   if (_isLogin)
+                                       initLogout();
+                                   else
+                                       initLogin();
+                               }
+                           }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                               @Override
+                               public void onClick(DialogInterface dialog, int which) {
+                                   if (_isLogin)
+                                       initLogout();
+                                   else
+                                       initLogin();
+                               }
+                           }).show();
+                       }
+                       else
+                       {
+                           if (_isLogin)
+                               initLogout();
+                           else
+                               initLogin();
+                       }
+                   }
+                });
+            }
+
+            if (navigationView != null) {
+                setupDrawerContent(navigationView);
+            }
+            if (_isLogin)
+            {
+                for (int i = 0; i < navigationView.getMenu().size(); i++)
+                    navigationView.getMenu().getItem(i).setVisible(true);
+                navigationView.getMenu().getItem(0).setVisible(false);
+                if (nav_user_name.equals("") || nav_pic_url.equals("") || nav_user_id.equals(""))
+                {
+                    ((ImageView) mDrawerLayout.findViewById(R.id.imageView_mycard)).setImageResource(R.drawable.ic_head_anon);
+                    ((TextView) mDrawerLayout.findViewById(R.id.textView_name)).setText("憑證過期");
+                    ((TextView) mDrawerLayout.findViewById(R.id.textView_email)).setText("請重新登入");
+                }
+                else
+                {
+                    mImageLoader.displayImage(nav_pic_url, (ImageView) mDrawerLayout.findViewById(R.id.imageView_mycard), Utils.getHeadDisplayImageOptions(getResources().getDimensionPixelSize(R.dimen.head_mycard) / 2));
+                    ((TextView) mDrawerLayout.findViewById(R.id.textView_name)).setText(nav_user_name);
+                    ((TextView) mDrawerLayout.findViewById(R.id.textView_email)).setText(nav_user_id);
+                }
+            }
+            else
+            {
+                for (int i = 0; i < navigationView.getMenu().size(); i++)
+                    navigationView.getMenu().getItem(i).setVisible(true);
+                for (int i = 1; i < 6; i++)
+                    navigationView.getMenu().getItem(i).setVisible(false);
+                navigationView.getMenu().getItem(7).setVisible(false);
+                ((ImageView) mDrawerLayout.findViewById(R.id.imageView_mycard)).setImageResource(R.drawable.ic_head_anon);
+                ((TextView) mDrawerLayout.findViewById(R.id.textView_name)).setText("遊客");
+                ((TextView) mDrawerLayout.findViewById(R.id.textView_email)).setText("請先登入");
+            }
+            for (int i = 0; i < navigationView.getMenu().size(); i++)
+            {
+                if (navigationView.getMenu().getItem(i).getTitle().equals(title))
+                {
+                    navigationView.getMenu().getItem(i).setChecked(true);
+                    break;
+                }
+            }
+
+            mImageLoader = Utils.getDefaultImageLoader(this);
+            final ImageView imageView = (ImageView) findViewById(R.id.drawer_indicator);
+            final Resources resources = getResources();
+            drawerArrowDrawable = new DrawerArrowDrawable(resources, true);
+            drawerArrowDrawable.setStrokeColor(Color.WHITE);
+            imageView.setImageDrawable(drawerArrowDrawable);
+
+            final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            try {
+                Field mDragger = drawer.getClass().getDeclaredField("mLeftDragger");
+                mDragger.setAccessible(true);
+                ViewDragHelper draggerObj = (ViewDragHelper) mDragger.get(drawer);
+
+                Field mEdgeSize = draggerObj.getClass().getDeclaredField("mEdgeSize");
+                mEdgeSize.setAccessible(true);
+                int edge = mEdgeSize.getInt(draggerObj);
+
+                mEdgeSize.setInt(draggerObj, 180);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            drawer.setDrawerListener(new DrawerLayout.SimpleDrawerListener() {
+                @Override
+                public void onDrawerSlide(View drawerView, float slideOffset) {
+                    offset = slideOffset;
+                    // Sometimes slideOffset ends up so close to but not quite 1 or 0.
+                    if (slideOffset >= .995) {
+                        flipped = true;
+                        drawerArrowDrawable.setFlip(flipped);
+                    } else if (slideOffset <= .005) {
+                        flipped = false;
+                        drawerArrowDrawable.setFlip(flipped);
+                    }
+                    drawerArrowDrawable.setParameter(offset);
+                }
+            });
+            imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mDrawerLayout.isDrawerVisible(START)) {
+                        mDrawerLayout.closeDrawer(START);
+                    } else {
+                        mDrawerLayout.openDrawer(START);
+                    }
+                }
+            });
         } catch (Exception e) {
+            ReLoginHandler.sendEmptyMessage(-1);
             e.printStackTrace();
         }
-
-        drawer.setDrawerListener(new DrawerLayout.SimpleDrawerListener() {
-            @Override
-            public void onDrawerSlide(View drawerView, float slideOffset) {
-                offset = slideOffset;
-                // Sometimes slideOffset ends up so close to but not quite 1 or 0.
-                if (slideOffset >= .995) {
-                    flipped = true;
-                    drawerArrowDrawable.setFlip(flipped);
-                } else if (slideOffset <= .005) {
-                    flipped = false;
-                    drawerArrowDrawable.setFlip(flipped);
-                }
-                drawerArrowDrawable.setParameter(offset);
-            }
-        });
-        imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mDrawerLayout.isDrawerVisible(START)) {
-                    mDrawerLayout.closeDrawer(START);
-                } else {
-                    mDrawerLayout.openDrawer(START);
-                }
-            }
-        });
-
-
     }
 
     private void setupDrawerContent(NavigationView navigationView) {
@@ -1225,7 +1243,7 @@ public class MainActivity extends ActionBarActivity {
                         mDrawerLayout.closeDrawers();
                         if (menuItem.isChecked()) return true;
                         menuItem.setChecked(true);
-                        if (SimCourseChange && LayoutId == R.layout.simcourse)
+                        if (SimCourseChange && LayoutId == R.layout.simcourse_hack)
                         {
                             AlertDialogPro.Builder builder = CustomDialog("模擬選課", "尚未儲存變更，是否儲存課表？", false);
                             builder.setPositiveButton("確定", new DialogInterface.OnClickListener() {
@@ -1326,11 +1344,11 @@ public class MainActivity extends ActionBarActivity {
         if (_isLogin)
         {
             if (!select)
-                setContentViewEx(R.layout.course);
+                setContentViewEx(R.layout.course_hack);
             mViewFlipper = (ViewFlipper) this.findViewById(R.id.view_flipper);
         }
         else
-            setContentViewEx(R.layout.offlinecourse);
+            setContentViewEx(R.layout.offlinecourse_hack);
 
         TextView textView = (TextView) findViewById(R.id.textView);
         textView.setVisibility(View.GONE);
@@ -1352,7 +1370,7 @@ public class MainActivity extends ActionBarActivity {
             });
         }
 
-        initDrawerHack(_isLogin, true, "模擬選課");
+        initDrawerHack(_isLogin, true, "學期課表");
 
         _fncid = "AG222";
         ReadCourseRunnable = new Runnable() {
@@ -1535,7 +1553,7 @@ public class MainActivity extends ActionBarActivity {
 
     public void initScore(final boolean select, boolean cancel){
         if (!select)
-            setContentViewEx(R.layout.score);
+            setContentViewEx(R.layout.score_hack);
         mViewFlipper = (ViewFlipper) this.findViewById(R.id.view_flipper);
 
         RelativeLayout Select = (RelativeLayout) findViewById(R.id.select);
@@ -1644,7 +1662,7 @@ public class MainActivity extends ActionBarActivity {
 
     void initLeave(boolean select, boolean cancel)
     {
-        setContentViewEx(R.layout.leave);
+        setContentViewEx(R.layout.leave_hack);
         mViewFlipper = (ViewFlipper) this.findViewById(R.id.view_flipper);
         initLeave1(select, cancel);
     }
@@ -2147,7 +2165,7 @@ public class MainActivity extends ActionBarActivity {
 
     void initEvent(boolean _isLogin, boolean Reload)
     {
-        setContentViewEx(R.layout.event);
+        setContentViewEx(R.layout.event_hack);
         mViewFlipper = (ViewFlipper) this.findViewById(R.id.view_flipper);
         initEvent1(_isLogin, Reload);
     }
@@ -2378,7 +2396,7 @@ public class MainActivity extends ActionBarActivity {
 
     void initBus(boolean ShowCal)
     {
-        setContentViewEx(R.layout.bus);
+        setContentViewEx(R.layout.bus_hack);
         mViewFlipper = (ViewFlipper) this.findViewById(R.id.view_flipper);
         initBus1(ShowCal);
     }
@@ -2666,7 +2684,7 @@ public class MainActivity extends ActionBarActivity {
 
     private void initAbout(final boolean _isLogin)
     {
-        setContentViewEx(R.layout.about);
+        setContentViewEx(R.layout.about_hack);
 
         initDrawerHack(_isLogin, true, "關於我們");
 
@@ -2762,7 +2780,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void initSimCourse(boolean Reload, final boolean _isLogin) {
-        setContentViewEx(R.layout.simcourse);
+        setContentViewEx(R.layout.simcourse_hack);
 
         _fncid = "";
 
@@ -3012,7 +3030,7 @@ public class MainActivity extends ActionBarActivity {
     private void initSimCourseSearch1(boolean ReloadContext, boolean Reload)
     {
         if (ReloadContext)
-            setContentViewEx(R.layout.simcourse_search);
+            setContentViewEx(R.layout.simcourse_search_hack);
         mViewFlipper = (ViewFlipper) this.findViewById(R.id.view_flipper);
         mViewFlipper.setDisplayedChild(0);
         SimCourseSelectDepartment = 0;
@@ -3315,7 +3333,7 @@ public class MainActivity extends ActionBarActivity {
 
     private void initSimCourseSearch2()
     {
-        setContentViewEx(R.layout.simcourse_search);
+        setContentViewEx(R.layout.simcourse_search_hack);
         mViewFlipper = (ViewFlipper) this.findViewById(R.id.view_flipper);
         mViewFlipper.setDisplayedChild(0);
         ViewFlipper mViewFlipper2 = (ViewFlipper) this.findViewById(R.id.view_flipper2);
@@ -5364,21 +5382,21 @@ public class MainActivity extends ActionBarActivity {
             super.onPostExecute(result);
             switch (LayoutId)
             {
-                case R.layout.simcourse:
+                case R.layout.simcourse_hack:
                     addSimCourse();
                     break;
-                case R.layout.simcourse_search:
+                case R.layout.simcourse_search_hack:
                     break;
-                case R.layout.score:
+                case R.layout.score_hack:
                     addScore();
                     break;
-                case R.layout.course:
+                case R.layout.course_hack:
                     addCourse();
                     break;
-                case R.layout.offlinecourse:
+                case R.layout.offlinecourse_hack:
                     addOfflineCourse();
                     break;
-                case R.layout.leave:
+                case R.layout.leave_hack:
                     addLeave();
                     break;
             }
@@ -5397,8 +5415,8 @@ public class MainActivity extends ActionBarActivity {
 
         switch (LayoutId)
         {
-            case R.layout.course:
-            case R.layout.offlinecourse:
+            case R.layout.course_hack:
+            case R.layout.offlinecourse_hack:
                 if (!isSelecting)
                 {
                     if (isOfflineCourse)
@@ -5407,20 +5425,20 @@ public class MainActivity extends ActionBarActivity {
                         addCourse();
                 }
                 break;
-            case R.layout.leave:
+            case R.layout.leave_hack:
                 if (!isSelecting
                         && ((ViewFlipper) findViewById(R.id.view_flipper2)).getDisplayedChild() == 0)
                     addLeave();
                 break;
-            case R.layout.about:
+            case R.layout.about_hack:
                 if (AboutEasterEgg < 5)
                     initAboutPathView();
                 break;
-            case R.layout.simcourse:
+            case R.layout.simcourse_hack:
                 addSimCourse();
                 break;
-            case R.layout.logout:
-            case R.layout.logout_news:
+            case R.layout.logout_hack:
+            case R.layout.logout_news_hack:
                 initLogout();
                 break;
             default:
@@ -5445,16 +5463,16 @@ public class MainActivity extends ActionBarActivity {
     {
         LayoutId = _layoutID;
 
-        if (_layoutID == R.layout.login)
+        if (_layoutID == R.layout.login_hack)
             LoadingDialogTitle = "Login";
         else
             LoadingDialogTitle = "Loading...";
 
         switch (_layoutID)
         {
-            case R.layout.course:
-            case R.layout.score:
-            case R.layout.leave:
+            case R.layout.course_hack:
+            case R.layout.score_hack:
+            case R.layout.leave_hack:
                 SelectLayoutId = _layoutID;
                 break;
         }

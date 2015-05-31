@@ -8,8 +8,8 @@ android {
         applicationId "com.kuas.ap.donate"
         minSdkVersion 9
         targetSdkVersion 22
-        versionCode 20001
-        versionName "2.0.1"
+        versionCode 20100
+        versionName "2.1.0"
     }
     buildTypes {
         release {

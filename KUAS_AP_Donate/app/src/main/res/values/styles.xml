@@ -3,8 +3,8 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/md_blue_700</item>
-        <item name="colorPrimaryDark">@color/md_blue_800</item>
+        <item name="colorPrimary">@color/md_light_blue_700</item>
+        <item name="colorPrimaryDark">@color/md_light_blue_800</item>
         <item name="colorAccent">@color/actionbar_color2</item>
         <item name="alertDialogProTheme">@style/AppTheme.FlavoredMaterial</item>
     </style>

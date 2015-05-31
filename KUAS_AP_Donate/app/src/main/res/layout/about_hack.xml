@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:ripple="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/drawer_layout"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:fitsSystemWindows="true"
+    android:background="#ffffffff">
+
+    <RelativeLayout android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/appbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="?attr/colorPrimary"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+                app:layout_scrollFlags="scroll|enterAlways">
+
+                <com.andexert.library.RippleView
+                    ripple:rv_centered="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    ripple:rv_rippleDuration="280">
+                    <ImageView
+                        android:id="@+id/drawer_indicator"
+                        android:layout_width="@dimen/actionbar_dimen"
+                        android:layout_height="@dimen/actionbar_dimen"
+                        android:scaleType="centerInside"
+                        android:background="@drawable/drawer_selector"
+                        android:layout_gravity="start"
+                        />
+                </com.andexert.library.RippleView>
+
+                <TextView
+                    android:id="@+id/indicator_style"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/actionbar_dimen"
+                    android:paddingLeft="12dp"
+                    android:paddingRight="12dp"
+                    android:text="About"
+                    android:gravity="center"
+                    android:background="@drawable/drawer_selector"
+                    android:layout_gravity="center"
+                    android:textColor="@color/white"
+                    android:textSize="18sp"
+                    android:layout_marginLeft="5dp"/>
+
+                <RelativeLayout
+                    android:layout_width="50dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginRight="5dp"
+                    android:layout_gravity="right"
+                    android:id="@+id/Logout"
+                    android:gravity="center_vertical|center_horizontal">
+
+                    <ImageView
+                        android:layout_width="27dp"
+                        android:layout_height="27dp"
+                        android:scaleType="centerInside"
+                        android:background="@drawable/ic_settings_white_48dp" />
+                </RelativeLayout>
+            </android.support.v7.widget.Toolbar>
+        </android.support.design.widget.AppBarLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/appbar">
+
+            <ScrollView
+                android:id="@+id/scrollView"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_marginBottom="10sp">
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="KUAS AP: A KUAS Adminstration System for Mobile"
+                        android:textSize="30sp"
+                        android:id="@+id/title"
+                        android:gravity="center"
+                        android:textStyle="bold"
+                        android:textColor="#ff000000"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginRight="20dp"
+                        android:layout_marginBottom="5dp" />
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_below="@id/title"
+                        android:id="@+id/kuasapImage"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="5sp">
+
+                        <RelativeLayout
+                            android:id="@+id/kuasap"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="150dp"
+                                android:id="@+id/imageView"
+                                android:adjustViewBounds="true"
+                                android:scaleType="fitCenter"
+                                android:src="@drawable/kuasap2"
+                                android:layout_centerHorizontal="true"
+                                android:layout_marginRight="20dp"
+                                android:layout_marginBottom="5dp"
+                                android:layout_marginLeft="20dp" />
+
+                            <com.eftimoff.androipathview.PathView
+                                android:id="@+id/pathView"
+                                android:layout_width="wrap_content"
+                                android:layout_height="150dp"
+                                app:svg="@raw/kuasap"
+                                app:pathColor="@color/white"
+                                app:pathWidth="2"
+                                android:layout_alignTop="@+id/imageView"
+                                android:layout_alignLeft="@+id/imageView"
+                                android:layout_alignRight="@+id/imageView"
+                                android:layout_alignBottom="@+id/imageView" />
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:id="@+id/EasterEgg"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="5sp"
+                            android:visibility="gone">
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:id="@+id/noBody"
+                                android:scaleType="fitCenter"
+                                android:src="@drawable/nobody_but_you"
+                                android:layout_centerHorizontal="true"
+                                android:layout_marginRight="20dp"
+                                android:layout_marginLeft="20dp"
+                                android:layout_marginBottom="5sp" />
+
+                            <RelativeLayout
+                                android:layout_below="@id/noBody"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_alignLeft="@+id/noBody"
+                                android:layout_alignRight="@+id/noBody"
+                                android:background="#09000000">
+
+                                <View android:layout_height="fill_parent" android:background="@color/bar_grey2"
+                                    android:layout_width="10sp"
+                                    android:id="@+id/noBodyBar"
+                                    android:layout_alignTop="@+id/noBodyTextView"
+                                    android:layout_alignBottom="@+id/noBodyTextView"/>
+
+                                <ImageView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_toRightOf="@id/noBodyBar"
+                                    android:id="@+id/quote"
+                                    android:scaleType="fitStart"
+                                    android:src="@drawable/ic_format_quote_black_48dp"
+                                    android:layout_marginLeft="3sp"
+                                    android:layout_alignTop="@+id/noBodyTextView"
+                                    android:layout_alignBottom="@+id/noBodyTextView"
+                                    android:layout_marginTop="7sp" />
+
+                                <TextView
+                                    android:layout_toRightOf="@id/quote"
+                                    android:id="@+id/noBodyTextView"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:textSize="15sp"
+                                    android:text="「不要問為何沒有人做這個，先承認你就是『沒有人』」。因為，「沒有人」是萬能的。"
+                                    android:textColor="#ff000000"
+                                    android:layout_marginLeft="5sp"
+                                    android:paddingTop="5sp"
+                                    android:paddingBottom="5sp" />
+                            </RelativeLayout>
+                        </RelativeLayout>
+                    </RelativeLayout>
+
+
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Rebuild"
+                        android:textSize="20sp"
+                        android:id="@+id/rebuild"
+                        android:textColor="#ff000000"
+                        android:textStyle="bold"
+                        android:layout_below="@id/kuasapImage"
+                        android:layout_centerHorizontal="true"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="呂紹榕(Louie Lu), 姜尚德(JohnThunder), \nregisterAutumn, 詹濬鍵(Evans), \n陳建霖(HearSilent)"
+                        android:textSize="15sp"
+                        android:id="@+id/author"
+                        android:layout_below="@id/rebuild"
+                        android:gravity="center"
+                        android:textColor="#ff000000"
+                        android:layout_marginBottom="10dp"
+                        android:layout_centerHorizontal="true" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Contact Us"
+                        android:textSize="20sp"
+                        android:id="@+id/contact"
+                        android:textColor="#ff000000"
+                        android:textStyle="bold"
+                        android:layout_below="@id/author"
+                        android:layout_centerHorizontal="true"/>
+
+                    <RelativeLayout
+                        android:layout_below="@id/contact"
+                        android:layout_width="match_parent"
+                        android:gravity="center"
+                        android:layout_height="wrap_content">
+
+                        <ImageView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:id="@+id/facebook"
+                            android:src="@drawable/facebook"
+                            android:layout_margin="5sp" />
+
+                        <ImageView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:id="@+id/github"
+                            android:src="@drawable/github"
+                            android:layout_toRightOf="@+id/facebook"
+                            android:layout_margin="5sp" />
+
+                        <ImageView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:id="@+id/mail"
+                            android:src="@drawable/mail"
+                            android:layout_toRightOf="@+id/github"
+                            android:layout_margin="5sp" />
+                    </RelativeLayout>
+                </RelativeLayout>
+            </ScrollView>
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <android.support.design.widget.NavigationView
+        android:id="@+id/nav_view"
+        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_gravity="start"
+        android:fitsSystemWindows="true"
+        app:headerLayout="@layout/nav_header"
+        app:menu="@menu/drawer_view"
+        android:background="#ffffffff"/>
+
+</android.support.v4.widget.DrawerLayout>
