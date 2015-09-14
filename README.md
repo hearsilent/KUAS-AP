@@ -1,6 +1,9 @@
 高應校務通
 ===========
 
+此專案已不再維護，請至新版本：
+https://github.com/hearsilent/KUAS-AP-Material
+
 ## TODO List:
 - [x] 學期課表
 - [x] 學期成績
